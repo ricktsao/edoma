@@ -1,0 +1,22 @@
+{
+          "sProcessing": "處理中...",
+          "sLengthMenu": "每頁 _MENU_ 筆記錄",
+          "sZeroRecords": "沒有找到記錄",
+          "sInfo": "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
+          "sInfo": "第 _PAGE_ 頁 ( 總共 _TOTAL_ 筆， _PAGES_ 頁 )",
+          "sInfo": "總共 _TOTAL_ 筆",
+          "sInfoEmpty": "顯示第 0 至 0 筆結果，共 0 筆",
+          "sInfoFiltered": "(從 _MAX_ 條記錄過濾)",
+          "sInfoPostFix": "",
+          "sSearch": "關鍵字搜尋:",
+          "sUrl": "",
+          "sEmptyTable": "無任何資料",
+          "sLoadingRecords": "載入中...",
+          "sInfoThousands": ",",
+          "oPaginate": {
+              "sFirst": "首頁",
+              "sPrevious": "上頁",
+              "sNext": "下頁",
+              "sLast": "末頁"
+          }    
+}

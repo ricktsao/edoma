@@ -1,0 +1,130 @@
+  * {
+      box-sizing: border-box;
+      font-family: "微軟正黑體";
+  }
+  
+  a {
+      text-decoration: none;
+      color: #FFF;
+  }
+  
+  body,
+  html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      min-width: 820px;
+      min-height: 600px;
+  }
+  
+  img {
+      border: none;
+  }
+  
+input:focus{
+    outline: none;
+}
+  
+  body {
+      background: url(../images/bg.jpg) center center no-repeat;
+  }
+  
+  #primary {
+      background: url(../images/bg2.png) center center;
+      height: 483px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      margin-top: -241px;
+      padding-top: 100px;
+      min-width: 820px;
+  }
+  
+  #primary > form {
+      position: relative;
+      width: 820px;
+      margin: 0 auto;
+  }
+  
+  #title {
+      position: absolute;
+      top: -260px;
+      left: 0;
+  }
+  
+  #shild {
+      position: absolute;
+      right: 50px;
+      top: -20px;
+  }
+  
+  #logo {
+      position: absolute;
+      top: -300px;
+      left: -400px;
+      display: none;
+  }
+  
+  .inputStyle {
+      background: #FFF;
+      height: 50px;
+      position: relative;
+  }
+  
+  table {
+      width: 400px;
+  }
+  
+  table td {
+      padding-bottom: 10px;
+  }
+  
+  input {
+      border: none;
+      color: #0c65ba;
+  }
+  
+  .inputStyle.type1 > img {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+  }
+  
+  .inputStyle.type1 > input {
+      position: absolute;
+      width: 80%;
+      top: 15px;
+      left: 50px;
+  }
+  
+  .inputStyle.type2 {
+      width: 150px;
+  }
+  
+  .inputStyle.type2 > input {
+      position: absolute;
+      width: 80%;
+      top: 15px;
+      left: 10px;
+  }
+
+.btn{
+  background: none;
+  border:none;
+  cursor: pointer;
+}
+
+  /*
+  .btn {
+      background: url(../images/btn.png);
+      text-align: center;
+      border: none;
+      color: #FFF;
+      height: 50px;
+      width: 150px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+  }
+*/

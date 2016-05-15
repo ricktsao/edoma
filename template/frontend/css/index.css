@@ -1,0 +1,282 @@
+ .blockRow {
+     overflow: hidden;
+ }
+ 
+ .blockRow > div {
+     position: relative;
+ }
+ 
+ #blockA {
+     float: left;
+     width: 530px;
+ }
+ 
+ #blockB {
+     float: right;
+     width: 430px;
+ }
+ 
+ .block_title {
+     border-bottom: 1px solid #999;
+     padding-bottom: 5px;
+     margin-bottom: 10px;
+ }
+ 
+ .block_title > img {
+     display: block;
+ }
+ 
+ .block_title > a {
+     position: absolute;
+     top: 20px;
+     right: 10px;
+ }
+ 
+ #picGroup {}
+ 
+ #picGroup > li {
+     position: relative;
+     margin-bottom: 10px;
+ }
+ 
+ #picGroup > li > a {
+     position: absolute;
+     bottom: 0;
+     right: 0;
+     color: #F00;
+     height: 1em;
+     line-height: 1em;
+     overflow: hidden;
+     max-width: 8em;
+ }
+ 
+ .dateTime {
+     width: 70px;
+     height: 66px;
+     background: #999;
+     float: left;
+     margin-right: 10px;
+     position: absolute;
+     top: 12px;
+ }
+ 
+ .dateTime > div {
+     color: #FFF;
+     text-align: center;
+ }
+ 
+ .dateTime > .day {
+     border-bottom: 1px solid #FFF;
+     font-size: 25px;
+     margin-bottom: 10px;
+ }
+ 
+ .dateTime > .date {
+     font-size: 12px;
+ }
+ 
+ .film {
+     background: url('../images/film.png') center center no-repeat;
+     width: 371px;
+     height: 95px;
+     float: left;
+     padding-top: 13px;
+     padding-left: 10px;
+     margin-left: 80px;
+ }
+ 
+ .film > li {
+     width: 86px;
+     height: 68px;
+     overflow: hidden;
+     float: left;
+     margin: 0 5px;
+ }
+
+ .film > li img {
+    max-width: 100%;
+    max-height: 100%;
+ }
+ 
+ #rental {
+     padding-top: 20px;
+ }
+ 
+ #rental > li {
+     overflow: hidden;
+     margin-bottom: 30px;
+ }
+ 
+ #rental .img {
+     display: block;
+     float: left;
+     margin-right: 10px;
+     width: 113px;
+     height: 66px;
+     overflow: hidden;
+ }
+ 
+ #rental .rental_content {
+     float: right;
+     width: 298px;
+ }
+ 
+ #rental .rental_content > a,
+ #rental .rental_content > div {
+     display: block;
+     line-height: 1.5em;
+     height: 1.5em;
+     width: 100%;
+     overflow: hidden;
+ }
+ 
+ #rental .rental_content > a {
+     color: #333;
+ }
+ 
+ #rental .rental_content > div {
+     color: #666;
+     font-size: 12px;
+ }
+ 
+ .glayBg {
+     background: #f4f4f4;
+     padding-top: 40px;
+ }
+ 
+ #secondPart .title_area {
+     background: #FFF;
+     color: #0094da;
+     font-size: 16px;
+     padding: 0.5em 1em;
+     position: relative;
+ }
+ 
+ #secondPart .leftArea {
+     float: left;
+     width: 290px;
+ }
+ 
+ #secondPart .leftArea .title_area a {
+     position: absolute;
+     display: block;
+     font-size: 12px;
+     color: #666;
+     right: 15px;
+     top: 10px;
+ }
+ 
+ #secondPart .rightArea {
+     float: right;
+     width: 695px;
+ }
+ 
+ #secondPart .rightArea .title_area a {
+     position: absolute;
+     display: block;
+     font-size: 12px;
+     background: #666;
+     width: 140px;
+     height: 100%;
+     right: 0;
+     top: 0;
+     color: #FFF;
+     font-size: 15px;
+     text-align: center;
+     line-height: 2.5em;
+ }
+ 
+ #secondPart .list_type_1,
+ #secondPart .list_type_2 {
+     padding-top: 15px;
+ }
+ 
+ #secondPart .list_type_1 li,
+ #secondPart .list_type_2 li {
+     padding: 0 0.5em;
+     margin-bottom: 5px;
+     position: relative;
+ }
+ 
+ #secondPart .list_type_1 a {
+     display: block;
+     height: 1.5em;
+     line-height: 1.5em;
+     overflow: hidden;
+     color: #333;
+ }
+ 
+ #secondPart .list_type_2 li {
+    overflow: hidden;
+ }
+ 
+ #secondPart .list_type_2 a {
+     display: block;
+     height: 1.5em;
+     line-height: 1.5em;
+     overflow: hidden;
+     color: #333;
+     width: 80%;
+     float: left
+ }
+ 
+ #secondPart .list_type_2 li > div {
+     float: right;
+     width: 20%;
+     text-align: center;
+      height: 1.5em;
+     line-height: 1.5em;
+ }
+
+
+#cycle {
+    height: 144px;
+    overflow: hidden;
+}
+
+#cycle > div {
+    overflow: hidden;
+    text-align: center;
+}
+
+#cycle a {    
+    padding: 5px;
+    display: inline-block;
+    border: 1px solid #aaa;
+    margin: 0 15px;
+}
+
+#cycle img {
+    max-width: 93px;
+    min-height: 132px;
+    display: block;
+}
+
+#cycle_bg {
+    background: #dcdcdc;
+    padding: 10px;
+    padding-bottom: 40px;
+    position: relative;
+}
+
+#pager {
+    padding-top: 10px;
+   position: absolute;
+   bottom: 0px;
+   left: 10px;
+}
+
+#pager > span {
+    display: inline-block;
+    font-size: 50px;
+    width: 9px;
+    height: 9px;
+    margin-right: 10px;
+    content:"";
+    color:#000;
+    cursor: pointer;
+}
+
+#pager > span.cycle-pager-active{
+    color: #f00;
+}

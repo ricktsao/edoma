@@ -1,0 +1,183 @@
+@charset "utf-8";
+/* CSS Document */
+html,body {
+	margin:0px;
+	padding:0px;	
+}
+
+
+body {
+	font-size: 12px;
+	font-family: Verdana, Arial, "細明體", "新細明體", "MingLiU";
+	color: #333; /*all font color*/
+	line-height: 1.5em;
+	-webkit-text-size-adjust: none;	/*make chrome support < 12px*/
+	
+}
+
+
+#wrapper {	
+	position:relative;
+	min-width:1300px;	
+}
+
+#header {
+	height:60px;	
+	position:relative;	
+	z-index:500;
+	border-top:5px solid #333;
+	padding-bottom:10px;
+	
+}
+#logo {
+	position:absolute;
+	left:10px;
+	top:10px;
+}
+#logo img{
+	max-width:150px;
+	max-height:50px;
+}
+#stay {
+	position:absolute;
+	top:11px;
+	right:10px;
+}
+#stay td.separator {
+	color:#3a5064;
+	padding:0 8px;
+	font-size:10px;
+}
+
+#stay td a {
+	background-repeat:no-repeat;
+	color:#3a5064;
+	padding-left:21px;
+	background-position:left 1px;
+}
+#stay td a:hover{
+	text-decoration: underline;
+}
+#stay td.password a {
+	background-image:url(../images/icon_sitemap.gif);
+}
+#stay td.mail a {
+	background-image:url(../images/icon_contentus.gif);
+}
+#stay td.name a {
+	background-image:url(../images/icon_sitemap.gif);
+}
+#stay td.login a {
+	padding-left:22px;
+	position: relative;
+	
+	
+}
+
+#stay td.login a >div{
+	position:absolute;
+	top:0px;
+	left:0px;
+	background:url('../images/icon_sprite.png') -32px -16px;
+	width:16px;
+	height:16px;
+}
+
+#searchBlock {
+	position:absolute;
+	top:2px;
+	right:28px;
+	z-index:3000;
+}
+
+
+#search {
+	position:absolute;
+	top:56px;
+	right:152px;
+	width:237px;
+	height:24px;
+}
+#search form {
+	padding:0;
+	margin:0;
+}
+#search div.inputFrame {
+	width:237px;
+	height:24px;
+	float:left;
+}
+#search div.inputFrame div.left {
+	background-image:url(../images/bg_search_frame_left.png);
+	background-repeat:no-repeat;
+	width:27px;
+	height:24px;
+	float:left;
+}
+#search div.inputFrame div.center {
+	background-image:url(../images/bg_search_frame_center.png);
+	background-repeat:repeat-x;
+	width:135px;
+	padding-left:5px;
+	height:24px;
+	float:left;
+	overflow:hidden;
+	line-height: 24px;
+	color:#b0b0b0;
+}
+#search div.inputFrame div.right {
+	float:left;
+	width:70px;
+	height:24px;
+
+}
+#search div.inputFrame div.center input {
+	border:0;
+	width:130px;
+	height:16px;
+	*line-height:16px;
+	margin-top:3px;
+	color:#4e4e4e;
+	border:none;
+	background-color:transparent;
+}
+#search div.inputFrame div.right div#search_btn {
+	float:left;
+	width:70px;
+	height:24px;
+	line-height:24px;
+	background-image:url(../images/bg_search_frame_right.png);
+	background-repeat:no-repeat;
+	color:#fff;
+	cursor:pointer;
+	text-align:center;
+	font-size:11px;
+}
+
+#container {	
+	position:relative;	
+	background:url(../images/bg_content.jpg) repeat-x;
+	padding:10px;
+}
+
+#footer {
+	
+	margin-top:18px;
+	position:relative;
+	word-spacing: 3px;
+}
+
+#footer div#copyright {
+	color:#fff;
+	font-size:11px;
+	height:23px;
+	line-height:23px;
+	background-color:#333;
+	text-align:center;
+}
+.clear {
+	clear:both;
+}
+
+
+

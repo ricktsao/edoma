@@ -18,6 +18,7 @@ class Sys_news extends Backend_Controller {
 		$condition = "";
 		
 		$list = $this->c_model->GetList( "sys_news" , $condition ,FALSE, $this->per_page_rows , $this->page , array("sort"=>"asc","start_date"=>"desc","sn"=>"desc") );
+		//dprint($list);
 		//img_show_list($list["data"],'img_filename',$this->router->fetch_class());
 		
 		$data["list"] = $list["data"];
@@ -90,12 +91,12 @@ class Sys_news extends Backend_Controller {
 						
 			if(isNotNull($edit_data["sn"]))
 			{				
-				if($this->it_model->updateData( "web_menu_content" , $edit_data, "sn =".$edit_data["sn"] ))
+				if($this->it_model->updateData( "edoma_content" , $edit_data, "sn =".$edit_data["sn"] ))
 				{					
 					$img_filename = $this->uploadImage($edit_data["sn"]);					
 					$edit_data["img_filename"] = $img_filename;
 					
-					$this->sync_to_server($edit_data);
+					//$this->sync_to_server($edit_data);
 					$this->showSuccessMessage();					
 				}
 				else 
@@ -108,14 +109,14 @@ class Sys_news extends Backend_Controller {
 									
 				$edit_data["create_date"] =   date( "Y-m-d H:i:s" );
 				
-				$content_sn = $this->it_model->addData( "web_menu_content" , $edit_data );
+				$content_sn = $this->it_model->addData( "edoma_content" , $edit_data );
 				if($content_sn > 0)
 				{
 					$img_filename =$this->uploadImage($content_sn);
 					$edit_data["img_filename"] = $img_filename;
 					
 					$edit_data["sn"] = $content_sn;
-					$this->sync_to_server($edit_data);
+					//$this->sync_to_server($edit_data);
 				
 					
 					$this->showSuccessMessage();							
@@ -209,27 +210,39 @@ class Sys_news extends Backend_Controller {
 			$folder_name = $this->router->fetch_class();
 			
 			//圖片處理 img_filename				
-			$img_config['resize_setting'] =array($folder_name=>array(1024,1024));					
+			$img_config['resize_setting'] =array($folder_name=>array(1024,1024));
 			$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
 			move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
 			
 			$img_filename = resize_img($uploadedUrl,$img_config['resize_setting']);					
 				
-			//社區同步資料夾
-			$img_config['resize_setting'] =array($folder_name=>array(500,500));
-			resize_img($uploadedUrl,$img_config['resize_setting'],$this->getCommId(),$img_filename);
 			
-			@unlink($uploadedUrl);	
+			if (!is_dir( $this->config->item('edoma_folder_path') ))
+			{
+				mkdir($this->config->item('edoma_folder_path'),0777);
+			}  
+			
+			if (!is_dir( $this->config->item('edoma_folder_path').$folder_name ))
+			{
+				mkdir($this->config->item('edoma_folder_path').$folder_name,0777);
+			}
+			
+			//將檔案複製到commapi folder 下
+			copy(set_realpath("upload/website").$folder_name.'/'.$img_filename , $this->config->item('edoma_folder_path').$folder_name.'/'.$img_filename);
+			
+			
 
-			$this->it_model->updateData( "web_menu_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
+			$this->it_model->updateData( "edoma_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
 			
 			$orig_img_filename = $this->input->post('orig_img_filename');
 			
 			@unlink(set_realpath("upload/website/".$folder_name).$orig_img_filename);	
-			@unlink(set_realpath("upload/".$this->getCommId()."/".$folder_name).$orig_img_filename);	
+			@unlink($this->config->item('edoma_folder_path').$folder_name.'/'.$orig_img_filename);	
 			
 			//檔案同步至server
-			$this->sync_file($folder_name);
+			//$this->sync_file($folder_name);
+			
+			
 		}
 		return $img_filename;
 	}

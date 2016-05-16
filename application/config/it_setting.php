@@ -201,3 +201,7 @@ $config['suggestion_to_role'] = array(
 	"a" => "管委收",
 	"s" => "總幹事收"
 );
+
+
+// edoma folder path
+$config['edoma_folder_path'] = 'C:/htdocs/commapi/upload/edoma/';

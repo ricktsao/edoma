@@ -3,7 +3,7 @@
 <?php showOutputBox("tinymce/tinymce_js_view", array('elements' => 'content'));?>
 <form action="<?php echo bUrl("updateContent")?>" method="post"  id="update_form" enctype="multipart/form-data" class="form-horizontal" role="form">
 	
-	<?php echo textOption("單元名稱","title",$edit_data); ?>
+	<?php echo textOption("標題","title",$edit_data); ?>
 	
 	<?php
 	  echo textAreaOption("內容","content",$edit_data);

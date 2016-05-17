@@ -1,7 +1,32 @@
 
-
 <?php showOutputBox("tinymce/tinymce_js_view", array('elements' => 'content'));?>
 <form action="<?php echo bUrl("updateContent")?>" method="post"  id="update_form" enctype="multipart/form-data" class="form-horizontal" role="form">
+		
+	<?php
+		$error_css= '';
+		if(isNotNull(form_error("comms")))
+		{
+			$error_css = 'has-error';			
+		}
+	?>		
+	<div class="form-group <?php echo $error_css;?>">
+		<label for="url" class="col-xs-12 col-sm-2 control-label no-padding-right">發佈社區</label>
+		
+		<div class="col-xs-12 col-sm-8">
+			<select multiple="multiple" size="10" name="comms[]">
+			<?php 
+              	foreach ($community_list as $key => $item) 
+              	{
+					echo '<option value="'.$item["id"].'">'.$item["name"].'</option>';
+				}
+            ?>	    
+
+			</select>
+			<div class="help-block col-xs-12 col-sm-reset inline"><p><?php echo form_error("comms")?></p></div>
+		</div>
+		
+	</div>
+	
 	
 	<?php echo textOption("標題","title",$edit_data); ?>
 	
@@ -28,9 +53,12 @@
 	
 	
 	<?php echo pickDateOption($edit_data);?>
-	<?php echo textOption("排序","sort",$edit_data); ?>
+	<?php
+	 //echo textOption("排序","sort",$edit_data); 
+	 ?>
 	<?php echo checkBoxOption("啟用","launch",$edit_data);?>
 	
+	<input type="hidden" name="sort" value="<? echo tryGetData('sort', $edit_data)?>" />
 	<input type="hidden" name="sn" value="<? echo tryGetData('sn', $edit_data)?>" />
 	<input type="hidden" name="content_type" value="<? echo tryGetData('content_type', $edit_data)?>" />
 		
@@ -56,5 +84,51 @@
 </form>
 	
 	
+<script>
+	$(function () {
 
+		$(".chzn-select").chosen();
+
+		//chosen plugin inside a modal will have a zero width because the select element is originally hidden
+		//and its width cannot be determined.
+		//so we set the width after modal is show
+		$('#modal-form').on('show', function () {
+			$(this).find('.chzn-container').each(function(){
+				$(this).find('a:first-child').css('width' , '200px');
+				$(this).find('.chzn-drop').css('width' , '210px');
+				$(this).find('.chzn-search input').css('width' , '200px');
+			});
+		})
+		
+		
+		$('#can_msg').change(function()
+	    {
+	    	$("textarea#msg_content").val($('#can_msg').val());
+	    	//$('#msg_content').text($('#can_msg').val());
+	    	//alert('tste');
+	    });
+		
+	});
+
+	
+	var demo1 = $('select[name="comms[]"]').bootstrapDualListbox({
+		filterPlaceHolder : '關鍵字',
+		filterTextClear : '顯示全部',
+        infoText : '共{0}個社區',
+        moveAllLabel: 'Selected',
+        infoTextFiltered: '<span class="label label-warning">找到</span> {0} 筆',
+        infoTextEmpty: '訊息發送列表',
+        //nonSelectedFilter: 'ion ([7-9]|[1][0-2])'
+      });
+
+		demo1.bootstrapDualListbox("getContainer").find(".btn.moveall").append("(選擇全部)");
+		demo1.bootstrapDualListbox("getContainer").find(".btn.removeall").append("(全部移除)");
+
+	  /*
+	$("#update_form").submit(function() {
+      alert('請選擇發布對象');
+      return false;
+    });
+	*/
+  </script>
   

@@ -54,6 +54,8 @@ abstract class Backend_Controller extends IT_Controller
 		$this->getLeftMenu();
 		$this->module_info = $this->getModuleInfo();
 		
+		/*
+		
 		// 取得戶別相關參數
 		$this->load->model('auth_model');
 		$this->building_part_01 = $this->auth_model->getWebSetting('building_part_01');
@@ -84,6 +86,9 @@ abstract class Backend_Controller extends IT_Controller
 		if (isNotNull($parking_part_02_value)) {
 			$this->parking_part_02_array = array_merge(array(0=>' -- '), explode(',', $parking_part_02_value));
 		}
+		
+		
+		*/
 	}
 	
 	

@@ -16,7 +16,6 @@ class Sys_news extends Backend_Controller {
 	public function contentList()
 	{			
 		$condition = "";
-		
 		$list = $this->c_model->GetList( "sys_news" , $condition ,FALSE, $this->per_page_rows , $this->page , array("sort"=>"asc","start_date"=>"desc","sn"=>"desc") );
 		//dprint($list);
 		//img_show_list($list["data"],'img_filename',$this->router->fetch_class());
@@ -35,11 +34,25 @@ class Sys_news extends Backend_Controller {
 	public function editContent()
 	{
 		
+		$this->addCss("css/chosen.css");
+		$this->addJs("js/chosen.jquery.min.js");	
+		
+		$this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
+		$this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
+		
+		$this->addCss("css/bootstrap-fonts.css");
+				
 		
 		$content_sn = $this->input->get('sn');
+		
 			
-		$cat_list = $this->c_model->GetList( "sys_newscat" , "" ,FALSE, NULL , NULL , array("sort"=>"asc","sn"=>"desc") );
-		$data["cat_list"] = $cat_list["data"];
+		//社區
+		$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
+		$data["community_list"] = $community_list["data"];	
+		
+		
+		
+		
 				
 		if($content_sn == "")
 		{
@@ -80,6 +93,20 @@ class Sys_news extends Backend_Controller {
 						
 		if ( ! $this->_validateContent())
 		{
+			$this->addCss("css/chosen.css");
+			$this->addJs("js/chosen.jquery.min.js");	
+			
+			$this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
+			$this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
+			
+			$this->addCss("css/bootstrap-fonts.css");
+			
+			//社區
+			$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
+			$data["community_list"] = $community_list["data"];	
+			
+			
+			
 			$data["edit_data"] = $edit_data;		
 			$this->display("content_form_view",$data);
 		}
@@ -258,7 +285,9 @@ class Sys_news extends Backend_Controller {
 		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');		
 		
 		$this->form_validation->set_rules( 'title', '名稱', 'required' );	
-		$this->form_validation->set_rules('sort', '排序', 'trim|required|numeric|min_length[1]');			
+		$this->form_validation->set_rules( 'content', '內容', 'required' );	
+		$this->form_validation->set_rules( 'sort', '排序', 'trim|required|numeric|min_length[1]');			
+		$this->form_validation->set_rules( 'comms', '發佈社區', 'required' );	
 		
 		return ($this->form_validation->run() == FALSE) ? FALSE : TRUE;
 	}

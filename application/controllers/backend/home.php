@@ -4,18 +4,6 @@ class Home extends Backend_Controller{
 
 	public function index()
 	{
-		// Rick
-		$this->check_offline_sync();//web_menu_content 離線同步
-		$this->check_mailbox_offline_sync();//mailbox 離線同步		
-		$this->check_repair_offline_sync();//報修	
-		$this->check_suggestion_offline_sync();//社區意見箱
-		$this->check_gas_offline_sync();//gas 離線同步
-		
-		// Claire
-		$this->check_user_sync();	//user 離線同步	 
-		$this->check_house_to_rent_sync();	// 租屋離線同步	 
-		$this->check_house_to_sale_sync();	// 售屋離線同步	
-
 		$this->display("index_view");
 	}
 

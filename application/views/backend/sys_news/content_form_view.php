@@ -15,9 +15,13 @@
 		<div class="col-xs-12 col-sm-8">
 			<select multiple="multiple" size="10" name="comms[]">
 			<?php 
+			
+				$comm_ids = tryGetData('comm_id',$edit_data);
+				$comm_id_ary = explode(",", $comm_ids);
+				
               	foreach ($community_list as $key => $item) 
               	{
-					echo '<option value="'.$item["id"].'">'.$item["name"].'</option>';
+					echo '<option value="'.$item["id"].'"  '.(in_array($item["id"], $comm_id_ary)?"selected":"").'  >'.$item["name"].'</option>';
 				}
             ?>	    
 

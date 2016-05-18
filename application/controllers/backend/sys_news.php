@@ -168,65 +168,7 @@ class Sys_news extends Backend_Controller {
 	}	
 	
 	
-	/**
-	 * pdf下載頁面
-	 */
-	public function showPdf()
-	{
-		$content_sn = $this->input->get('sn');
-		$item_info = $this->c_model->GetList( "sys_news" , "sn =".$content_sn);
-			
-		if(count($item_info["data"])>0)
-		{
-			img_show_list($item_info["data"],'img_filename',$this->router->fetch_class());
-			$item_info = $item_info["data"][0];			
-			
-			$img_str = "";
-			if(isNotNull($item_info["img_filename"]))
-			{
-				$img_str = "<tr><td><img  src='".$item_info["img_filename"]."'></td></tr>";
-			}
-			
-						
-	
-			$html = "<h1 style='text-align:center'>管委公告</h1>";
-			$html .= "<h3>".$item_info["title"]."</h3>";
-			$html .= "<table border=0><tr><td>".$item_info["content"]."</td></tr>".$img_str."</table>";
-	
-			$this->load->library('pdf');
-			$mpdf = new Pdf();
-			$mpdf = $this->pdf->load();
-			$mpdf->useAdobeCJK = true;
-			$mpdf->autoScriptToLang = true;
-			
-			
-			
-			$water_info = $this->c_model->GetList( "watermark");			
-			if(count($water_info["data"])>0)
-			{
-				img_show_list($water_info["data"],'img_filename',"watermark");
-				$water_info = $water_info["data"][0];			
 		
-				$mpdf->SetWatermarkImage($water_info["img_filename"]);
-				$mpdf->watermarkImageAlpha = 0.081;
-				$mpdf->showWatermarkImage = true;				
-			}
-			
-			
-			
-			$mpdf->WriteHTML($html);	
-
-
-			$time = time();
-			$pdfFilePath = "管委公告_".$time .".pdf";
-			$mpdf->Output($pdfFilePath,'I');
-		}
-		else
-		{
-			$this->closebrowser();
-		}
-	}
-	
 	//圖片處理
 	private function uploadImage($content_sn)
 	{
@@ -242,11 +184,11 @@ class Sys_news extends Backend_Controller {
 			
 			//圖片處理 img_filename				
 			$img_config['resize_setting'] =array($folder_name=>array(1024,1024));
-			$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
-			move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
+			//$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
+			//move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
 			
-			$img_filename = resize_img($uploadedUrl,$img_config['resize_setting']);					
-				
+			$img_filename = resize_img($_FILES['img_filename']['tmp_name'],$img_config['resize_setting']);					
+			//echo 	$img_filename;exit;
 			
 			if (!is_dir( $this->config->item('edoma_folder_path') ))
 			{

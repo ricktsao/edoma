@@ -116,8 +116,7 @@
 		filterTextClear : '顯示全部',
         infoText : '共{0}個社區',
         moveAllLabel: 'Selected',
-        infoTextFiltered: '<span class="label label-warning">找到</span> {0} 筆',
-        infoTextEmpty: '訊息發送列表',
+        infoTextFiltered: '<span class="label label-warning">找到</span> {0} 筆',        
         //nonSelectedFilter: 'ion ([7-9]|[1][0-2])'
       });
 

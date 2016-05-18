@@ -90,7 +90,12 @@ class Sys_news extends Backend_Controller {
 	public function updateContent()
 	{	
 		$edit_data = $this->dealPost();
-						
+		
+		$comm_id_ary = tryGetData("comms", $_POST,array());
+		$edit_data["comm_id"] = implode(",", $comm_id_ary);
+		
+		//dprint($edit_data["comm_id"]);exit;
+		
 		if ( ! $this->_validateContent())
 		{
 			$this->addCss("css/chosen.css");
@@ -113,9 +118,8 @@ class Sys_news extends Backend_Controller {
         else 
         {
 			
-			deal_img($edit_data ,"img_filename",$this->router->fetch_class());			
 			
-						
+			
 			if(isNotNull($edit_data["sn"]))
 			{				
 				if($this->it_model->updateData( "edoma_content" , $edit_data, "sn =".$edit_data["sn"] ))
@@ -305,7 +309,7 @@ class Sys_news extends Backend_Controller {
 		$sync_sn_ary = array();//待同步至雲端主機 array
 		foreach ($del_ary as  $content_sn) 
 		{
-			$result = $this->it_model->updateData( "web_menu_content" , array("del"=>1,"is_sync"=>0,"update_date"=>date("Y-m-d H:i:s")), "sn ='".$content_sn."'" );
+			$result = $this->it_model->updateData( "edoma_content" , array("del"=>1,"update_date"=>date("Y-m-d H:i:s")), "sn ='".$content_sn."'" );
 			if($result)
 			{
 				array_push($sync_sn_ary,$content_sn);
@@ -313,25 +317,6 @@ class Sys_news extends Backend_Controller {
 		}
 		//----------------------------------------------------------------------------------------------------
 				
-		//社區主機同步
-		//----------------------------------------------------------------------------------------------------
-		foreach ($sync_sn_ary as  $content_sn) 
-		{			
-			$query = "SELECT SQL_CALC_FOUND_ROWS * from web_menu_content where sn =	'".$content_sn."'";			
-			$content_info = $this->it_model->runSql($query);
-			if($content_info["count"] > 0)
-			{
-				$content_info = $content_info["data"][0]; 
-				
-				
-				$this->sync_to_server($content_info);
-				
-				//dprint($content_info);exit;
-								
-			}			
-		}		
-		//----------------------------------------------------------------------------------------------------
-
 		
 		$this->showSuccessMessage();
 		

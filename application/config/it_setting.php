@@ -204,4 +204,4 @@ $config['suggestion_to_role'] = array(
 
 
 // edoma folder path
-$config['edoma_folder_path'] = 'C:/htdocs/commapi/upload/edoma/';
+$config['edoma_folder_path'] = 'E:/htdocs/commapi/upload/edoma/';

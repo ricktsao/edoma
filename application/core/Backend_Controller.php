@@ -930,7 +930,7 @@ abstract class Backend_Controller extends IT_Controller
 	//ajax 取得
 	public function ajaxlaunchContent($sn)
     {
-		$table_name = 'web_menu_content';
+		$table_name = 'edoma_content';
         $field_name = 'launch';
         if(isNull($table_name) || isNull($field_name) || isNull($sn) )
         {
@@ -959,25 +959,10 @@ abstract class Backend_Controller extends IT_Controller
 			}
 			
 			
-			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );				
-			if($result)
-			{
-				//社區主機同步
-				//----------------------------------------------------------------------------------------------------
-				$query = "SELECT SQL_CALC_FOUND_ROWS * from web_menu_content where sn =	'".$sn."'";			
-				$content_info = $this->it_model->runSql($query);
-				if($content_info["count"] > 0)
-				{
-					$content_info = $content_info["data"][0]; 					
-					$this->sync_to_server($content_info);									
-				}			
-				//----------------------------------------------------------------------------------------------------
-				echo json_encode($change_value);
-			}
-			else
-			{
-				echo json_encode($data_info[$field_name]);
-			}
+			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );	
+			
+			
+			echo json_encode($change_value);
 			                      
         }
     }

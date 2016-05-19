@@ -56,7 +56,7 @@
 													echo '<span class="label label-sm label-warning">Hot</span>';
 												}
 											
-												echo '<img src="'.$list[$i]["img_filename"].'" style="height:150px">';  ;
+												echo '<a href="'.$list[$i]["img_filename"].'" target="_blank" ><img src="'.$list[$i]["img_filename"].'" style="height:150px"></a>';
 											 
 											 ?>
 										</td>

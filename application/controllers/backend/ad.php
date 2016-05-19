@@ -10,16 +10,18 @@ class Ad extends Backend_Controller {
 	
 
 
+	/**
+	 * ad list page
+	 */
 	public function contentList()
-	{						
+	{			
 		$condition = "";
-		
-		$list = $this->c_model->GetList2( "ad" , $condition ,FALSE, $this->per_page_rows , $this->page , array("web_menu_content.hot"=>'desc',"sort"=>"asc","start_date"=>"desc","sn"=>"desc") );
+		$list = $this->c_model->GetList( "ad" , $condition ,FALSE, $this->per_page_rows , $this->page , array("sort"=>"asc","start_date"=>"desc","sn"=>"desc") );
+		//dprint($list);
 		img_show_list($list["data"],'img_filename',$this->router->fetch_class());
 		
 		$data["list"] = $list["data"];
 		
-		//dprint($data);
 		//取得分頁
 		$data["pager"] = $this->getPager($list["count"],$this->page,$this->per_page_rows,"contentList");	
 		
@@ -30,12 +32,27 @@ class Ad extends Backend_Controller {
 	 * category edit page
 	 */
 	public function editContent()
-	{		
+	{
+		
+		$this->addCss("css/chosen.css");
+		$this->addJs("js/chosen.jquery.min.js");	
+		
+		$this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
+		$this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
+		
+		$this->addCss("css/bootstrap-fonts.css");
+				
 		
 		$content_sn = $this->input->get('sn');
+		
 			
-		$cat_list = $this->c_model->GetList( "ad" , "" ,FALSE, NULL , NULL , array("sort"=>"asc","sn"=>"desc") );
-		$data["cat_list"] = $cat_list["data"];
+		//社區
+		$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
+		$data["community_list"] = $community_list["data"];	
+		
+		
+		
+		
 				
 		if($content_sn == "")
 		{
@@ -73,53 +90,85 @@ class Ad extends Backend_Controller {
 	public function updateContent()
 	{	
 		$edit_data = $this->dealPost();
-						
-						
-		if(isNotNull($edit_data["sn"]))
-		{				
-			if($this->it_model->updateData( "web_menu_content" , $edit_data, "sn =".$edit_data["sn"] ))
-			{					
-				$img_filename = $this->uploadImage($edit_data["sn"]);					
-				$edit_data["img_filename"] = $img_filename;
-				
-				$this->sync_to_server($edit_data);
-				$this->showSuccessMessage();					
-			}
-			else 
-			{
-				$this->showFailMessage();
-			}				
-		}
-		else 
+		
+		$comm_id_ary = tryGetData("comms", $_POST,array());
+		$edit_data["comm_id"] = implode(",", $comm_id_ary);
+		
+		//dprint($edit_data["comm_id"]);exit;
+		
+		if ( ! $this->_validateContent())
 		{
-								
-			$edit_data["create_date"] =   date( "Y-m-d H:i:s" );
+			$this->addCss("css/chosen.css");
+			$this->addJs("js/chosen.jquery.min.js");	
 			
-			$content_sn = $this->it_model->addData( "web_menu_content" , $edit_data );
-			if($content_sn > 0)
-			{
-				$img_filename =$this->uploadImage($content_sn);
-				$edit_data["img_filename"] = $img_filename;
-				
-				$edit_data["sn"] = $content_sn;
-				$this->sync_to_server($edit_data);
+			$this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
+			$this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
 			
-				
-				$this->showSuccessMessage();							
+			$this->addCss("css/bootstrap-fonts.css");
+			
+			//社區
+			$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
+			$data["community_list"] = $community_list["data"];	
+			
+			
+			
+			$data["edit_data"] = $edit_data;		
+			$this->display("content_form_view",$data);
+		}
+        else 
+        {
+			
+			
+			
+			if(isNotNull($edit_data["sn"]))
+			{				
+				if($this->it_model->updateData( "edoma_content" , $edit_data, "sn =".$edit_data["sn"] ))
+				{					
+					$img_filename = $this->uploadImage($edit_data["sn"]);					
+					$edit_data["img_filename"] = $img_filename;
+					
+					//$this->sync_to_server($edit_data);
+					$this->showSuccessMessage();					
+				}
+				else 
+				{
+					$this->showFailMessage();
+				}				
 			}
 			else 
 			{
-				$this->showFailMessage();					
-			}	
-		
-		
-		}
+									
+				$edit_data["create_date"] =   date( "Y-m-d H:i:s" );
+				
+				$content_sn = $this->it_model->addData( "edoma_content" , $edit_data );
+				if($content_sn > 0)
+				{
+					$img_filename =$this->uploadImage($content_sn);
+					$edit_data["img_filename"] = $img_filename;
+					
+					$edit_data["sn"] = $content_sn;
+					//$this->sync_to_server($edit_data);
+				
+					
+					$this->showSuccessMessage();							
+				}
+				else 
+				{
+					$this->showFailMessage();					
+				}	
+			}
+			
+			$sync_data = array(
+			
+			);			
+			
+			
 			redirect(bUrl("contentList"));	
-        	
-	}
+        }	
+	}	
 	
 	
-	
+		
 	//圖片處理
 	private function uploadImage($content_sn)
 	{
@@ -134,27 +183,39 @@ class Ad extends Backend_Controller {
 			$folder_name = $this->router->fetch_class();
 			
 			//圖片處理 img_filename				
-			$img_config['resize_setting'] =array($folder_name=>array(1024,1024));					
-			$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
-			move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
+			$img_config['resize_setting'] =array($folder_name=>array(1024,1024));
+			//$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
+			//move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
 			
-			$img_filename = resize_img($uploadedUrl,$img_config['resize_setting']);					
-				
-			//社區同步資料夾
-			$img_config['resize_setting'] =array($folder_name=>array(500,500));
-			resize_img($uploadedUrl,$img_config['resize_setting'],$this->getCommId(),$img_filename);
+			$img_filename = resize_img($_FILES['img_filename']['tmp_name'],$img_config['resize_setting']);					
+			//echo 	$img_filename;exit;
 			
-			@unlink($uploadedUrl);	
+			if (!is_dir( $this->config->item('edoma_folder_path') ))
+			{
+				mkdir($this->config->item('edoma_folder_path'),0777);
+			}  
+			
+			if (!is_dir( $this->config->item('edoma_folder_path').$folder_name ))
+			{
+				mkdir($this->config->item('edoma_folder_path').$folder_name,0777);
+			}
+			
+			//將檔案複製到commapi folder 下
+			copy(set_realpath("upload/website").$folder_name.'/'.$img_filename , $this->config->item('edoma_folder_path').$folder_name.'/'.$img_filename);
+			
+			
 
-			$this->it_model->updateData( "web_menu_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
+			$this->it_model->updateData( "edoma_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
 			
 			$orig_img_filename = $this->input->post('orig_img_filename');
 			
 			@unlink(set_realpath("upload/website/".$folder_name).$orig_img_filename);	
-			@unlink(set_realpath("upload/".$this->getCommId()."/".$folder_name).$orig_img_filename);	
+			@unlink($this->config->item('edoma_folder_path').$folder_name.'/'.$orig_img_filename);	
 			
 			//檔案同步至server
-			$this->sync_file($folder_name);
+			//$this->sync_file($folder_name);
+			
+			
 		}
 		return $img_filename;
 	}
@@ -162,15 +223,15 @@ class Ad extends Backend_Controller {
 	
 	
 	/**
-	 * 驗證bulletinedit 欄位是否正確
+	 * 驗證adedit 欄位是否正確
 	 */
 	function _validateContent()
 	{
 		
-		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');		
-		
-		$this->form_validation->set_rules( 'title', '名稱', 'required' );	
-		$this->form_validation->set_rules('sort', '排序', 'trim|required|numeric|min_length[1]');			
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');				
+
+		$this->form_validation->set_rules( 'sort', '排序', 'trim|required|numeric|min_length[1]');			
+		$this->form_validation->set_rules( 'comms', '發佈社區', 'required' );	
 		
 		return ($this->form_validation->run() == FALSE) ? FALSE : TRUE;
 	}
@@ -188,7 +249,7 @@ class Ad extends Backend_Controller {
 		$sync_sn_ary = array();//待同步至雲端主機 array
 		foreach ($del_ary as  $content_sn) 
 		{
-			$result = $this->it_model->updateData( "web_menu_content" , array("del"=>1,"is_sync"=>0,"update_date"=>date("Y-m-d H:i:s")), "sn ='".$content_sn."'" );
+			$result = $this->it_model->updateData( "edoma_content" , array("del"=>1,"update_date"=>date("Y-m-d H:i:s")), "sn ='".$content_sn."'" );
 			if($result)
 			{
 				array_push($sync_sn_ary,$content_sn);
@@ -196,25 +257,6 @@ class Ad extends Backend_Controller {
 		}
 		//----------------------------------------------------------------------------------------------------
 				
-		//社區主機同步
-		//----------------------------------------------------------------------------------------------------
-		foreach ($sync_sn_ary as  $content_sn) 
-		{			
-			$query = "SELECT SQL_CALC_FOUND_ROWS * from web_menu_content where sn =	'".$content_sn."'";			
-			$content_info = $this->it_model->runSql($query);
-			if($content_info["count"] > 0)
-			{
-				$content_info = $content_info["data"][0]; 
-				
-				
-				$this->sync_to_server($content_info);
-				
-				//dprint($content_info);exit;
-								
-			}			
-		}		
-		//----------------------------------------------------------------------------------------------------
-
 		
 		$this->showSuccessMessage();
 		

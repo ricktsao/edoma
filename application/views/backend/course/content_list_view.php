@@ -78,10 +78,7 @@
 										<td>
 											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editContent",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
 												<i class="icon-edit bigger-120"></i>編輯
-											</a>
-											<a class="btn  btn-minier btn-danger" target="_blank" href="<?php echo bUrl("showPdf",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
-												<i class="icon-edit bigger-120"></i>PDF下載
-											</a>
+											</a>											
 										</td>
 										<td>					
 											<div class="col-xs-3">

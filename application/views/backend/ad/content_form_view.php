@@ -30,7 +30,7 @@
 		</div>
 		
 	</div>
-	
+	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
 	
 	<?php 
 	//echo textOption("標題","title",$edit_data);

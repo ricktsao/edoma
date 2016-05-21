@@ -960,6 +960,28 @@ abstract class Backend_Controller extends IT_Controller
 			
 			
 			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );	
+			if($result)
+			{
+				$comm_info = $this->it_model->listData("edoma_content","sn ='".$sn."'");
+				if($comm_info["count"]>0)
+				{
+					$comm_info = $comm_info["data"][0];
+					$del_comm_ary = explode(",",$comm_info["comm_id"]);
+					foreach( $del_comm_ary as $key => $del_comm_id )
+					{					
+						if(isNull($del_comm_id))
+						{
+							continue;
+						}
+						$update_data = $comm_info;
+						$update_data["comm_id"] = $del_comm_id;						
+						$this->updateCommContent($update_data);
+					}
+					
+				}				
+			}
+			
+			
 			
 			
 			echo json_encode($change_value);
@@ -1102,6 +1124,25 @@ abstract class Backend_Controller extends IT_Controller
 			$this->sync_item_to_server($item,"updateSaleHouse","house_to_sale");			
 		}
 	}
+	
+	public function updateCommContent($edit_data)
+	{
+		$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["client_sync"] = 0;
+		unset($edit_data["sn"]);
+		unset($edit_data["sync_comm_id"]);
+		
+		
+		
+		$result = $this->it_model->updateData( "web_menu_content" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
+		
+		if($result == FALSE)
+		{
+			$content_sn = $this->it_model->addData( "web_menu_content" , $edit_data );
+		}
+	}
+	
+	
 	
 	/**
 	 * 取得社區id

@@ -30,7 +30,7 @@
 		</div>
 		
 	</div>
-	
+	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
 	
 	<?php echo textOption("課程主旨","title",$edit_data); ?>
 	
@@ -73,7 +73,7 @@
 	<input type="hidden" name="sort" value="<? echo tryGetData('sort', $edit_data)?>" />
 	<input type="hidden" name="sn" value="<? echo tryGetData('sn', $edit_data)?>" />
 	<input type="hidden" name="content_type" value="<? echo tryGetData('content_type', $edit_data)?>" />
-		
+	<input type="hidden" name="forever" value="1" />	
 
 	
 	<div class="clearfix form-actions">

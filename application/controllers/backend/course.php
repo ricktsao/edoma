@@ -118,7 +118,7 @@ class Course extends Backend_Controller {
         else 
         {
 			
-			
+			$edit_data["brief"] = tryGetData("brief",$edit_data,0);
 			
 			if(isNotNull($edit_data["sn"]))
 			{				
@@ -157,10 +157,45 @@ class Course extends Backend_Controller {
 					$this->showFailMessage();					
 				}	
 			}
+			$orig_comm_id = tryGetData("orig_comm_id", $_POST); 
+			$orig_comm_id_ary = explode(",",$orig_comm_id);		
 			
-			$sync_data = array(
 			
-			);			
+			//需要更新至web_menu_content的資料
+			//----------------------------------------------------------------
+			//dprint($comm_id_ary);
+			//dprint($orig_comm_id_ary);
+			foreach( $comm_id_ary as $key => $comm_id )
+			{
+				if(isNull($comm_id))
+				{
+					continue;
+				}
+				$update_data = $edit_data;
+				$update_data["comm_id"] = $comm_id;
+				$update_data["del"] = 0;
+				$this->updateCommContent($update_data);
+			}
+			//$comm_id_ary
+			//----------------------------------------------------------------
+			
+			//web_menu_content需要刪除的檔案
+			//----------------------------------------------------------------
+			$del_comm_ary = array_diff($orig_comm_id_ary,$comm_id_ary);
+			//dprint($del_comm_ary);
+			foreach( $del_comm_ary as $key => $del_comm_id )
+			{					
+				if(isNull($del_comm_id))
+				{
+					continue;
+				}
+				$update_data = $edit_data;
+				$update_data["comm_id"] = $del_comm_id;
+				$update_data["del"] = 1;
+				$this->updateCommContent($update_data);
+			}
+			//exit;
+			//----------------------------------------------------------------
 			
 			
 			redirect(bUrl("contentList"));	
@@ -169,6 +204,9 @@ class Course extends Backend_Controller {
 	
 	
 		
+	
+	
+	
 	//圖片處理
 	private function uploadImage($content_sn)
 	{
@@ -184,10 +222,11 @@ class Course extends Backend_Controller {
 			
 			//圖片處理 img_filename				
 			$img_config['resize_setting'] =array($folder_name=>array(1024,1024));
-			//$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
-			//move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
+			$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
+			move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
 			
-			$img_filename = resize_img($_FILES['img_filename']['tmp_name'],$img_config['resize_setting']);					
+			
+			$img_filename = resize_img($uploadedUrl,$img_config['resize_setting']);					
 			//echo 	$img_filename;exit;
 			
 			if (!is_dir( $this->config->item('edoma_folder_path') ))
@@ -209,6 +248,7 @@ class Course extends Backend_Controller {
 			
 			$orig_img_filename = $this->input->post('orig_img_filename');
 			
+			@unlink($uploadedUrl);
 			@unlink(set_realpath("upload/website/".$folder_name).$orig_img_filename);	
 			@unlink($this->config->item('edoma_folder_path').$folder_name.'/'.$orig_img_filename);	
 			
@@ -219,8 +259,6 @@ class Course extends Backend_Controller {
 		}
 		return $img_filename;
 	}
-	
-	
 	
 	/**
 	 * 驗證courseedit 欄位是否正確
@@ -247,14 +285,30 @@ class Course extends Backend_Controller {
 		$del_ary = tryGetData("del",$_POST,array());				
 
 		//刪除
-		//----------------------------------------------------------------------------------------------------
-		$sync_sn_ary = array();//待同步至雲端主機 array
+		//----------------------------------------------------------------------------------------------------		
 		foreach ($del_ary as  $content_sn) 
 		{
 			$result = $this->it_model->updateData( "edoma_content" , array("del"=>1,"update_date"=>date("Y-m-d H:i:s")), "sn ='".$content_sn."'" );
 			if($result)
 			{
-				array_push($sync_sn_ary,$content_sn);
+				$del_comm_info = $this->it_model->listData("edoma_content","sn ='".$content_sn."'");
+				if($del_comm_info["count"]>0)
+				{
+					$del_comm_info = $del_comm_info["data"][0];
+					$del_comm_ary = explode(",",$del_comm_info["comm_id"]);
+					foreach( $del_comm_ary as $key => $del_comm_id )
+					{					
+						if(isNull($del_comm_id))
+						{
+							continue;
+						}
+						$update_data = $del_comm_info;
+						$update_data["comm_id"] = $del_comm_id;
+						$update_data["del"] = 1;
+						$this->updateCommContent($update_data);
+					}
+					
+				}				
 			}						
 		}
 		//----------------------------------------------------------------------------------------------------

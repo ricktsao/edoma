@@ -5,7 +5,7 @@
 
 <div class="page-header">
 	<h1>
-		獨立車位所有人
+		社區管理
 		<small>
 			<i class="ace-icon fa fa-angle-double-right"></i>
 			
@@ -18,8 +18,8 @@
 <form  role="search" >
 <article class="well">
     <div class="btn-group">
-		<a class="btn  btn-sm btn-success" href="<?php echo bUrl("editUser/?role=P");?>">
-			<i class="icon-edit bigger-120"></i>新增
+		<a class="btn  btn-sm btn-success" href="<?php echo bUrl("editComm");?>">
+			<i class="icon-edit bigger-120"></i>新增社區
 		</a>
     </div>
 
@@ -48,8 +48,8 @@
 									<tr>
 										<th>序號</th>
 
-										<th style='text-align: center'>姓　名</th>
-										<th>性　別</th>
+										<th style='text-align: center'>社區名稱</th>
+										<th>社區ID</th>
 										<th>電　話</th>
 										<th>手　機</th>
 										<th>地　址</th>
@@ -74,7 +74,7 @@
 										<?php echo tryGetData('name', $item);?>
 										</td>
 										<td style='text-align: center'>
-										<?php echo tryGetData($item['gender'], config_item('gender_array'), '-'); ?>
+										<?php echo mask($item['id'] , 1, 6); ?>
 										</td>
 										<td>
 										<?php echo tryGetData('tel', $item);?>
@@ -87,17 +87,14 @@
 										</td>
 
 										<td style="text-align:left; padding-left:10px;">
-											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editUser",TRUE,NULL,array("sn"=>tryGetData('sn', $item), "role"=>tryGetData('role', $item))); ?>">
+											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editComm",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
 												<i class="icon-edit bigger-120"></i>編輯
-											</a>
-											<a class="btn  btn-minier btn-purple" href="<?php echo bUrl("setParking",TRUE,NULL,array("sn"=>tryGetData('sn', $item), "role"=>tryGetData('role', $item))); ?>">
-												<i class="icon-edit bigger-120"></i>車位設定
 											</a>
 										</td>
 										<td>
 											<div class="col-xs-3">
 												<label>
-													<input name="switch-field-1" class="ace ace-switch" type="checkbox"  <?php echo tryGetData('launch', $item)==1?"checked":"" ?> value="<?php echo tryGetData('sn', $item) ?>" onClick='javascript:launch(this);' />
+													<input name="switch-field-1" class="ace ace-switch" type="checkbox"  <?php echo tryGetData('status', $item)==1?"checked":"" ?> value="<?php echo tryGetData('sn', $item) ?>" onClick='javascript:launch(this);' />
 													<span class="lbl"></span>
 												</label>
 											</div>
@@ -138,8 +135,8 @@
 	
 	 $.ajax({ 
             type : "POST",
-            data: {'user_sn' : obj.value  },
-            url: "<?php echo bUrl("launchUser");?>",
+            data: {'sn' : obj.value  },
+            url: "<?php echo bUrl("launchComm");?>",
             timeout: 3000 ,
             error: function( xhr ) 
             {

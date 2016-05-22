@@ -13,10 +13,48 @@
 
 <form action="<?php echo bUrl("update")?>" method="post"  id="update_form" enctype="multipart/form-data" class="form-horizontal" role="form">
 <div class="row">
+
 	<div class="col-xs-12 form-horizontal">
-	
-		<?php
+
+
+
+	<?php
+		$error_css= '';
+		if(isNotNull(form_error("comms")))
+		{
+			$error_css = 'has-error';			
+		}
+	?>		
+	<div class="form-group <?php echo $error_css;?>">
+		<label for="url" class="col-xs-12 col-sm-2 control-label no-padding-right">發佈社區</label>
 		
+		<div class="col-xs-12 col-sm-8">
+			<select multiple="multiple" size="10" name="comms[]">
+			<?php 
+			
+				$comm_ids = tryGetData('comm_id',$edit_data);
+				$comm_id_ary = explode(",", $comm_ids);
+				
+              	foreach ($community_list as $key => $item) 
+              	{
+					echo '<option value="'.$item["id"].'"  '.(in_array($item["id"], $comm_id_ary)?"selected":"").'  >'.$item["name"].'</option>';
+				}
+            ?>	    
+
+			</select>
+			<div class="help-block col-xs-12 col-sm-reset inline"><p><?php echo form_error("comms")?></p></div>
+		</div>
+	</div>
+	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
+
+
+
+
+
+
+
+
+		<?php
 		echo form_hidden('sn', tryGetData('sn', $edit_data,NULL));
 		echo textOption("<span class='red'>＊</span>售屋標題", "title", $edit_data);
 		echo textOption("<span class='red'>＊</span>聯絡人", "name", $edit_data);
@@ -111,3 +149,18 @@
 	</div>	
 </div>
 </form>
+
+<script>	
+	var demo1 = $('select[name="comms[]"]').bootstrapDualListbox({
+		filterPlaceHolder : '關鍵字',
+		filterTextClear : '顯示全部',
+        infoText : '共{0}個社區',
+        moveAllLabel: 'Selected',
+        infoTextFiltered: '<span class="label label-warning">找到</span> {0} 筆',        
+        //nonSelectedFilter: 'ion ([7-9]|[1][0-2])'
+      });
+
+		demo1.bootstrapDualListbox("getContainer").find(".btn.moveall").append("(選擇全部)");
+		demo1.bootstrapDualListbox("getContainer").find(".btn.removeall").append("(全部移除)");
+
+</script>

@@ -15,6 +15,35 @@
 <div class="row">
 	<div class="col-xs-12 form-horizontal">
 	
+	<?php
+		$error_css= '';
+		if(isNotNull(form_error("comms")))
+		{
+			$error_css = 'has-error';			
+		}
+	?>		
+	<div class="form-group <?php echo $error_css;?>">
+		<label for="url" class="col-xs-12 col-sm-2 control-label no-padding-right"><span class='red'>＊</span>發佈社區</label>
+		
+		<div class="col-xs-12 col-sm-8">
+			<select multiple="multiple" size="10" name="comms[]">
+			<?php 
+			
+				$comm_ids = tryGetData('comm_id',$edit_data);
+				$comm_id_ary = explode(",", $comm_ids);
+				
+              	foreach ($community_list as $key => $item) 
+              	{
+					echo '<option value="'.$item["id"].'"  '.(in_array($item["id"], $comm_id_ary)?"selected":"").'  >'.$item["name"].'</option>';
+				}
+            ?>	    
+
+			</select>
+			<div class="help-block col-xs-12 col-sm-reset inline"><p><?php echo form_error("comms")?></p></div>
+		</div>
+	</div>
+	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
+
 		<?php
 		
 		echo form_hidden('sn', tryGetData('sn', $edit_data,NULL));
@@ -47,7 +76,7 @@
 		echo textNumberOption("<span class='red'>＊</span>位於幾樓", "locate_level", $edit_data, -3, 30, 1,'樓');
 		echo textNumberOption("<span class='red'>＊</span>總樓層", "total_level", $edit_data, -3, 30, 1,'樓');
 		echo textNumberOption("<span class='red'>＊</span>面積", "area_ping", $edit_data, 0, 300, 0.01, '坪');
-		echo textNumberOption("<span class='red'>＊</span>月租金", "rent_price", $edit_data, 0, 100000, 1000, '元');
+		echo textNumberOption("<span class='red'>＊</span>月租金", "rent_price", $edit_data, 0, 100000, 10, '元');
 		echo textOption("<span class='red'>＊</span>押金", "deposit", $edit_data, 'ex.兩個月');
 		echo textOption("<span class='red'>＊</span>地址", "addr", $edit_data);
 		?>
@@ -121,3 +150,18 @@
 	</div>	
 </div>
 </form>
+
+<script>	
+	var demo1 = $('select[name="comms[]"]').bootstrapDualListbox({
+		filterPlaceHolder : '關鍵字',
+		filterTextClear : '顯示全部',
+        infoText : '共{0}個社區',
+        moveAllLabel: 'Selected',
+        infoTextFiltered: '<span class="label label-warning">找到</span> {0} 筆',        
+        //nonSelectedFilter: 'ion ([7-9]|[1][0-2])'
+      });
+
+		demo1.bootstrapDualListbox("getContainer").find(".btn.moveall").append("(選擇全部)");
+		demo1.bootstrapDualListbox("getContainer").find(".btn.removeall").append("(全部移除)");
+
+</script>

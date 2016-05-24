@@ -23,6 +23,7 @@ class App_log extends Backend_Controller {
 			$query = "SELECT SQL_CALC_FOUND_ROWS *	FROM sys_user WHERE comm_id = '5tgb4rfv' and role = 'I' and app_id is not null and app_id != '' and launch = 1";
 	
 			$user_list = $this->it_model->runSql( $query);
+			
 
 			
 		}

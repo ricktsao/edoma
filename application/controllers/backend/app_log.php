@@ -19,12 +19,43 @@ class App_log extends Backend_Controller {
 		
 		foreach ($comm_list["data"] as $key => $comm_info) 
 		{
+			$query = "select SQL_CALC_FOUND_ROWS count(*) as user_cnt FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
+			$user_cnt_info = $this->it_model->runSql( $query);
+			if($user_cnt_info["count"] > 0)
+			{
+				$user_cnt_info = $user_cnt_info["data"][0];
+			}
+			else 
+			{				
+				$user_cnt_info = array();
+			}			
+			$comm_list["data"][$key]["user_cnt"] = tryGetData("user_cnt", $user_cnt_info,0);
 			
-			$query = "SELECT SQL_CALC_FOUND_ROWS *	FROM sys_user WHERE comm_id = '5tgb4rfv' and role = 'I' and app_id is not null and app_id != '' and launch = 1";
-	
-			$user_list = $this->it_model->runSql( $query);
 			
-
+			$query = "SELECT SQL_CALC_FOUND_ROWS  count(*) as app_cnt	FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I' and app_id is not null and app_id != '' and launch = 1";	
+			$appopen_cnt_info = $this->it_model->runSql( $query);
+			if($appopen_cnt_info["count"] > 0)
+			{
+				$appopen_cnt_info = $appopen_cnt_info["data"][0];
+			}
+			else 
+			{				
+				$appopen_cnt_info = array();
+			}
+			$comm_list["data"][$key]["app_cnt"] = tryGetData("app_cnt", $appopen_cnt_info,0);
+			
+			
+			$query = "SELECT SQL_CALC_FOUND_ROWS sum(app_use_cnt) as app_use_cnt FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
+			$app_use_cnt_info = $this->it_model->runSql( $query);
+			if($app_use_cnt_info["count"] > 0)
+			{
+				$app_use_cnt_info = $app_use_cnt_info["data"][0];
+			}
+			else 
+			{				
+				$app_use_cnt_info = array();
+			}
+			$comm_list["data"][$key]["app_use_cnt"] = tryGetData("app_use_cnt", $app_use_cnt_info,0);
 			
 		}
 		
@@ -33,10 +64,9 @@ class App_log extends Backend_Controller {
 		//dprint($list);
 		//img_show_list($list["data"],'img_filename',$this->router->fetch_class());
 		
-		$data["list"] = $comm_list["data"];
+		$data["comm_list"] = $comm_list["data"];
 		
 		//取得分頁
-		$data["pager"] = $this->getPager($list["count"],$this->page,$this->per_page_rows,"contentList");	
 		
 		$this->display("content_list_view",$data);
 	}

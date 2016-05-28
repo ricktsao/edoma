@@ -90,8 +90,7 @@
 				
 
 		<form action="<?php echo bUrl("updatePhoto")?>" method="post"  id="add_form" role="form" enctype="multipart/form-data">
-		<input type='hidden' name='house_to_sale_sn' value='<?php echo tryGetData('sn', $house_data); ?>'>
-		<input type='hidden' name='comm_id' value='<?php echo tryGetData('comm_id', $house_data); ?>'>
+		<input type='hidden' name='edoma_house_to_sale_sn' value='<?php echo tryGetData('sn', $house_data); ?>'>
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">新增照片：</label>
 				<div class="col-xs-12 col-sm-6"><input type='file' id='filename' name='filename' size=20></div>
@@ -149,7 +148,7 @@
 									foreach ($exist_photo_array as $key=>$photo) {
 
 										$sn = tryGetData('sn', $photo, NULL);
-										$house_to_sale_sn = tryGetData('house_to_sale_sn', $photo, NULL);
+										$edoma_house_to_sale_sn = tryGetData('edoma_house_to_sale_sn', $photo, NULL);
 										$filename = tryGetData('filename', $photo, NULL);
 
 										if ( isNull($filename) ) continue;
@@ -158,8 +157,8 @@
 										//$thumb = 'thumb_'.$filename;
 										$thumb = $filename;
 										$comm_id = tryGetData('comm_id', $house_data);
-										$thumb = base_url('./upload/website/house_to_sale/'.$house_to_sale_sn.'/'.$thumb);
-										$url = base_url('./upload/website/house_to_sale/'.$house_to_sale_sn.'/'.$filename);
+										$thumb = base_url('upload/website/house_to_sale/'.$edoma_house_to_sale_sn.'/'.$thumb);
+										$url = base_url('upload/website/house_to_sale/'.$edoma_house_to_sale_sn.'/'.$filename);
 									?>
 									<tr>
 										<td class="center">
@@ -167,11 +166,11 @@
 											//if ( sizeof($exist_lands_array) < 1 && sizeof($exists_custs_array) > 0) {
 											?>
 											<label>
-												<input type="checkbox" class="ace" name="del[]" value="<?php echo $sn.'!@'.$house_to_sale_sn.'!@'.$filename;?>" />
+												<input type="checkbox" class="ace" name="del[]" value="<?php echo $sn.'!@'.$edoma_house_to_sale_sn.'!@'.$filename;?>" />
 												<span class="lbl"></span>
 											</label>
 										</td>
-										<td><?php echo '<a href="'.$url.'" title="檢視大圖234" target=_blank><img border="0" width="150" src="'.$thumb.'?"></a>'; ?></td>
+										<td><?php echo '<a href="'.$url.'" title="檢視大圖" target=_blank><img border="0" width="150" src="'.$thumb.'?"></a>'; ?></td>
 										<td><?php echo tryGetData('title', $photo, '-');?></td>
 										
 										<td><?php echo tryGetData('updated', $photo, '-');?></td>
@@ -199,89 +198,3 @@
 					</div>
 				</div>
 			</div>
-
-
-
-
-
-<script type="text/javascript"> 
-
-//To select country name
-function selectParking(parking_sn, parking_id, xlocation) {
-	$("#parking_sn").val(parking_sn);
-	$("#parking_id").val(parking_id);
-	$("#location").val(xlocation).attr("readonly",true);
-	$("#suggesstion-box").hide();
-}
-
-
-$(function(){
-
-	$("#search-reset").click(function(){
-
-			$("#cust_sn").val('');
-			$("#parking_id").val('').attr("readonly",false);
-			$("#addr").val('').attr("readonly",false);
-	});
-
-/*
-    $("search-box").autocomplete('<?php echo bUrl('ajaxGetPeople');?>', {
-        minChars: 2
-    });
-*/
-	$('#suggesstion-box').hide();
-
-	$("#search-box").click(function(){
-	    
-		$("#cust_sn").val('');
-
-		$("#addr").val('').attr("readonly",false);
-
-		$.ajax({
-				type: "GET",
-				url: "<?php echo bUrl('ajaxGetParking', false);?>",
-				data:'keyword='+$("#parking_id").val(),
-				beforeSend: function(){
-					var input = $('#parking_id');
-					var inputValue = input.val();
-					var nowLehgth = inputValue.length;
-					input.css("background","#FFF url(http://phppot.com/demo/jquery-ajax-autocomplete-country-example/loaderIcon.gif) no-repeat 165px");
-					if(inputValue != '' && nowLehgth >= 2) {
-						input.css("background-image","none");
-					} else {
-						input.css("background-image","none");
-						alert('請至少輸入二個字');
-					}
-
-		},
-		success: function(data){
-			console.log(data);
-
-			$("#suggesstion-box").show();
-			$("#suggesstion-box").html(data);
-			$("#search-box").css("background","#FFF");
-		}
-		});
-	});
-
-
-
-	/*
-	$('#add_cust').hide();
-
-	$('#click_add_cust').click(function() {
-
-		$('#add_cust').toggle();
-
-		if($('#add_cust').is(':hidden')) {
-			$(this).text('新增車位').attr('class','btn btn-success');
-		} else {
-			$(this).text('取消新增').attr('class','btn btn-success');
-		}
-
-
-	});
-	*/
-});
-
-</script>

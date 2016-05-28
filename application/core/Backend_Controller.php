@@ -1143,7 +1143,96 @@ abstract class Backend_Controller extends IT_Controller
 	}
 	
 	
+
+
+
+	/**
+	 * 租賃資料  
+	 * edoma_house_to_rent -> house_to_rent
+	 */
+	public function updateCommRent($edit_data)
+	{
+		$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["client_sync"] = 0;
+		unset($edit_data["sn"]);
+
+		$result = $this->it_model->updateData( "house_to_rent" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
+		
+		if($result == FALSE)
+		{
+			$content_sn = $this->it_model->addData( "house_to_rent" , $edit_data );
+		}
+	}
 	
+	
+	
+	/**
+	 * 租賃物件照片
+	 * edoma_house_to_rent_photo -> house_to_rent_photo
+	 */
+	public function updateCommRentPhoto($edit_data)
+	{
+		//$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["client_sync"] = 0;
+		unset($edit_data["sn"]);
+		
+		
+		$result = $this->it_model->updateData( "house_to_rent_photo" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' " );
+		
+		if($result === FALSE)
+		{
+			$content_sn = $this->it_model->addData( "house_to_rent_photo" , $edit_data );
+		}
+	}
+	
+	
+
+
+	/**
+	 * 售屋資料
+	 * edoma_house_to_sale -> house_to_sale
+	 */
+	public function updateCommSale($edit_data)
+	{
+		$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["client_sync"] = 0;
+		unset($edit_data["sn"]);
+
+		$result = $this->it_model->updateData( "house_to_sale" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
+		
+		if($result == FALSE)
+		{
+			$content_sn = $this->it_model->addData( "house_to_sale" , $edit_data );
+		}
+	}
+	
+	
+	/**
+	 * 售屋物件照片
+	 * edoma_house_to_sale_photo -> house_to_sale_photo
+	 */
+	public function updateCommSalePhoto($edit_data)
+	{
+		//$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["client_sync"] = 0;
+		unset($edit_data["sn"]);
+		
+		
+		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' " );
+		
+		if($result === FALSE)
+		{
+			$content_sn = $this->it_model->addData( "house_to_sale_photo" , $edit_data );
+		}
+	}
+	
+	
+	
+
+
+
+
+
 	/**
 	 * 取得社區id
 	 */

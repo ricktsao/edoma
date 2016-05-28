@@ -70,10 +70,10 @@
 			</div>
 		</div>
 		<div class="form-group ">
-			<label for="rent_type" class="col-xs-12 col-sm-2 control-label no-padding-right"><span class='red'>＊</span>類 別</label>
+			<label for="sale_type" class="col-xs-12 col-sm-2 control-label no-padding-right"><span class='red'>＊</span>類 別</label>
 			<div class="col-xs-12 col-sm-6">
 				<label class="middle" style="width:100%;">
-				<?php echo generate_radio('rent_type', tryGetData('rent_type', $edit_data, 'a'), 'rent_sale_type_array');?>
+				<?php echo generate_radio('sale_type', tryGetData('rent_type', $edit_data, 'a'), 'rent_sale_type_array');?>
 				</label>
 			</div>
 		</div>

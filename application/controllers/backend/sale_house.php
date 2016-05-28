@@ -168,7 +168,8 @@ class Sale_House extends Backend_Controller {
         {
 			$comm_id = NULL;
 			if ( isNotNull(tryGetData("comms", $edit_data, NULL)) ) {
-				$comm_id = implode(",", $edit_data['comms']);
+				$comm_id_array = $edit_data['comms'];
+				$comm_id = implode(",", $comm_id_array);
 			}
 
         	$arr_data = array(
@@ -217,16 +218,12 @@ class Sale_House extends Backend_Controller {
 				if($arr_return['success'])
 				{
 					$this->showSuccessMessage();
-						
-						/* 同步 同步 同步 同步 同步 */
-						//$this->sync_item_to_server($arr_data, 'updateSaleHouse', 'house_to_sale');
 				}
 				else 
 				{
 					$this->showFailMessage();
 				}
-				
-				redirect(bUrl("index",TRUE,array("sn")));		
+					
 			}
 			else 
 			{
@@ -239,17 +236,60 @@ class Sale_House extends Backend_Controller {
 					$edit_data["sn"] = $sale_sn;
 					$this->showSuccessMessage();
 
-						/* 同步 同步 同步 同步 同步 */
-						//$arr_data["sn"] = $sale_sn;
-						//$this->sync_item_to_server($arr_data, 'updateSaleHouse', 'house_to_sale');
 				}
 				else 
 				{
 					$this->showFailMessage();
 				}
 			}
-				dprint($this->db->last_query());
-				//redirect(bUrl("index",TRUE,array("sn")));
+				//dprint($this->db->last_query());
+
+
+			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
+			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data); 
+			$orig_comm_id_array = explode(",", $orig_comm_id_list);		
+			
+			
+			//需要更新至web_menu_content的資料
+			//----------------------------------------------------------------
+			//dprint($comm_id_array);
+			//dprint($orig_comm_id_array);
+			foreach( $comm_id_array as $key => $comm_id )
+			{
+				if(isNull($comm_id))
+				{
+					continue;
+				}
+				$update_data = $arr_data;
+				$update_data["comm_id"] = $comm_id;
+				$update_data["del"] = 0;
+				$this->updateCommSale($update_data);
+			}
+			//$comm_id_ary
+			//----------------------------------------------------------------
+			
+			//web_menu_content需要刪除的檔案
+			//----------------------------------------------------------------
+			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
+			//dprint($del_comm_ary);
+			foreach( $del_comm_ary as $key => $del_comm_id )
+			{					
+				if(isNull($del_comm_id))
+				{
+					continue;
+				}
+				$update_data = $arr_data;
+				$update_data["comm_id"] = $del_comm_id;
+				$update_data["del"] = 1;
+				$this->updateCommSale($update_data);
+			}
+			//exit;
+			//----------------------------------------------------------------
+			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+
+
+			redirect(bUrl("index",TRUE,array("sn")));
+
         }
 	}
 
@@ -327,8 +367,8 @@ class Sale_House extends Backend_Controller {
 				$data['house_data'] = $edit_data;
 
 				## 既有照片list
-				$exist_parking_list = $this->it_model->listData( "edoma_house_to_sale h LEFT JOIN edoma_house_to_sale_photo p ON h.sn = p.house_to_sale_sn" 
-														, "house_to_sale_sn = ".$edoma_house_to_sale_sn , NULL , NULL , array("p.sn"=>"asc"));
+				$exist_parking_list = $this->it_model->listData( "edoma_house_to_sale h LEFT JOIN edoma_house_to_sale_photo p ON h.sn = p.edoma_house_to_sale_sn" 
+														, "del=0 and edoma_house_to_sale_sn = ".$edoma_house_to_sale_sn , NULL , NULL , array("p.sn"=>"asc"));
 
 				$data["exist_photo_array"] = count($exist_parking_list["data"]) > 0 ? $exist_parking_list["data"] : array();
 				
@@ -357,9 +397,9 @@ class Sale_House extends Backend_Controller {
 			$edit_data[$key] = $this->input->post($key,TRUE);			
 		}
 
-		$house_to_sale_sn = tryGetData('house_to_sale_sn', $edit_data, NULL);
+		$edoma_house_to_sale_sn = tryGetData('edoma_house_to_sale_sn', $edit_data, NULL);
 		$comm_id = tryGetData('comm_id', $edit_data, NULL);
-		$config['upload_path'] = './upload/website/house_to_sale/'.$edit_data['house_to_sale_sn'];
+		$config['upload_path'] = './upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'];
 		$config['allowed_types'] = 'jpg|png';
 		$config['max_size']	= '1000';
 		$config['max_width']  = '1200';
@@ -368,11 +408,12 @@ class Sale_House extends Backend_Controller {
 
 		$this->load->library('upload', $config);
 
-		if (!is_dir('./upload/website/house_to_sale/'.$edit_data['house_to_sale_sn'])) {
-				mkdir('./upload/website/house_to_sale/'.$edit_data['house_to_sale_sn'], 0777, true);
+		if (!is_dir('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'])) {
+				mkdir('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'], 0777, true);
+
 		}
 
-		if ( isNull($house_to_sale_sn) || isNull($comm_id) || ! $this->upload->do_upload('filename'))
+		if ( isNull($edoma_house_to_sale_sn) || ! $this->upload->do_upload('filename'))
 		{
 			$error = array('error' => $this->upload->display_errors());
 
@@ -387,21 +428,32 @@ class Sale_House extends Backend_Controller {
 			// image_thumb('website/house_to_sale/website/thumb_'.$edit_data['house_to_sale_sn'], $filename, '120', '100');
 
 			$arr_data = array('sn'					=>	tryGetData('sn', $edit_data, NULL)
-							, 'comm_id'				=>  tryGetData('comm_id', $edit_data)
-							, 'house_to_sale_sn'	=>	tryGetData('house_to_sale_sn', $edit_data)
+							//, 'comm_id'				=>  tryGetData('comm_id', $edit_data)
+							, 'edoma_house_to_sale_sn'	=>	tryGetData('edoma_house_to_sale_sn', $edit_data)
 							, 'filename'			=>	$filename
 							, 'title'				=>	tryGetData('title', $edit_data)
 							, 'updated'				=>	date('Y-m-d H:i:s')
 							, 'updated_by'			=>	$this->session->userdata('user_name')
-							//, 'is_sync'				=>  0
 							);
 
-			$this->it_model->addData('edoma_house_to_sale_photo', $arr_data);
+			$sn = $this->it_model->addData('edoma_house_to_sale_photo', $arr_data);
 			if ( $this->db->affected_rows() > 0 or $this->db->_error_message() == '') {
+
 				$this->showSuccessMessage('物件照片上傳成功');
 
-				// 檔案同步至server 檔案同步至server 檔案同步至server
-				//$this->sync_file('house_to_sale/'.$edit_data['house_to_sale_sn']);
+
+				//將檔案複製到commapi folder 下  - - - - - - - - - - - - - - - - - -
+				if (!is_dir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/')) {
+						mkdir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/', 0777, true);
+				}
+				copy('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename , $this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename);
+
+				$update_data = $arr_data;
+				$update_data["edoma_sn"] = $sn;
+				$update_data["del"] = 0;
+				$this->updateCommSalePhoto($update_data);
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 			} else {
 				$this->showFailMessage('物件照片上傳失敗，請稍後再試');
@@ -411,28 +463,42 @@ class Sale_House extends Backend_Controller {
 		redirect(bUrl("photoSetting"));
 	}
 
+
+
 	/**
 	 * 刪除照片
 	 */
 	function deletePhoto()
 	{
 		$del_array = $this->input->post("del",TRUE);
-		$comm_id = $this->getCommId();
+
 		foreach( $del_array as $item ) {
 
 			$tmp = explode('!@', $item);
 			$sn = $tmp[0];
-			$house_to_sale_sn = $tmp[1];
+			$edoma_house_to_sale_sn = $tmp[1];
 			$filename = $tmp[2];
 			
 			@unlink('./upload/website/house_to_sale/'.$house_to_sale_sn.'/'.$filename);
 			//unlink('./upload/website/house_to_sale/'.$house_to_sale_sn.'/thumb_'.$filename);
 
-			$this->it_model->deleteData('edoma_house_to_sale_photo',  array('sn' => $sn, 'filename' => $filename));
+			$del = $this->it_model->updateDB( "edoma_house_to_sale_photo" , array('del' => 1), "sn =".$sn." and edoma_house_to_sale_sn ='".$edoma_house_to_sale_sn."'" );
+
+			if ($del) {
+			
+				/* 同步 同步 同步 同步 同步 */
+				$update_data = $arr_data;
+				$update_data["edoma_sn"] = $sn;
+				$update_data["del"] = 1;
+				$this->updateCommSalePhoto($update_data);
+			}
+
+
+
 		}
 
 		// 檔案同步至server 檔案同步至server 檔案同步至server
-		//$this->sync_file('house_to_sale/'.$sn);
+		$this->sync_file('house_to_sale/'.$sn.'/');
 
 		$this->showSuccessMessage('物件照片刪除成功');
 

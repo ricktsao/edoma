@@ -184,14 +184,18 @@ class Rent_House extends Backend_Controller {
         else 
         {
 
-			$comm_id = NULL;
+			$comm_id_list = NULL;
+				dprint('@'.__LINE__);
 			if ( isNotNull(tryGetData("comms", $edit_data, NULL)) ) {
-				$comm_id = implode(",", $edit_data['comms']);
+				dprint('@'.__LINE__);
+				$comm_id_array = $edit_data['comms'];
+				$comm_id_list = implode(",", $comm_id_array);
 			}
+
 
         	$arr_data = array(
 				 "sn"				=>	tryGetData("sn", $edit_data, NULL)
-				, 'comm_id'			=>  $comm_id
+				, 'comm_id'			=>  $comm_id_list
 				, "rent_type"		=>	tryGetData("rent_type", $edit_data)
 				, "house_type"		=>	tryGetData("house_type", $edit_data)
 				, "furniture"		=>	implode(',', tryGetData("furniture", $edit_data, array()))
@@ -237,9 +241,6 @@ class Rent_House extends Backend_Controller {
 				if($arr_return['success'])
 				{
 					$this->showSuccessMessage();
-
-						/* 同步 同步 同步 同步 同步 */
-						//$this->sync_item_to_server($arr_data, 'updateRentHouse', 'house_to_rent');
 				}
 				else 
 				{
@@ -269,8 +270,68 @@ class Rent_House extends Backend_Controller {
 					$this->showFailMessage();
 				}
 				
-				redirect(bUrl("index",TRUE,array("sn")));
 			}
+
+
+
+
+
+
+
+
+
+
+
+
+			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
+			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data); 
+			$orig_comm_id_array = explode(",", $orig_comm_id_list);		
+			
+			
+			//需要更新至web_menu_content的資料
+			//----------------------------------------------------------------
+			//dprint($comm_id_array);
+			//dprint($orig_comm_id_array);
+			foreach( $comm_id_array as $key => $comm_id )
+			{
+				if(isNull($comm_id))
+				{
+					continue;
+				}
+				$update_data = $arr_data;
+				$update_data["comm_id"] = $comm_id;
+				$update_data["del"] = 0;
+				$this->updateCommRent($update_data);
+			}
+			//$comm_id_ary
+			//----------------------------------------------------------------
+			
+			//web_menu_content需要刪除的檔案
+			//----------------------------------------------------------------
+			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
+			//dprint($del_comm_ary);
+			foreach( $del_comm_ary as $key => $del_comm_id )
+			{					
+				if(isNull($del_comm_id))
+				{
+					continue;
+				}
+				$update_data = $arr_data;
+				$update_data["comm_id"] = $del_comm_id;
+				$update_data["del"] = 1;
+				$this->updateCommRent($update_data);
+			}
+			//exit;
+			//----------------------------------------------------------------
+			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+
+
+
+
+
+
+
+			redirect(bUrl("index",TRUE,array("sn")));
         }
 	}
 
@@ -339,11 +400,11 @@ class Rent_House extends Backend_Controller {
 		$this->addCss("css/chosen.css");
 		$this->addJs("js/chosen.jquery.min.js");		
 		
-		$house_to_rent_sn = tryGetData('sn', $_GET, NULL);
+		$edoma_house_to_rent_sn = tryGetData('sn', $_GET, NULL);
 		
-		if ( isNotNull($house_to_rent_sn) ) {
+		if ( isNotNull($edoma_house_to_rent_sn) ) {
 			## 物件基本資料
-			$admin_info = $this->it_model->listData( "edoma_house_to_rent" , "sn =".$house_to_rent_sn);
+			$admin_info = $this->it_model->listData( "edoma_house_to_rent" , "sn =".$edoma_house_to_rent_sn);
 			
 			if (count($admin_info["data"]) > 0) {
 				$edit_data =$admin_info["data"][0];
@@ -351,8 +412,9 @@ class Rent_House extends Backend_Controller {
 				$data['house_data'] = $edit_data;
 
 				## 既有照片list
-				$exist_parking_list = $this->it_model->listData( "edoma_house_to_rent h LEFT JOIN edoma_house_to_rent_photo p ON h.sn = p.house_to_rent_sn" 
-														, "house_to_rent_sn = ".$house_to_rent_sn , NULL , NULL , array("p.sn"=>"asc"));
+				$exist_parking_list = $this->it_model->listData( "edoma_house_to_rent h LEFT JOIN edoma_house_to_rent_photo p ON h.sn = p.edoma_house_to_rent_sn" 
+														, "del=0 and edoma_house_to_rent_sn = ".$edoma_house_to_rent_sn 
+														, NULL , NULL , array("p.sn"=>"asc"));
 
 				$data["exist_photo_array"] = count($exist_parking_list["data"]) > 0 ? $exist_parking_list["data"] : array();
 				
@@ -381,9 +443,9 @@ class Rent_House extends Backend_Controller {
 			$edit_data[$key] = $this->input->post($key,TRUE);			
 		}
 		
-		$house_to_rent_sn = tryGetData('house_to_rent_sn', $edit_data, NULL);
+		$edoma_house_to_rent_sn = tryGetData('edoma_house_to_rent_sn', $edit_data, NULL);
 		$comm_id = tryGetData('comm_id', $edit_data, NULL);
-		$config['upload_path'] = './upload/website/house_to_rent/'.$edit_data['house_to_rent_sn'];
+		$config['upload_path'] = './upload/website/house_to_rent/'.$edit_data['edoma_house_to_rent_sn'];
 		$config['allowed_types'] = 'jpg|png';
 		$config['max_size']	= '1000';
 		$config['max_width']  = '1200';
@@ -392,11 +454,11 @@ class Rent_House extends Backend_Controller {
 
 		$this->load->library('upload', $config);
 
-		if (!is_dir('./upload/website/house_to_rent/'.$edit_data['house_to_rent_sn'])) {
-				mkdir('./upload/website/house_to_rent/'.$edit_data['house_to_rent_sn'], 0777, true);
+		if (!is_dir('./upload/website/house_to_rent/'.$edit_data['edoma_house_to_rent_sn'])) {
+				mkdir('./upload/website/house_to_rent/'.$edit_data['edoma_house_to_rent_sn'], 0777, true);
 		}
 
-		if ( isNull($house_to_rent_sn) || isNull($comm_id) || ! $this->upload->do_upload('filename'))
+		if ( isNull($edoma_house_to_rent_sn) || ! $this->upload->do_upload('filename'))
 		{
 			$error = array('error' => $this->upload->display_errors());
 
@@ -411,21 +473,33 @@ class Rent_House extends Backend_Controller {
 			// image_thumb('./upload/website/house_to_rent/'.$edit_data['house_to_rent_sn'], 'ddd_'.$filename, '120', '100');
 
 			$arr_data = array('sn'					=>	tryGetData('sn', $edit_data, NULL)
-							, 'comm_id'				=>  tryGetData('comm_id', $edit_data)
-							, 'house_to_rent_sn'	=>	tryGetData('house_to_rent_sn', $edit_data)
+							//, 'comm_id'				=>  tryGetData('comm_id', $edit_data)
+							, 'edoma_house_to_rent_sn'	=>	tryGetData('edoma_house_to_rent_sn', $edit_data)
 							, 'filename'			=>	$filename
 							, 'title'				=>	tryGetData('title', $edit_data)
 							, 'updated'				=>	date('Y-m-d H:i:s')
 							, 'updated_by'			=>	$this->session->userdata('user_name')
-							//, 'is_sync'				=>  0
 							);
 
-			$this->it_model->addData('edoma_house_to_rent_photo', $arr_data);
+			$sn = $this->it_model->addData('edoma_house_to_rent_photo', $arr_data);
 			if ( $this->db->affected_rows() > 0 or $this->db->_error_message() == '') {
+
 				$this->showSuccessMessage('物件照片上傳成功');
 
-				// 檔案同步至server 檔案同步至server 檔案同步至server
-				//$this->sync_file('house_to_rent/'.$edit_data['house_to_rent_sn']);
+			
+				//將檔案複製到commapi folder 下  - - - - - - - - - - - - - - - - - -
+				if (!is_dir($this->config->item('edoma_folder_path').'house_to_rent/'.$edit_data['edoma_house_to_rent_sn'].'/')) {
+						mkdir($this->config->item('edoma_folder_path').'house_to_rent/'.$edit_data['edoma_house_to_rent_sn'].'/', 0777, true);
+						dprint('@'.__LINE__);
+				}
+				copy('./upload/website/house_to_rent/'.$edit_data['edoma_house_to_rent_sn'].'/'.$filename , $this->config->item('edoma_folder_path').'house_to_rent/'.$edit_data['edoma_house_to_rent_sn'].'/'.$filename);
+
+				$update_data = $arr_data;
+				$update_data["edoma_sn"] = $sn;
+				$update_data["del"] = 0;
+				$this->updateCommRentPhoto($update_data);
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 			} else {
 				$this->showFailMessage('物件照片上傳失敗，請稍後再試');
@@ -434,6 +508,8 @@ class Rent_House extends Backend_Controller {
 
 		redirect(bUrl("photoSetting"));
 	}
+
+
 
 	/**
 	 * 刪除照片
@@ -446,19 +522,31 @@ class Rent_House extends Backend_Controller {
 
 			$tmp = explode('!@', $item);
 			$sn = $tmp[0];
-			$house_to_rent_sn = $tmp[1];
+			$edoma_house_to_rent_sn = $tmp[1];
 			$filename = $tmp[2];
 
-			@unlink('./upload/website/house_to_rent/'.$house_to_rent_sn.'/'.$filename);
-			//@unlink('./upload/website/house_to_rent/'.$house_to_rent_sn.'/thumb_'.$filename);
+			@unlink('./upload/website/house_to_rent/'.$edoma_house_to_rent_sn.'/'.$filename);
+			//unlink('./upload/website/house_to_rent/'.$house_to_rent_sn.'/thumb_'.$filename);
 
-			$this->it_model->deleteData('edoma_house_to_rent_photo',  array('sn' => $sn, 'filename' => $filename));
+			$del = $this->it_model->updateDB( "edoma_house_to_rent_photo" , array('del' => 1), "sn =".$sn." and edoma_house_to_rent_sn ='".$edoma_house_to_rent_sn."'" );
+
+			if ($del) {
+			
+				/* 同步 同步 同步 同步 同步 */
+				$update_data = $arr_data;
+				$update_data["edoma_sn"] = $sn;
+				$update_data["del"] = 1;
+				$this->updateCommRentPhoto($update_data);
+			}
+
+
+
 		}
 
-		$this->showSuccessMessage('物件照片刪除成功');
-
 		// 檔案同步至server 檔案同步至server 檔案同步至server
-		$this->sync_file('house_to_sale/'.$sn);
+		$this->sync_file('house_to_sale/'.$sn.'/');
+
+		$this->showSuccessMessage('物件照片刪除成功');
 
 		redirect(bUrl("photoSetting"));
 	}
@@ -468,7 +556,6 @@ class Rent_House extends Backend_Controller {
 	/**************************************************/
 	/**************************************************/
 	/**************************************************/
-
 
 
 	public function GenerateTopMenu()

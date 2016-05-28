@@ -39,7 +39,7 @@
 
 
 			<div class="form-group">
-				<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">售屋標題：</label>
+				<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">租屋標題：</label>
 				<div class="col-xs-12 col-sm-8"><span style='font-weight:bold'><?php echo tryGetData('title',$house_data); ?></span></div>
 			</div>
 			<div class="form-group">
@@ -86,8 +86,7 @@
 		<div class="hr hr-16 hr-dotted"></div>
 			
 		<form action="<?php echo bUrl("updatePhoto", false)?>" method="post"  id="add_form" role="form" enctype="multipart/form-data">
-		<input type='hidden' name='house_to_rent_sn' value='<?php echo tryGetData('sn', $house_data); ?>'>
-		<input type='hidden' name='comm_id' value='<?php echo tryGetData('comm_id', $house_data); ?>'>
+		<input type='hidden' name='edoma_house_to_rent_sn' value='<?php echo tryGetData('sn', $house_data); ?>'>
 			<div class="form-group">
 				<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">新增照片：</label>
 				<div class="col-xs-12 col-sm-6"><input type='file' id='filename' name='filename' size=20></div>
@@ -145,7 +144,7 @@
 									foreach ($exist_photo_array as $key=>$photo) {
 
 										$sn = tryGetData('sn', $photo, NULL);
-										$house_to_rent_sn = tryGetData('house_to_rent_sn', $photo, NULL);
+										$edoma_house_to_rent_sn = tryGetData('edoma_house_to_rent_sn', $photo, NULL);
 										$filename = tryGetData('filename', $photo, NULL);
 
 										if ( isNull($filename) ) continue;
@@ -154,8 +153,8 @@
 										//$thumb = 'thumb_'.$filename;
 										$thumb = $filename;
 										$comm_id = tryGetData('comm_id', $house_data);
-										$thumb = base_url('upload/website/house_to_rent/'.$house_to_rent_sn.'/'.$thumb);
-										$url = base_url('upload/website/house_to_rent/'.$house_to_rent_sn.'/'.$filename);
+										$thumb = base_url('upload/website/house_to_rent/'.$edoma_house_to_rent_sn.'/'.$thumb);
+										$url = base_url('upload/website/house_to_rent/'.$edoma_house_to_rent_sn.'/'.$filename);
 									?>
 									<tr>
 										<td class="center">
@@ -163,7 +162,7 @@
 											//if ( sizeof($exist_lands_array) < 1 && sizeof($exists_custs_array) > 0) {
 											?>
 											<label>
-												<input type="checkbox" class="ace" name="del[]" value="<?php echo $sn.'!@'.$house_to_rent_sn.'!@'.$filename;?>" />
+												<input type="checkbox" class="ace" name="del[]" value="<?php echo $sn.'!@'.$edoma_house_to_rent_sn.'!@'.$filename;?>" />
 												<span class="lbl"></span>
 											</label>
 										</td>

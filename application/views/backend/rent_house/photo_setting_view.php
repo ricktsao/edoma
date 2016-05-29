@@ -85,7 +85,7 @@
 
 		<div class="hr hr-16 hr-dotted"></div>
 			
-		<form action="<?php echo bUrl("updatePhoto")?>" method="post"  id="add_form" role="form" enctype="multipart/form-data">
+		<form action="<?php echo bUrl("updatePhoto", false)?>" method="post"  id="add_form" role="form" enctype="multipart/form-data">
 		<input type='hidden' name='house_to_rent_sn' value='<?php echo tryGetData('sn', $house_data); ?>'>
 		<input type='hidden' name='comm_id' value='<?php echo tryGetData('comm_id', $house_data); ?>'>
 			<div class="form-group">
@@ -154,8 +154,8 @@
 										//$thumb = 'thumb_'.$filename;
 										$thumb = $filename;
 										$comm_id = tryGetData('comm_id', $house_data);
-										$thumb = base_url('upload/'.$comm_id.'/house_to_rent/'.$house_to_rent_sn.'/'.$thumb);
-										$url = base_url('upload/'.$comm_id.'/house_to_rent/'.$house_to_rent_sn.'/'.$filename);
+										$thumb = base_url('upload/website/house_to_rent/'.$house_to_rent_sn.'/'.$thumb);
+										$url = base_url('upload/website/house_to_rent/'.$house_to_rent_sn.'/'.$filename);
 									?>
 									<tr>
 										<td class="center">

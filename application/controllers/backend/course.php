@@ -305,6 +305,7 @@ class Course extends Backend_Controller {
 						$update_data = $del_comm_info;
 						$update_data["comm_id"] = $del_comm_id;
 						$update_data["del"] = 1;
+						$update_data["client_sync"] = 0;
 						$this->updateCommContent($update_data);
 					}
 					

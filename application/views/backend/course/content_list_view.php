@@ -5,20 +5,15 @@
 			<i class="icon-edit bigger-120"></i>新增
 		</a>	
     </div>
-    
-    
    
-    <div class="btn-group" style="display:none">
-        
-          <button type="submit" class="btn btn-primary btn-sm btn_margin"><i class="icon-search nav-search-icon"></i>搜尋</button>
-        
+    <div class="btn-group" style="display:none">        
+          <button type="submit" class="btn btn-primary btn-sm btn_margin"><i class="icon-search nav-search-icon"></i>搜尋</button>        
     </div>                
 </article>	
 <span style="display: none" class="label label-sx label-warning">Hot於前端首頁只顯示1則(列表第一筆)</span>		
 </form>
 
-<form action="" id="update_form" method="post" class="contentForm">   
-	
+<form action="" id="update_form" method="post" class="contentForm">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="row">
@@ -78,7 +73,11 @@
 										<td>
 											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editContent",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
 												<i class="icon-edit bigger-120"></i>編輯
-											</a>											
+											</a>	
+
+											<a class="btn  btn-minier btn-purple" href="<?php echo bUrl("contentPhoto",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
+												<i class="icon-edit bigger-120"></i>圖片
+											</a>			
 										</td>
 										<td>					
 											<div class="col-xs-3">

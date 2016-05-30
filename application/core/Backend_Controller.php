@@ -1179,7 +1179,7 @@ abstract class Backend_Controller extends IT_Controller
 		
 		if ( isNotNull($content_sn) ) {
 			## 物件基本資料
-			$content_info = $this->it_model->listData( "web_menu_content" , "sn =".$content_sn);
+			$content_info = $this->it_model->listData( "edoma_content" , "sn =".$content_sn);
 			
 			if ($content_info["count"] > 0) 
 			{
@@ -1188,7 +1188,7 @@ abstract class Backend_Controller extends IT_Controller
 				$data['content_info'] = $edit_data;
 
 				## 既有照片list
-				$photo_list = $this->it_model->listData( "web_menu_photo" , "content_sn =".$content_sn);
+				$photo_list = $this->it_model->listData( "edoma_photo" , "content_sn =".$content_sn);
 				$data["photo_list"] = $photo_list["data"];
 				
 				$this->display("photo_setting_view",$data);
@@ -1223,7 +1223,7 @@ abstract class Backend_Controller extends IT_Controller
 		$config['upload_path'] = './upload/content_photo/'.$edit_data['content_sn'];
 		$config['allowed_types'] = 'jpg|png';
 		//$config['max_size']	= '1000';
-		//$config['max_width']  = '1200';
+		$config['max_width']  = '1200';
 		//$config['max_height']  = '1000';
 		$config['overwrite']  = true;
 
@@ -1260,10 +1260,10 @@ abstract class Backend_Controller extends IT_Controller
 							, 'created'				=>	date('Y-m-d H:i:s')
 							);
 
-			$photo_sn = $this->it_model->addData('web_menu_photo', $arr_data);
+			$photo_sn = $this->it_model->addData('edoma_photo', $arr_data);
 			if ( $this->db->affected_rows() > 0 or $this->db->_error_message() == '') 
 			{
-				$this->pingConentPhoto(tryGetData('content_sn', $edit_data));
+				//$this->pingConentPhoto(tryGetData('content_sn', $edit_data));
 				$this->showSuccessMessage('圖片上傳成功');
 			} else {
 				$this->showFailMessage('圖片上傳失敗，請稍後再試');
@@ -1292,7 +1292,7 @@ abstract class Backend_Controller extends IT_Controller
 
 				unlink('./upload/content_photo/'.$content_sn.'/'.$filename);
 
-				$del = $this->it_model->deleteData('web_menu_photo',  array('sn' => $sn));
+				$del = $this->it_model->deleteData('edoma_photo',  array('sn' => $sn));
 				
 				if ($del) 
 				{			
@@ -1300,9 +1300,9 @@ abstract class Backend_Controller extends IT_Controller
 				}
 			}
 			
-			$this->pingConentPhoto($content_sn);
+			//$this->pingConentPhoto($content_sn);
 		}
-		$this->showSuccessMessage('物件照片刪除成功');
+		$this->showSuccessMessage('圖片刪除成功');
 
 
 		redirect(bUrl("contentPhoto"));

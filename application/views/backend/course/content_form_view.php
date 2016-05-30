@@ -40,7 +40,7 @@
 	
 	<?php echo checkBoxOption("收費","brief",$edit_data);?>
 	
-	<div class="form-group ">
+	<div class="form-group " style="display:none">
         <label class="col-xs-12 col-sm-2 control-label no-padding-right" for="content">圖片</label>
         <div class="col-xs-12 col-sm-6">
             <input type="file" name="img_filename" size="20" /><br /><br />
@@ -80,7 +80,7 @@
 		<div class="col-md-offset-3 col-md-9">
 			<a class="btn" href="<?php echo bUrl("contentList",TRUE,array("sn")) ?>">
 				<i class="icon-undo bigger-110"></i>
-				Back
+				回上頁
 			</a>		
 		
 
@@ -88,7 +88,7 @@
 			
 			<button class="btn btn-info" type="Submit">
 				<i class="icon-ok bigger-110"></i>
-				Submit
+				送出
 			</button>
 			
 		</div>

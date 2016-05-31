@@ -1225,7 +1225,10 @@ abstract class Backend_Controller extends IT_Controller
 		//$config['max_size']	= '1000';
 		$config['max_width']  = '1200';
 		//$config['max_height']  = '1000';
-		$config['overwrite']  = true;
+		
+		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 );	
+		$config['file_name'] = $filename;
+		$config['overwrite'] = false;
 
 		$this->load->library('upload', $config);
 
@@ -1263,7 +1266,7 @@ abstract class Backend_Controller extends IT_Controller
 			$photo_sn = $this->it_model->addData('edoma_photo', $arr_data);
 			if ( $this->db->affected_rows() > 0 or $this->db->_error_message() == '') 
 			{
-				//$this->pingConentPhoto(tryGetData('content_sn', $edit_data));
+				$this->pingConentPhoto(tryGetData('content_sn', $edit_data));
 				$this->showSuccessMessage('圖片上傳成功');
 			} else {
 				$this->showFailMessage('圖片上傳失敗，請稍後再試');
@@ -1298,9 +1301,8 @@ abstract class Backend_Controller extends IT_Controller
 				{			
 					
 				}
-			}
-			
-			//$this->pingConentPhoto($content_sn);
+			}			
+			$this->pingConentPhoto($content_sn);
 		}
 		$this->showSuccessMessage('圖片刪除成功');
 
@@ -1315,20 +1317,24 @@ abstract class Backend_Controller extends IT_Controller
 	function pingConentPhoto($content_sn)
 	{
 		ini_set("memory_limit","256M");
-		$content_info = $this->it_model->listData("web_menu_content","sn = '".$content_sn."'");
+		$content_info = $this->it_model->listData("edoma_content","sn = '".$content_sn."'");
 		if($content_info["count"]==0)
 		{
 			return;
 		}
 		$content_info = $content_info["data"][0];
 		
-		$photo_list = $this->it_model->listData( "web_menu_photo" , "content_sn =".$content_sn);
+		$photo_list = $this->it_model->listData( "edoma_photo" , "content_sn =".$content_sn);
 		$source = array();
 		
 		$dest_width = 0;
 		$dest_height = 0;
+		
+		$photo_name_ary = array();
 		foreach( $photo_list["data"] as $key => $photo ) 
 		{
+			array_push($photo_name_ary,$photo["img_filename"]);
+			
 			$img = set_realpath("upload/content_photo/".$content_sn).$photo["img_filename"];
 			
 			$exploded = explode('.',$photo["img_filename"]);
@@ -1408,27 +1414,51 @@ abstract class Backend_Controller extends IT_Controller
 		$folder_name = $content_info["content_type"];
 		$img_config['resize_setting'] =array($folder_name=>array(1024,1024));		
 		$img_filename = resize_img($img_url,$img_config['resize_setting']);	
-
-		//社區同步資料夾
-		$img_config['resize_setting'] =array($folder_name=>array(500,500));
-		resize_img($img_url,$img_config['resize_setting'],$this->getCommId(),$img_filename);
-				
-		@unlink($img_url);
 		
+		
+		if (!is_dir( $this->config->item('edoma_folder_path') ))
+		{
+			mkdir($this->config->item('edoma_folder_path'),0777);
+		}  		
+		if (!is_dir( $this->config->item('edoma_folder_path').$folder_name ))
+		{
+			mkdir($this->config->item('edoma_folder_path').$folder_name,0777);
+		}		
+		//將檔案複製到commapi folder 下
+		copy(set_realpath("upload/website").$folder_name.'/'.$img_filename , $this->config->item('edoma_folder_path').$folder_name.'/'.$img_filename);
+		
+		
+		$this->it_model->updateData( "edoma_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
+			
 		$orig_img_filename = tryGetData("img_filename",$content_info);
 		
-		$this->it_model->updateData( "web_menu_content" , array("img_filename"=> $img_filename,"is_sync"=>0,"update_date" => date("Y-m-d H:i:s")  ), "sn = '".$content_sn."'" );
-			
-				
+
 		@unlink(set_realpath("upload/website/".$folder_name).$orig_img_filename);	
-		@unlink(set_realpath("upload/".$this->getCommId()."/".$folder_name).$orig_img_filename);	
+		@unlink($this->config->item('edoma_folder_path').$folder_name.'/'.$orig_img_filename);			
 		
-		//檔案同步至server
-		$this->sync_file($folder_name);
+		//--------------------------------------------------------------------------------
 		
-		$content_info["img_filename"] = $img_filename;
-		$content_info["is_sync"] = 0;
-		$this->sync_to_server($content_info);
+		
+		
+		//資料同步至各社區
+		//--------------------------------------------------------------------------------
+		$comm_ids  = tryGetData("comm_id",$content_info);
+		$comm_id_ary = explode(",",$comm_ids);
+		
+		foreach( $comm_id_ary as $key => $comm_id )
+		{
+			if(isNull($comm_id))
+			{
+				continue;
+			}
+			$update_data = $content_info;
+			$update_data["comm_id"] = $comm_id;
+			$update_data["img_filename"] = $img_filename;
+			$update_data["brief2"] = implode(",",$photo_name_ary);			
+			$update_data["del"] = 0;
+			$this->updateCommContent($update_data);
+		}
+		
 		//--------------------------------------------------------------------------------
 	}
 	

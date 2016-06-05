@@ -70,7 +70,7 @@ class Comm extends Backend_Controller
 
 			$admin_info = $this->it_model->listData( "community" , "sn =".$comm_sn);
 			
-			if (count($admin_info["data"]) > 0) {			
+			if (count($admin_info["data"]) > 0) {
 				$edit_data =$admin_info["data"][0];
 				
 				//$edit_data["start_date"] = $edit_data["start_date"]==NULL?"": date( "Y-m-d" , strtotime( $edit_data["start_date"] ) );
@@ -172,14 +172,46 @@ class Comm extends Backend_Controller
 		$this->form_validation->set_rules( 'name', '社區名稱', 'required|max_length[30]' );
 		$this->form_validation->set_rules( 'tel', '電話', 'min_length[8]|max_length[20]' );
 		$this->form_validation->set_rules( 'phone', '行動電話', 'min_length[8]|max_length[20]' );
-		$this->form_validation->set_rules( 'addr', '住址', 'min_length[10]|max_length[100]' );
+		$this->form_validation->set_rules( 'addr', '社區地址', 'min_length[10]|max_length[100]' );
 
 		return ($this->form_validation->run() == FALSE) ? FALSE : TRUE;
 	}
 
 
+	// 產生社區SQL檔案，提供社區安裝使用
+	public function generateSql()
+	{
+		$comm_sn = $this->input->get("sn", TRUE);
+		if ( $comm_sn > 0 ) {
+			$comm_info = $this->it_model->listData( "community" , "sn =".$comm_sn);
+			
+			if (count($comm_info["data"]) > 0) {			
+				$edit_data = $comm_info["data"][0];
 
+				$comm_id = tryGetData('id', $edit_data, NULL);
 
+				if ( isNotNull($comm_id) ) {
+
+					// 讀取安裝SQL的原始檔，寫入 comm_id 之後另存新檔
+					$sql_content = read_file('./upload/init.sql');
+					$generate_content = sprintf($sql_content, $comm_id, $comm_id);
+
+					$filename = prepPassword($comm_id);
+					$filename = $filename.'.sql';
+					
+					if ( ! write_file('./upload/comm_sql/'.$filename, $generate_content) ) {
+						$this->showFailMessage();
+					} else {
+						$this->showSuccessMessage();
+					}
+				}
+			}
+		}
+
+		redirect(bUrl("index", FALSE));	
+	}
+
+	/*
 	public function deleteComm()
 	{
 		$del_ary =array('sn'=> $this->input->post('del',TRUE));		
@@ -191,14 +223,14 @@ class Comm extends Backend_Controller
 		$this->showSuccessMessage();
 		redirect(bUrl("index", FALSE));	
 	}
+	*/
+
 
 	public function launchComm()
 	{		
 		$this->ajaxChangeStatus("comm","status",$this->input->post("sn", TRUE));
 	}
 
-	
-	
 	
 	public function generateTopMenu()
 	{

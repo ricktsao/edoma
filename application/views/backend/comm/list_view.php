@@ -54,6 +54,7 @@
 										<th>手　機</th>
 										<th>地　址</th>
 										<th style="width:150px">操作</th>
+										<th style="width:150px">SQL檔案</th>
 										<th>啟用/停用</th>
 										
 									</tr>
@@ -86,10 +87,30 @@
 										<?php echo tryGetData('addr', $item);?>
 										</td>
 
-										<td style="text-align:left; padding-left:10px;">
+										<td>
 											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editComm",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
 												<i class="icon-edit bigger-120"></i>編輯
 											</a>
+										</td>
+										<td>
+										<?php
+										$filename = prepPassword($item['id']);
+										$filename = './upload/comm_sql/'.$filename.'.sql';
+
+										if ( !file_exists($filename) ) {
+										?>
+											<a class="btn  btn-minier btn-yellow" href="<?php echo bUrl("generateSql",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
+												<i class="icon-edit bigger-120"></i>產出
+											</a>
+										<?php
+										} else {
+										?>
+											<a class="btn  btn-minier btn-success" href="<?php echo base_url().$filename ?>">
+												<i class="icon-edit bigger-120"></i>下載
+											</a>
+										<?php
+										}
+										?>
 										</td>
 										<td>
 											<div class="col-xs-3">
@@ -109,7 +130,7 @@
 									
 								</tbody>
 								<tr>
-					              	<td colspan="8">
+					              	<td colspan="9">
 									<?php echo showBackendPager($pager)?>
 					                </td>
 								</tr>

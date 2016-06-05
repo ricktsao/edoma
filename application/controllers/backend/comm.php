@@ -182,10 +182,11 @@ class Comm extends Backend_Controller
 	public function generateSql()
 	{
 		$comm_sn = $this->input->get("sn", TRUE);
+
 		if ( $comm_sn > 0 ) {
 			$comm_info = $this->it_model->listData( "community" , "sn =".$comm_sn);
-			
-			if (count($comm_info["data"]) > 0) {			
+
+			if (count($comm_info["data"]) > 0) {
 				$edit_data = $comm_info["data"][0];
 
 				$comm_id = tryGetData('id', $edit_data, NULL);
@@ -198,7 +199,7 @@ class Comm extends Backend_Controller
 
 					$filename = prepPassword($comm_id);
 					$filename = $filename.'.sql';
-					
+
 					if ( ! write_file('./upload/comm_sql/'.$filename, $generate_content) ) {
 						$this->showFailMessage();
 					} else {

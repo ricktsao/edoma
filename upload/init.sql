@@ -11,12 +11,12 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 -- 導出 comm 的資料庫結構
-DROP DATABASE IF EXISTS `comm`;
-CREATE DATABASE IF NOT EXISTS `comm` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `comm`;
+DROP DATABASE IF EXISTS `edoma`;
+CREATE DATABASE IF NOT EXISTS `edoma` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `edoma`;
 
 
--- 導出  表 comm.album 結構
+-- 導出  表 edoma.album 結構
 DROP TABLE IF EXISTS `album`;
 CREATE TABLE IF NOT EXISTS `album` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -37,12 +37,12 @@ CREATE TABLE IF NOT EXISTS `album` (
   KEY `category_sn` (`album_category_sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  comm.album 的資料：~0 rows (大約)
+-- 正在導出表  edoma.album 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 
 
--- 導出  表 comm.album_item 結構
+-- 導出  表 edoma.album_item 結構
 DROP TABLE IF EXISTS `album_item`;
 CREATE TABLE IF NOT EXISTS `album_item` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -62,12 +62,12 @@ CREATE TABLE IF NOT EXISTS `album_item` (
   CONSTRAINT `album_item_ibfk_1` FOREIGN KEY (`album_sn`) REFERENCES `album` (`sn`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  comm.album_item 的資料：~0 rows (大約)
+-- 正在導出表  edoma.album_item 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `album_item` DISABLE KEYS */;
 /*!40000 ALTER TABLE `album_item` ENABLE KEYS */;
 
 
--- 導出  表 comm.gas 結構
+-- 導出  表 edoma.gas 結構
 DROP TABLE IF EXISTS `gas`;
 CREATE TABLE IF NOT EXISTS `gas` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -85,12 +85,12 @@ CREATE TABLE IF NOT EXISTS `gas` (
   UNIQUE KEY `building_id_year_month` (`building_id`,`year`,`month`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='瓦斯抄表';
 
--- 正在導出表  comm.gas 的資料：0 rows
+-- 正在導出表  edoma.gas 的資料：0 rows
 /*!40000 ALTER TABLE `gas` DISABLE KEYS */;
 /*!40000 ALTER TABLE `gas` ENABLE KEYS */;
 
 
--- 導出  表 comm.house_to_rent 結構
+-- 導出  表 edoma.house_to_rent 結構
 DROP TABLE IF EXISTS `house_to_rent`;
 CREATE TABLE IF NOT EXISTS `house_to_rent` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -137,12 +137,12 @@ CREATE TABLE IF NOT EXISTS `house_to_rent` (
   KEY `sn_comm_id` (`sn`,`comm_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='租屋資料表';
 
--- 正在導出表  comm.house_to_rent 的資料：~0 rows (大約)
+-- 正在導出表  edoma.house_to_rent 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `house_to_rent` DISABLE KEYS */;
 /*!40000 ALTER TABLE `house_to_rent` ENABLE KEYS */;
 
 
--- 導出  表 comm.house_to_rent_photo 結構
+-- 導出  表 edoma.house_to_rent_photo 結構
 DROP TABLE IF EXISTS `house_to_rent_photo`;
 CREATE TABLE IF NOT EXISTS `house_to_rent_photo` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序號',
@@ -158,12 +158,12 @@ CREATE TABLE IF NOT EXISTS `house_to_rent_photo` (
   KEY `sn_comm_id_house_to_rent_sn_filename` (`sn`,`comm_id`,`house_to_rent_sn`,`filename`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='租屋照片';
 
--- 正在導出表  comm.house_to_rent_photo 的資料：0 rows
+-- 正在導出表  edoma.house_to_rent_photo 的資料：0 rows
 /*!40000 ALTER TABLE `house_to_rent_photo` DISABLE KEYS */;
 /*!40000 ALTER TABLE `house_to_rent_photo` ENABLE KEYS */;
 
 
--- 導出  表 comm.house_to_sale 結構
+-- 導出  表 edoma.house_to_sale 結構
 DROP TABLE IF EXISTS `house_to_sale`;
 CREATE TABLE IF NOT EXISTS `house_to_sale` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -207,12 +207,12 @@ CREATE TABLE IF NOT EXISTS `house_to_sale` (
   KEY `sn_comm_id` (`sn`,`comm_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='售屋屋資料表';
 
--- 正在導出表  comm.house_to_sale 的資料：~0 rows (大約)
+-- 正在導出表  edoma.house_to_sale 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `house_to_sale` DISABLE KEYS */;
 /*!40000 ALTER TABLE `house_to_sale` ENABLE KEYS */;
 
 
--- 導出  表 comm.house_to_sale_photo 結構
+-- 導出  表 edoma.house_to_sale_photo 結構
 DROP TABLE IF EXISTS `house_to_sale_photo`;
 CREATE TABLE IF NOT EXISTS `house_to_sale_photo` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '車位序號',
@@ -228,12 +228,12 @@ CREATE TABLE IF NOT EXISTS `house_to_sale_photo` (
   KEY `sn_comm_id_house_to_sale_sn_filename` (`sn`,`comm_id`,`house_to_sale_sn`,`filename`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='售屋照片';
 
--- 正在導出表  comm.house_to_sale_photo 的資料：0 rows
+-- 正在導出表  edoma.house_to_sale_photo 的資料：0 rows
 /*!40000 ALTER TABLE `house_to_sale_photo` DISABLE KEYS */;
 /*!40000 ALTER TABLE `house_to_sale_photo` ENABLE KEYS */;
 
 
--- 導出  表 comm.it_sessions 結構
+-- 導出  表 edoma.it_sessions 結構
 DROP TABLE IF EXISTS `it_sessions`;
 CREATE TABLE IF NOT EXISTS `it_sessions` (
   `session_id` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `it_sessions` (
 
 
 
--- 導出  表 comm.mailbox 結構
+-- 導出  表 edoma.mailbox 結構
 DROP TABLE IF EXISTS `mailbox`;
 CREATE TABLE IF NOT EXISTS `mailbox` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -273,12 +273,12 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='社區郵件';
 
--- 正在導出表  comm.mailbox 的資料：~0 rows (大約)
+-- 正在導出表  edoma.mailbox 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `mailbox` DISABLE KEYS */;
 /*!40000 ALTER TABLE `mailbox` ENABLE KEYS */;
 
 
--- 導出  表 comm.parking 結構
+-- 導出  表 edoma.parking 結構
 DROP TABLE IF EXISTS `parking`;
 CREATE TABLE IF NOT EXISTS `parking` (
   `sn` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '車位序號',
@@ -290,12 +290,12 @@ CREATE TABLE IF NOT EXISTS `parking` (
   UNIQUE KEY `comm_id_parking_id` (`comm_id`,`parking_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='社區車位';
 
--- 正在導出表  comm.parking 的資料：~0 rows (大約)
+-- 正在導出表  edoma.parking 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `parking` DISABLE KEYS */;
 /*!40000 ALTER TABLE `parking` ENABLE KEYS */;
 
 
--- 導出  表 comm.repair 結構
+-- 導出  表 edoma.repair 結構
 DROP TABLE IF EXISTS `repair`;
 CREATE TABLE IF NOT EXISTS `repair` (
   `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -315,12 +315,12 @@ CREATE TABLE IF NOT EXISTS `repair` (
   KEY `status` (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='社區環境報修';
 
--- 正在導出表  comm.repair 的資料：0 rows
+-- 正在導出表  edoma.repair 的資料：0 rows
 /*!40000 ALTER TABLE `repair` DISABLE KEYS */;
 /*!40000 ALTER TABLE `repair` ENABLE KEYS */;
 
 
--- 導出  表 comm.repair_reply 結構
+-- 導出  表 edoma.repair_reply 結構
 DROP TABLE IF EXISTS `repair_reply`;
 CREATE TABLE IF NOT EXISTS `repair_reply` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -333,12 +333,12 @@ CREATE TABLE IF NOT EXISTS `repair_reply` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.repair_reply 的資料：0 rows
+-- 正在導出表  edoma.repair_reply 的資料：0 rows
 /*!40000 ALTER TABLE `repair_reply` DISABLE KEYS */;
 /*!40000 ALTER TABLE `repair_reply` ENABLE KEYS */;
 
 
--- 導出  表 comm.suggestion 結構
+-- 導出  表 edoma.suggestion 結構
 DROP TABLE IF EXISTS `suggestion`;
 CREATE TABLE IF NOT EXISTS `suggestion` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -356,12 +356,12 @@ CREATE TABLE IF NOT EXISTS `suggestion` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='社區意見箱';
 
--- 正在導出表  comm.suggestion 的資料：0 rows
+-- 正在導出表  edoma.suggestion 的資料：0 rows
 /*!40000 ALTER TABLE `suggestion` DISABLE KEYS */;
 /*!40000 ALTER TABLE `suggestion` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_backend_log 結構
+-- 導出  表 edoma.sys_backend_log 結構
 DROP TABLE IF EXISTS `sys_backend_log`;
 CREATE TABLE IF NOT EXISTS `sys_backend_log` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -376,12 +376,12 @@ CREATE TABLE IF NOT EXISTS `sys_backend_log` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_backend_log 的資料：0 rows
+-- 正在導出表  edoma.sys_backend_log 的資料：0 rows
 /*!40000 ALTER TABLE `sys_backend_log` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_backend_log` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_config 結構
+-- 導出  表 edoma.sys_config 結構
 DROP TABLE IF EXISTS `sys_config`;
 CREATE TABLE IF NOT EXISTS `sys_config` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -396,14 +396,14 @@ CREATE TABLE IF NOT EXISTS `sys_config` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='系統配置設定';
 
--- 正在導出表  comm.sys_config 的資料：~1 rows (大約)
+-- 正在導出表  edoma.sys_config 的資料：~1 rows (大約)
 /*!40000 ALTER TABLE `sys_config` DISABLE KEYS */;
 INSERT INTO `sys_config` (`sn`, `id`, `value`, `param1`, `param2`, `desc`, `launch`, `updated`, `created`) VALUES
 	(1, 'comm_id', '%s', NULL, NULL, NULL, 1, NULL, NULL);
 /*!40000 ALTER TABLE `sys_config` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_frontend_log_2016 結構
+-- 導出  表 edoma.sys_frontend_log_2016 結構
 DROP TABLE IF EXISTS `sys_frontend_log_2016`;
 CREATE TABLE IF NOT EXISTS `sys_frontend_log_2016` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -419,12 +419,12 @@ CREATE TABLE IF NOT EXISTS `sys_frontend_log_2016` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_frontend_log_2016 的資料：0 rows
+-- 正在導出表  edoma.sys_frontend_log_2016 的資料：0 rows
 /*!40000 ALTER TABLE `sys_frontend_log_2016` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_frontend_log_2016` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_function 結構
+-- 導出  表 edoma.sys_function 結構
 DROP TABLE IF EXISTS `sys_function`;
 CREATE TABLE IF NOT EXISTS `sys_function` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -437,12 +437,12 @@ CREATE TABLE IF NOT EXISTS `sys_function` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_function 的資料：~0 rows (大約)
+-- 正在導出表  edoma.sys_function 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `sys_function` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_function` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_message_assign 結構
+-- 導出  表 edoma.sys_message_assign 結構
 DROP TABLE IF EXISTS `sys_message_assign`;
 CREATE TABLE IF NOT EXISTS `sys_message_assign` (
   `sn` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -464,12 +464,12 @@ CREATE TABLE IF NOT EXISTS `sys_message_assign` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='訊息';
 
--- 正在導出表  comm.sys_message_assign 的資料：~0 rows (大約)
+-- 正在導出表  edoma.sys_message_assign 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `sys_message_assign` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_message_assign` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_module 結構
+-- 導出  表 edoma.sys_module 結構
 DROP TABLE IF EXISTS `sys_module`;
 CREATE TABLE IF NOT EXISTS `sys_module` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -485,7 +485,7 @@ CREATE TABLE IF NOT EXISTS `sys_module` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  comm.sys_module 的資料：~50 rows (大約)
+-- 正在導出表  edoma.sys_module 的資料：~50 rows (大約)
 /*!40000 ALTER TABLE `sys_module` DISABLE KEYS */;
 INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `title`, `icon_text`, `sort`, `launch`) VALUES
 	(22, NULL, 'auth-dir', 1, 1, 1, '權限管理', 'fa fa-group ', 1, 1),
@@ -541,7 +541,7 @@ INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `titl
 /*!40000 ALTER TABLE `sys_module` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_setting 結構
+-- 導出  表 edoma.sys_setting 結構
 DROP TABLE IF EXISTS `sys_setting`;
 CREATE TABLE IF NOT EXISTS `sys_setting` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -552,12 +552,12 @@ CREATE TABLE IF NOT EXISTS `sys_setting` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  comm.sys_setting 的資料：~0 rows (大約)
+-- 正在導出表  edoma.sys_setting 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `sys_setting` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_setting` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user 結構
+-- 導出  表 edoma.sys_user 結構
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE IF NOT EXISTS `sys_user` (
   `comm_id` char(8) DEFAULT NULL COMMENT '社區序號',
@@ -609,14 +609,14 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   KEY `app_id` (`app_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用戶資料表\r\n\r\n身分別：Ｉ-住戶　 Ｓ-物業秘書　Ｍ-物業總幹事　Ｇ-物業警衛　Ｆ-富網通\r\n\r\nＩ以 id（刷卡10';
 
--- 正在導出表  comm.sys_user 的資料：~1 rows (大約)
+-- 正在導出表  edoma.sys_user 的資料：~1 rows (大約)
 /*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
 INSERT INTO `sys_user` (`comm_id`, `sn`, `is_sync`, `building_id`, `name`, `role`, `title`, `id`, `app_id`, `act_code`, `gender`, `account`, `is_contact`, `is_owner`, `owner_addr`, `password`, `is_manager`, `manager_title`, `voting_right`, `gas_right`, `email`, `tel`, `phone`, `addr`, `is_chang_pwd`, `start_date`, `end_date`, `forever`, `launch`, `is_default`, `updated`, `created`, `created_by`, `last_login_ip`, `last_login_time`, `login_time`, `last_login_agent`, `use_cnt`, `app_last_login_ip`, `app_login_time`, `app_last_login_time`, `app_use_cnt`) VALUES
 	('%s', 1, 0, NULL, '管理者', 'M', '富網通', NULL, NULL, NULL, 1, 'admin', 0, 0, '', 'c4983d36fb195428c9e8c79dfa9bcb0eb20f74e0', 0, '', 0, 0, NULL, NULL, NULL, NULL, 0, '2016-05-31 00:00:01', NULL, 1, 1, 0, '2016-05-31 13:05:51', '2015-05-27 12:01:11', '', '192.168.1.68', '2016-03-24 14:06:27', NULL, '[OS] Unknown Windows OS\n[Agent] Chrome 49.0.2623.87', 1, NULL, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user_belong_group 結構
+-- 導出  表 edoma.sys_user_belong_group 結構
 DROP TABLE IF EXISTS `sys_user_belong_group`;
 CREATE TABLE IF NOT EXISTS `sys_user_belong_group` (
   `sys_user_sn` int(10) unsigned NOT NULL,
@@ -627,7 +627,7 @@ CREATE TABLE IF NOT EXISTS `sys_user_belong_group` (
   KEY `FK_sys_admin_belong_group_2` (`sys_user_group_sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_user_belong_group 的資料：~13 rows (大約)
+-- 正在導出表  edoma.sys_user_belong_group 的資料：~13 rows (大約)
 /*!40000 ALTER TABLE `sys_user_belong_group` DISABLE KEYS */;
 INSERT INTO `sys_user_belong_group` (`sys_user_sn`, `sys_user_group_sn`, `launch`, `update_date`) VALUES
 	(3, 5, 0, '2016-05-31 13:05:51'),
@@ -646,7 +646,7 @@ INSERT INTO `sys_user_belong_group` (`sys_user_sn`, `sys_user_group_sn`, `launch
 /*!40000 ALTER TABLE `sys_user_belong_group` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user_file_auth 結構
+-- 導出  表 edoma.sys_user_file_auth 結構
 DROP TABLE IF EXISTS `sys_user_file_auth`;
 CREATE TABLE IF NOT EXISTS `sys_user_file_auth` (
   `sn` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -657,12 +657,12 @@ CREATE TABLE IF NOT EXISTS `sys_user_file_auth` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_user_file_auth 的資料：~0 rows (大約)
+-- 正在導出表  edoma.sys_user_file_auth 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `sys_user_file_auth` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_user_file_auth` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user_func_auth 結構
+-- 導出  表 edoma.sys_user_func_auth 結構
 DROP TABLE IF EXISTS `sys_user_func_auth`;
 CREATE TABLE IF NOT EXISTS `sys_user_func_auth` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -674,12 +674,12 @@ CREATE TABLE IF NOT EXISTS `sys_user_func_auth` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前端特殊權限';
 
--- 正在導出表  comm.sys_user_func_auth 的資料：~0 rows (大約)
+-- 正在導出表  edoma.sys_user_func_auth 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `sys_user_func_auth` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_user_func_auth` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user_group 結構
+-- 導出  表 edoma.sys_user_group 結構
 DROP TABLE IF EXISTS `sys_user_group`;
 CREATE TABLE IF NOT EXISTS `sys_user_group` (
   `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -692,7 +692,7 @@ CREATE TABLE IF NOT EXISTS `sys_user_group` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_user_group 的資料：~5 rows (大約)
+-- 正在導出表  edoma.sys_user_group 的資料：~5 rows (大約)
 /*!40000 ALTER TABLE `sys_user_group` DISABLE KEYS */;
 INSERT INTO `sys_user_group` (`sn`, `title`, `launch`, `id`, `sort`, `update_date`, `creare_date`) VALUES
 	(1, '住戶', 1, 'user', 500, '2015-03-18 16:17:58', NULL),
@@ -703,7 +703,7 @@ INSERT INTO `sys_user_group` (`sn`, `title`, `launch`, `id`, `sort`, `update_dat
 /*!40000 ALTER TABLE `sys_user_group` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user_group_b_auth 結構
+-- 導出  表 edoma.sys_user_group_b_auth 結構
 DROP TABLE IF EXISTS `sys_user_group_b_auth`;
 CREATE TABLE IF NOT EXISTS `sys_user_group_b_auth` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -718,7 +718,7 @@ CREATE TABLE IF NOT EXISTS `sys_user_group_b_auth` (
   CONSTRAINT `FK_sys_admin_group_authority_sys_module` FOREIGN KEY (`module_sn`) REFERENCES `sys_module` (`sn`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=183 DEFAULT CHARSET=utf8;
 
--- 正在導出表  comm.sys_user_group_b_auth 的資料：~168 rows (大約)
+-- 正在導出表  edoma.sys_user_group_b_auth 的資料：~168 rows (大約)
 /*!40000 ALTER TABLE `sys_user_group_b_auth` DISABLE KEYS */;
 INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
 	(1, 3, 22, 1, '2016-06-03 16:58:51'),
@@ -892,7 +892,7 @@ INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `la
 /*!40000 ALTER TABLE `sys_user_group_b_auth` ENABLE KEYS */;
 
 
--- 導出  表 comm.sys_user_group_f_auth 結構
+-- 導出  表 edoma.sys_user_group_f_auth 結構
 DROP TABLE IF EXISTS `sys_user_group_f_auth`;
 CREATE TABLE IF NOT EXISTS `sys_user_group_f_auth` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -907,12 +907,12 @@ CREATE TABLE IF NOT EXISTS `sys_user_group_f_auth` (
   CONSTRAINT `FK_sys_user_group_f_auth_web_menu` FOREIGN KEY (`web_menu_sn`) REFERENCES `web_menu` (`sn`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='群組對應前端權限關係表';
 
--- 正在導出表  comm.sys_user_group_f_auth 的資料：~0 rows (大約)
+-- 正在導出表  edoma.sys_user_group_f_auth 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `sys_user_group_f_auth` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_user_group_f_auth` ENABLE KEYS */;
 
 
--- 導出  表 comm.user_message 結構
+-- 導出  表 edoma.user_message 結構
 DROP TABLE IF EXISTS `user_message`;
 CREATE TABLE IF NOT EXISTS `user_message` (
   `sn` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -928,12 +928,12 @@ CREATE TABLE IF NOT EXISTS `user_message` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='訊息';
 
--- 正在導出表  comm.user_message 的資料：~0 rows (大約)
+-- 正在導出表  edoma.user_message 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `user_message` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_message` ENABLE KEYS */;
 
 
--- 導出  表 comm.user_message_assign 結構
+-- 導出  表 edoma.user_message_assign 結構
 DROP TABLE IF EXISTS `user_message_assign`;
 CREATE TABLE IF NOT EXISTS `user_message_assign` (
   `sn` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -949,12 +949,12 @@ CREATE TABLE IF NOT EXISTS `user_message_assign` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='訊息';
 
--- 正在導出表  comm.user_message_assign 的資料：~0 rows (大約)
+-- 正在導出表  edoma.user_message_assign 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `user_message_assign` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_message_assign` ENABLE KEYS */;
 
 
--- 導出  表 comm.user_parking 結構
+-- 導出  表 edoma.user_parking 結構
 DROP TABLE IF EXISTS `user_parking`;
 CREATE TABLE IF NOT EXISTS `user_parking` (
   `comm_id` char(8) NOT NULL,
@@ -969,12 +969,12 @@ CREATE TABLE IF NOT EXISTS `user_parking` (
   UNIQUE KEY `comm_id_parking_id` (`comm_id`,`parking_sn`,`user_sn`,`person_sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='住戶、車位關聯表\r\n＊一個人可以有多個車位\r\n＊一個車位可以登記多輛車子車牌';
 
--- 正在導出表  comm.user_parking 的資料：0 rows
+-- 正在導出表  edoma.user_parking 的資料：0 rows
 /*!40000 ALTER TABLE `user_parking` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_parking` ENABLE KEYS */;
 
 
--- 導出  表 comm.voting 結構
+-- 導出  表 edoma.voting 結構
 DROP TABLE IF EXISTS `voting`;
 CREATE TABLE IF NOT EXISTS `voting` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -990,12 +990,12 @@ CREATE TABLE IF NOT EXISTS `voting` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投票主表';
 
--- 正在導出表  comm.voting 的資料：~0 rows (大約)
+-- 正在導出表  edoma.voting 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `voting` DISABLE KEYS */;
 /*!40000 ALTER TABLE `voting` ENABLE KEYS */;
 
 
--- 導出  表 comm.voting_option 結構
+-- 導出  表 edoma.voting_option 結構
 DROP TABLE IF EXISTS `voting_option`;
 CREATE TABLE IF NOT EXISTS `voting_option` (
   `sn` int(10) NOT NULL AUTO_INCREMENT,
@@ -1006,12 +1006,12 @@ CREATE TABLE IF NOT EXISTS `voting_option` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投票選項';
 
--- 正在導出表  comm.voting_option 的資料：~0 rows (大約)
+-- 正在導出表  edoma.voting_option 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `voting_option` DISABLE KEYS */;
 /*!40000 ALTER TABLE `voting_option` ENABLE KEYS */;
 
 
--- 導出  表 comm.voting_record 結構
+-- 導出  表 edoma.voting_record 結構
 DROP TABLE IF EXISTS `voting_record`;
 CREATE TABLE IF NOT EXISTS `voting_record` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -1024,12 +1024,12 @@ CREATE TABLE IF NOT EXISTS `voting_record` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投票記錄';
 
--- 正在導出表  comm.voting_record 的資料：~0 rows (大約)
+-- 正在導出表  edoma.voting_record 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `voting_record` DISABLE KEYS */;
 /*!40000 ALTER TABLE `voting_record` ENABLE KEYS */;
 
 
--- 導出  表 comm.web_menu 結構
+-- 導出  表 edoma.web_menu 結構
 DROP TABLE IF EXISTS `web_menu`;
 CREATE TABLE IF NOT EXISTS `web_menu` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -1052,12 +1052,12 @@ CREATE TABLE IF NOT EXISTS `web_menu` (
   CONSTRAINT `web_menu_ibfk_1` FOREIGN KEY (`parent_sn`) REFERENCES `web_menu` (`sn`) ON DELETE SET NULL ON UPDATE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前端單元';
 
--- 正在導出表  comm.web_menu 的資料：~0 rows (大約)
+-- 正在導出表  edoma.web_menu 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `web_menu` DISABLE KEYS */;
 /*!40000 ALTER TABLE `web_menu` ENABLE KEYS */;
 
 
--- 導出  表 comm.web_menu_banner 結構
+-- 導出  表 edoma.web_menu_banner 結構
 DROP TABLE IF EXISTS `web_menu_banner`;
 CREATE TABLE IF NOT EXISTS `web_menu_banner` (
   `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -1077,12 +1077,12 @@ CREATE TABLE IF NOT EXISTS `web_menu_banner` (
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  comm.web_menu_banner 的資料：~0 rows (大約)
+-- 正在導出表  edoma.web_menu_banner 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `web_menu_banner` DISABLE KEYS */;
 /*!40000 ALTER TABLE `web_menu_banner` ENABLE KEYS */;
 
 
--- 導出  表 comm.web_menu_content 結構
+-- 導出  表 edoma.web_menu_content 結構
 DROP TABLE IF EXISTS `web_menu_content`;
 CREATE TABLE IF NOT EXISTS `web_menu_content` (
   `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -1115,12 +1115,12 @@ CREATE TABLE IF NOT EXISTS `web_menu_content` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  comm.web_menu_content 的資料：0 rows
+-- 正在導出表  edoma.web_menu_content 的資料：0 rows
 /*!40000 ALTER TABLE `web_menu_content` DISABLE KEYS */;
 /*!40000 ALTER TABLE `web_menu_content` ENABLE KEYS */;
 
 
--- 導出  表 comm.web_menu_photo 結構
+-- 導出  表 edoma.web_menu_photo 結構
 DROP TABLE IF EXISTS `web_menu_photo`;
 CREATE TABLE IF NOT EXISTS `web_menu_photo` (
   `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序號',
@@ -1133,12 +1133,12 @@ CREATE TABLE IF NOT EXISTS `web_menu_photo` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='照片';
 
--- 正在導出表  comm.web_menu_photo 的資料：0 rows
+-- 正在導出表  edoma.web_menu_photo 的資料：0 rows
 /*!40000 ALTER TABLE `web_menu_photo` DISABLE KEYS */;
 /*!40000 ALTER TABLE `web_menu_photo` ENABLE KEYS */;
 
 
--- 導出  表 comm.web_setting 結構
+-- 導出  表 edoma.web_setting 結構
 DROP TABLE IF EXISTS `web_setting`;
 CREATE TABLE IF NOT EXISTS `web_setting` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
@@ -1153,7 +1153,7 @@ CREATE TABLE IF NOT EXISTS `web_setting` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='前端單元';
 
--- 正在導出表  comm.web_setting 的資料：18 rows
+-- 正在導出表  edoma.web_setting 的資料：18 rows
 /*!40000 ALTER TABLE `web_setting` DISABLE KEYS */;
 INSERT INTO `web_setting` (`sn`, `title`, `key`, `value`, `memo`, `type`, `sort`, `launch`, `update_date`) VALUES
 	(1, '網站名稱', 'website_title', 'E-DOMA e化你家', '', 'text', 10, 1, '2016-06-05 13:07:22'),

@@ -168,7 +168,8 @@ DROP TABLE IF EXISTS `house_to_sale`;
 CREATE TABLE IF NOT EXISTS `house_to_sale` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
   `comm_id` varchar(12) NOT NULL,
-  `is_sync` int(11) NOT NULL DEFAULT '0',
+  `is_sync` TINYINT(1) NOT NULL DEFAULT '0',
+  `del` tinyint(1) NOT NULL DEFAULT '0',
   `sale_type` char(1) DEFAULT NULL,
   `house_type` char(1) DEFAULT NULL,
   `direction` char(1) DEFAULT NULL COMMENT '座向',
@@ -914,19 +915,25 @@ CREATE TABLE IF NOT EXISTS `sys_user_group_f_auth` (
 
 -- 導出  表 edoma.user_message 結構
 DROP TABLE IF EXISTS `user_message`;
-CREATE TABLE IF NOT EXISTS `user_message` (
-  `sn` bigint(20) NOT NULL AUTO_INCREMENT,
-  `edit_user_sn` bigint(20) DEFAULT NULL COMMENT '訊息編輯者',
-  `to_user_sn` int(11) NOT NULL,
-  `to_user_app_id` varchar(10) DEFAULT NULL,
-  `to_user_name` varchar(10) DEFAULT NULL,
-  `title` varchar(50) DEFAULT NULL,
-  `msg_content` text NOT NULL COMMENT '訊息',
-  `is_sync` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已同步至server',
-  `updated` datetime NOT NULL,
-  `created` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='訊息';
+CREATE TABLE `user_message` (
+	`sn` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`edit_user_sn` BIGINT(20) NULL DEFAULT NULL COMMENT '訊息編輯者',
+	`to_user_sn` INT(11) NOT NULL,
+	`to_user_app_id` VARCHAR(10) NULL DEFAULT NULL,
+	`to_user_name` VARCHAR(10) NULL DEFAULT NULL,
+	`title` VARCHAR(50) NULL DEFAULT NULL,
+	`msg_content` TEXT NOT NULL COMMENT '訊息',
+	`is_sync` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否已同步至server',
+	`post_date` DATETIME NOT NULL,
+	`updated` DATETIME NOT NULL,
+	`created` DATETIME NOT NULL,
+	PRIMARY KEY (`sn`)
+)
+COMMENT='訊息'
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
+
 
 -- 正在導出表  edoma.user_message 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `user_message` DISABLE KEYS */;
@@ -935,18 +942,25 @@ CREATE TABLE IF NOT EXISTS `user_message` (
 
 -- 導出  表 edoma.user_message_assign 結構
 DROP TABLE IF EXISTS `user_message_assign`;
-CREATE TABLE IF NOT EXISTS `user_message_assign` (
-  `sn` bigint(20) NOT NULL AUTO_INCREMENT,
-  `edit_user_sn` bigint(20) DEFAULT NULL COMMENT '訊息編輯者',
-  `to_user_sn` varchar(500) NOT NULL,
-  `to_user_name` varchar(500) DEFAULT NULL,
-  `to_user_count` smallint(5) unsigned DEFAULT NULL,
-  `title` varchar(50) DEFAULT NULL,
-  `msg_content` text NOT NULL COMMENT '訊息',
-  `is_sync` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已同步至server',
-  `updated` datetime NOT NULL,
-  `created` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
+CREATE TABLE `user_message_assign` (
+	`sn` BIGINT(20) NOT NULL AUTO_INCREMENT,
+	`edit_user_sn` BIGINT(20) NULL DEFAULT NULL COMMENT '訊息編輯者',
+	`to_user_sn` VARCHAR(500) NOT NULL,
+	`to_user_name` VARCHAR(500) NULL DEFAULT NULL,
+	`to_user_count` SMALLINT(5) UNSIGNED NULL DEFAULT NULL,
+	`title` VARCHAR(50) NULL DEFAULT NULL,
+	`msg_content` TEXT NOT NULL COMMENT '訊息',
+	`is_sync` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否已同步至server',
+	`post_date` DATETIME NOT NULL,
+	`updated` DATETIME NOT NULL,
+	`created` DATETIME NOT NULL,
+	PRIMARY KEY (`sn`)
+)
+COMMENT='訊息'
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='訊息';
 
 -- 正在導出表  edoma.user_message_assign 的資料：~0 rows (大約)

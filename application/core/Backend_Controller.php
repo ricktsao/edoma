@@ -1516,7 +1516,7 @@ abstract class Backend_Controller extends IT_Controller
 		unset($edit_data["sn"]);
 		
 		
-		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' " );
+		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_photo_sn ='".$edit_data["edoma_photo_sn"]."' " );
 		
 		if($result === FALSE)
 		{

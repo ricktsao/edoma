@@ -406,6 +406,9 @@ class Sale_House extends Backend_Controller {
 		$config['max_height']  = '1000';
 		$config['overwrite']  = true;
 
+		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 );
+		$config['file_name'] = $filename;
+
 		$this->load->library('upload', $config);
 
 		if (!is_dir('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'])) {
@@ -447,10 +450,13 @@ class Sale_House extends Backend_Controller {
 						mkdir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/', 0777, true);
 				}
 				copy('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename , $this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename);
+				
+				// dest : C:/wamp2/www/commapi/upload/edoma/house_to_sale/1/20160627013812_628277.jpg
 
 				$update_data = $arr_data;
-				$update_data["edoma_sn"] = $sn;
+				$update_data["edoma_photo_sn"] = $sn;
 				$update_data["del"] = 0;
+
 				$this->updateCommSalePhoto($update_data);
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

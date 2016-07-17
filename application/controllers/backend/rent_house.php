@@ -452,6 +452,9 @@ class Rent_House extends Backend_Controller {
 		$config['max_height']  = '1000';
 		$config['overwrite']  = true;
 
+		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 );
+		$config['file_name'] = $filename;
+
 		$this->load->library('upload', $config);
 
 		if (!is_dir('./upload/website/house_to_rent/'.$edit_data['edoma_house_to_rent_sn'])) {

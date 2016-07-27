@@ -484,14 +484,14 @@ CREATE TABLE IF NOT EXISTS `sys_module` (
   `sort` smallint(5) unsigned NOT NULL DEFAULT '500',
   `launch` tinyint(3) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`sn`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- 正在導出表  community.sys_module 的資料：~50 rows (大約)
+-- 正在導出表  community.sys_module 的資料：~51 rows (大約)
 /*!40000 ALTER TABLE `sys_module` DISABLE KEYS */;
 INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `title`, `icon_text`, `sort`, `launch`) VALUES
 	(22, NULL, 'auth-dir', 1, 1, 1, '權限設定', 'fa fa-group ', 1, 1),
 	(26, NULL, 'media', 1, 0, 1, '媒體庫', 'fa fa-cloud ', 3, 0),
-	(30, 51, 'setting', 1, 0, 2, '片語管理', 'fa fa-wrench', 2, 1),
+	(30, 51, 'setting', 1, 0, 2, '關於社區', 'fa fa-wrench', 2, 1),
 	(31, NULL, 'homesetting', 1, 1, 1, '首頁設定', 'fa fa-home', 5, 0),
 	(32, 22, 'auth', 1, 0, 2, '人員管理', 'fa fa-comment', 5, 1),
 	(33, 22, 'authgroup', 1, 0, 2, '群組管理', 'fa fa-briefcase', 6, 1),
@@ -522,7 +522,7 @@ INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `titl
 	(74, 49, 'mailreg', 1, 0, 2, '郵件登錄', 'fa fa-cubes', 1, 1),
 	(75, 49, 'mail_history', 1, 0, 2, '郵件物品記錄', 'fa fa-cubes', 3, 1),
 	(76, 84, 'userimport', 1, 0, 2, '批次匯入', 'fa fa-wrench', 2, 1),
-	(77, 84, 'parking', 1, 0, 2, '車位管理', 'icon-coffee', 3, 1),
+	(77, 84, 'parking', 1, 0, 2, '車位查詢', 'icon-coffee', 3, 1),
 	(78, NULL, 'house-dir', 1, 1, 1, '房產租售', 'fa fa-newspaper-o', 99, 1),
 	(79, 78, 'rent_house', 1, 0, 2, '租屋登記', 'fa fa-comment', 5, 1),
 	(80, 78, 'sale_house', 1, 0, 2, '售屋登記', 'fa fa-home', 5, 1),
@@ -530,20 +530,20 @@ INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `titl
 	(82, 60, 'gas_company', 1, 0, 2, '瓦斯公司', 'icon-coffee', 2, 1),
 	(83, 84, 'user', 1, 0, 2, '住戶管理', 'fa fa-cloud ', 1, 1),
 	(84, NULL, 'user-dir', 1, 1, 1, '社區管理', 'fa fa-group', 3, 1),
-	(85, 51, 'gen_parking', 1, 0, 2, '車位查詢', 'icon-coffee', 3, 1),
+	(85, 51, 'gen_parking', 1, 0, 2, '車位設定', 'icon-coffee', 3, 1),
 	(86, 49, 'mailbox', 1, 0, 2, '郵件領取', 'fa fa-cubes', 2, 1),
 	(87, 51, 'watermark', 1, 0, 2, 'pdf浮水印設定', 'icon-coffee', 4, 1),
-	(88, 51, 'about', 1, 0, 2, '關於社區', 'icon-coffee', 1, 1),
+	(88, 51, 'about', 1, 0, 2, '關於社區', 'icon-coffee', 1, 0),
 	(89, 84, 'parkuser', 1, 0, 2, '獨立車位承租人', 'icon-food', 4, 1),
 	(90, 84, 'app', 1, 0, 2, 'APP統計', 'icon-food', 5, 0),
 	(91, 84, 'collect', 1, 0, 2, '住戶磁扣蒐集', 'icon-food', 6, 1),
 	(92, NULL, 'cycle_img', 1, 0, 1, '公告輪播底圖', 'fa fa-newspaper-o', 5, 1),
-	(93, NULL, 'marquee', 1, 0, 1, '跑馬燈', 'fa fa-book', 5, 1);
+	(93, NULL, 'marquee', 1, 0, 1, '跑馬燈', 'fa fa-book', 5, 1),
+	(94, 51, 'landing', 1, 0, 2, '網站靜止頁面背景', 'icon-coffee', 5, 1);
 /*!40000 ALTER TABLE `sys_module` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-
 
 
 -- 導出  表 edoma.sys_setting 結構
@@ -564,67 +564,199 @@ CREATE TABLE IF NOT EXISTS `sys_setting` (
 
 -- 導出  表 edoma.sys_user 結構
 DROP TABLE IF EXISTS `sys_user`;
-CREATE TABLE `sys_user` (
-	`comm_id` CHAR(8) NULL DEFAULT NULL COMMENT '社區序號',
-	`sn` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用戶序號',
-	`is_sync` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-	`building_id` VARCHAR(60) NULL DEFAULT NULL COMMENT '棟別 或 門牌號(A-Z) 或 (9999)  樓層(99)    [住戶識別號_１_１]',
-	`name` VARCHAR(20) NULL DEFAULT NULL COMMENT '姓名',
-	`role` CHAR(1) NULL DEFAULT NULL COMMENT 'I:住戶    M:物業人員   F:富網通',
-	`addr_part_01` TINYINT(1) UNSIGNED NULL DEFAULT NULL COMMENT '地址門牌',
-	`addr_part_02` TINYINT(1) UNSIGNED NULL DEFAULT NULL COMMENT '地址門牌樓層',
-	`addr` VARCHAR(50) NULL DEFAULT NULL COMMENT '門牌號碼',
-	`title` VARCHAR(20) NULL DEFAULT NULL COMMENT '住戶 or 物業人員(ex秘書, 總幹事, 警衛) or 富網通',
-	`id` VARCHAR(10) NULL DEFAULT NULL COMMENT '磁扣卡10碼    [住戶識別號_２]',
-	`app_id` VARCHAR(50) NULL DEFAULT NULL COMMENT '手機識別碼    [住戶識別號_３]',
-	`act_code` CHAR(12) NULL DEFAULT NULL COMMENT '手機開通碼',
-	`gender` TINYINT(1) UNSIGNED NULL DEFAULT NULL COMMENT '１:男　２:女',
-	`account` VARCHAR(10) NULL DEFAULT NULL COMMENT '帳號（物業人員登入）',
-	`is_contact` TINYINT(1) UNSIGNED NULL DEFAULT '0' COMMENT '緊急聯絡人　0:否,1:是',
-	`is_owner` TINYINT(1) UNSIGNED NULL DEFAULT '0' COMMENT '所有權人　0:否,1:是',
-	`owner_addr` VARCHAR(200) NULL DEFAULT NULL,
-	`password` VARCHAR(100) NULL DEFAULT NULL COMMENT '密碼（物業人員登入）',
-	`is_manager` TINYINT(1) UNSIGNED NULL DEFAULT '0' COMMENT '管委',
-	`manager_title` VARCHAR(20) NULL DEFAULT NULL,
-	`voting_right` TINYINT(1) UNSIGNED NULL DEFAULT NULL COMMENT '投票權限　0:否,1:是',
-	`gas_right` TINYINT(1) NULL DEFAULT NULL COMMENT '瓦斯登記權限　0:否,1:是',
-	`email` VARCHAR(100) NULL DEFAULT NULL COMMENT '電子郵件',
-	`tel` VARCHAR(15) NULL DEFAULT NULL,
-	`phone` VARCHAR(15) NULL DEFAULT NULL,
-	`is_chang_pwd` TINYINT(1) NOT NULL DEFAULT '0',
-	`start_date` DATETIME NULL DEFAULT NULL,
-	`end_date` DATETIME NULL DEFAULT NULL,
-	`forever` TINYINT(1) NOT NULL DEFAULT '1',
-	`launch` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1' COMMENT '0:未啟用,1:啟用,2:離職',
-	`is_default` TINYINT(1) UNSIGNED NULL DEFAULT '0' COMMENT '所有權人　0:否,1:是',
-	`updated` DATETIME NULL DEFAULT NULL,
-	`created` DATETIME NOT NULL,
-	`created_by` VARCHAR(20) NOT NULL,
-	`last_login_ip` VARCHAR(30) NULL DEFAULT NULL,
-	`last_login_time` DATETIME NULL DEFAULT NULL,
-	`login_time` DATETIME NULL DEFAULT NULL,
-	`last_login_agent` VARCHAR(100) NULL DEFAULT NULL,
-	`use_cnt` INT(11) NULL DEFAULT '0' COMMENT 'keycode 使用次數',
-	`app_last_login_ip` VARCHAR(30) NULL DEFAULT NULL,
-	`app_login_time` DATETIME NULL DEFAULT NULL,
-	`app_last_login_time` DATETIME NULL DEFAULT NULL,
-	`app_use_cnt` INT(11) NULL DEFAULT NULL,
-	PRIMARY KEY (`sn`),
-	UNIQUE INDEX `comm_id_building_id` (`comm_id`, `building_id`),
-	UNIQUE INDEX `comm_id_id` (`comm_id`, `id`),
-	INDEX `name` (`name`),
-	INDEX `app_id` (`app_id`)
-)
-COMMENT='用戶資料表'
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB
-AUTO_INCREMENT=2;
+CREATE TABLE IF NOT EXISTS `sys_user` (
+  `comm_id` char(8) DEFAULT NULL COMMENT '社區序號',
+  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用戶序號',
+  `is_sync` int(10) unsigned NOT NULL DEFAULT '0',
+  `building_id` varchar(60) DEFAULT NULL COMMENT '棟別 或 門牌號(A-Z) 或 (9999)  樓層(99)    [住戶識別號_１_１]',
+  `name` varchar(20) DEFAULT NULL COMMENT '姓名',
+  `role` char(1) DEFAULT NULL COMMENT 'I:住戶    M:物業人員   F:富網通',
+  `addr_part_01` tinyint(1) unsigned DEFAULT NULL COMMENT '地址門牌',
+  `addr_part_02` tinyint(1) unsigned DEFAULT NULL COMMENT '地址門牌樓層',
+  `addr` varchar(50) DEFAULT NULL COMMENT '門牌號碼',
+  `title` varchar(20) DEFAULT NULL COMMENT '住戶 or 物業人員(ex秘書, 總幹事, 警衛) or 富網通',
+  `id` varchar(10) DEFAULT NULL COMMENT '磁扣卡10碼    [住戶識別號_２]',
+  `app_id` varchar(50) DEFAULT NULL COMMENT '手機識別碼    [住戶識別號_３]',
+  `act_code` char(12) DEFAULT NULL COMMENT '手機開通碼',
+  `gender` tinyint(1) unsigned DEFAULT NULL COMMENT '１:男　２:女',
+  `account` varchar(10) DEFAULT NULL COMMENT '帳號（物業人員登入）',
+  `is_contact` tinyint(1) unsigned DEFAULT '0' COMMENT '緊急聯絡人　0:否,1:是',
+  `is_owner` tinyint(1) unsigned DEFAULT '0' COMMENT '所有權人　0:否,1:是',
+  `owner_addr` varchar(200) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL COMMENT '密碼（物業人員登入）',
+  `is_manager` tinyint(1) unsigned DEFAULT '0' COMMENT '管委',
+  `manager_title` varchar(20) DEFAULT NULL,
+  `voting_right` tinyint(1) unsigned DEFAULT NULL COMMENT '投票權限　0:否,1:是',
+  `gas_right` tinyint(1) DEFAULT NULL COMMENT '瓦斯登記權限　0:否,1:是',
+  `email` varchar(100) DEFAULT NULL COMMENT '電子郵件',
+  `tel` varchar(15) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `is_chang_pwd` tinyint(1) NOT NULL DEFAULT '0',
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `forever` tinyint(1) NOT NULL DEFAULT '1',
+  `launch` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '0:未啟用,1:啟用,2:離職',
+  `is_default` tinyint(1) unsigned DEFAULT '0' COMMENT '所有權人　0:否,1:是',
+  `updated` datetime DEFAULT NULL,
+  `created` datetime NOT NULL,
+  `created_by` varchar(20) NOT NULL,
+  `last_login_ip` varchar(30) DEFAULT NULL,
+  `last_login_time` datetime DEFAULT NULL,
+  `login_time` datetime DEFAULT NULL,
+  `last_login_agent` varchar(100) DEFAULT NULL,
+  `use_cnt` int(11) DEFAULT '0' COMMENT 'keycode 使用次數',
+  `app_last_login_ip` varchar(30) DEFAULT NULL,
+  `app_login_time` datetime DEFAULT NULL,
+  `app_last_login_time` datetime DEFAULT NULL,
+  `app_use_cnt` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sn`),
+  UNIQUE KEY `comm_id_building_id` (`comm_id`,`building_id`),
+  UNIQUE KEY `comm_id_id` (`comm_id`,`id`),
+  KEY `name` (`name`),
+  KEY `app_id` (`app_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用戶資料表';
 
 -- 正在導出表  edoma.sys_user 的資料：~1 rows (大約)
 /*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
 INSERT INTO `sys_user` (`comm_id`, `sn`, `is_sync`, `building_id`, `name`, `role`, `title`, `id`, `app_id`, `act_code`, `gender`, `account`, `is_contact`, `is_owner`, `owner_addr`, `password`, `is_manager`, `manager_title`, `voting_right`, `gas_right`, `email`, `tel`, `phone`, `addr`, `is_chang_pwd`, `start_date`, `end_date`, `forever`, `launch`, `is_default`, `updated`, `created`, `created_by`, `last_login_ip`, `last_login_time`, `login_time`, `last_login_agent`, `use_cnt`, `app_last_login_ip`, `app_login_time`, `app_last_login_time`, `app_use_cnt`) VALUES
-	('%s', 1, 0, NULL, '管理者', 'M', '富網通', NULL, NULL, NULL, 1, 'admin', 0, 0, '', 'c4983d36fb195428c9e8c79dfa9bcb0eb20f74e0', 0, '', 0, 0, NULL, NULL, NULL, NULL, 0, '2016-05-31 00:00:01', NULL, 1, 1, 1, '2016-05-31 13:05:51', '2015-05-27 12:01:11', '', '192.168.1.68', '2016-03-24 14:06:27', NULL, '', 1, NULL, NULL, NULL, NULL);
+	('%s', 1, 0, NULL, '管理者', 'M', '富網通', NULL, NULL, NULL, 1, 'admin', 0, 0, '', 'c4983d36fb195428c9e8c79dfa9bcb0eb20f74e0', 0, '', 0, 0, NULL, NULL, NULL, NULL, 0, NOW(), NULL, 1, 1, 1, NOW(), NOW(), '', '192.168.1.68', NOW(), NULL, '', 1, NULL, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
+
+
+-- 導出  表 edoma.sys_user_group 結構
+DROP TABLE IF EXISTS `sys_user_group`;
+CREATE TABLE IF NOT EXISTS `sys_user_group` (
+  `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) DEFAULT NULL,
+  `launch` tinyint(1) DEFAULT '1',
+  `id` varchar(10) DEFAULT NULL,
+  `sort` smallint(5) unsigned NOT NULL DEFAULT '500',
+  `update_date` datetime DEFAULT NULL,
+  `creare_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- 正在導出表  edoma.sys_user_group 的資料：~5 rows (大約)
+/*!40000 ALTER TABLE `sys_user_group` DISABLE KEYS */;
+INSERT INTO `sys_user_group` (`sn`, `title`, `launch`, `id`, `sort`, `update_date`, `creare_date`) VALUES
+	(1, '住戶', 1, 'user', 500, '2015-03-18 16:17:58', NULL),
+	(2, '管委會', 1, 'advuser', 400, '2015-03-17 17:08:04', NULL),
+	(3, '總幹事', 1, 'secretary', 100, '2015-03-18 10:35:16', NULL),
+	(4, '警衛', 1, 'guard', 300, '2015-08-31 09:49:02', NULL),
+	(5, '富網通', 1, 'fu', 501, '2015-08-05 11:42:02', NULL);
+/*!40000 ALTER TABLE `sys_user_group` ENABLE KEYS */;
+
+
+
+
+
+-- 導出  表 edoma.web_menu 結構
+DROP TABLE IF EXISTS `web_menu`;
+CREATE TABLE IF NOT EXISTS `web_menu` (
+  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_sn` int(11) unsigned DEFAULT NULL COMMENT '父層序號',
+  `level` tinyint(4) NOT NULL DEFAULT '0' COMMENT '層級',
+  `title` varchar(100) NOT NULL COMMENT '名稱',
+  `id` varchar(20) DEFAULT NULL COMMENT 'id',
+  `img_filename` varchar(100) DEFAULT NULL COMMENT '圖片',
+  `dir` tinyint(1) NOT NULL DEFAULT '0' COMMENT '目錄 (0:否,1:是)',
+  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:網頁單元,1:連結',
+  `url` varchar(255) DEFAULT NULL COMMENT 'URL(type=1時使用)',
+  `target` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'target',
+  `sort` smallint(6) NOT NULL DEFAULT '500' COMMENT '排序',
+  `allow_internet` tinyint(1) NOT NULL DEFAULT '0',
+  `launch` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:啟用,0:停用',
+  `update_date` datetime NOT NULL,
+  `create_date` datetime NOT NULL,
+  PRIMARY KEY (`sn`),
+  KEY `parent_sn` (`parent_sn`),
+  CONSTRAINT `web_menu_ibfk_1` FOREIGN KEY (`parent_sn`) REFERENCES `web_menu` (`sn`) ON DELETE SET NULL ON UPDATE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前端單元';
+
+-- 正在導出表  edoma.web_menu 的資料：~0 rows (大約)
+/*!40000 ALTER TABLE `web_menu` DISABLE KEYS */;
+/*!40000 ALTER TABLE `web_menu` ENABLE KEYS */;
+
+
+-- 導出  表 edoma.web_menu_banner 結構
+DROP TABLE IF EXISTS `web_menu_banner`;
+CREATE TABLE IF NOT EXISTS `web_menu_banner` (
+  `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `banner_id` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `filename` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '檔案名稱',
+  `start_date` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `forever` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `launch` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `sort` int(10) unsigned NOT NULL DEFAULT '500',
+  `url` text COLLATE utf8_unicode_ci,
+  `target` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `content` text COLLATE utf8_unicode_ci,
+  `update_date` datetime NOT NULL,
+  `create_date` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- 正在導出表  edoma.web_menu_banner 的資料：~0 rows (大約)
+/*!40000 ALTER TABLE `web_menu_banner` DISABLE KEYS */;
+/*!40000 ALTER TABLE `web_menu_banner` ENABLE KEYS */;
+
+
+-- 導出  表 edoma.web_menu_content 結構
+DROP TABLE IF EXISTS `web_menu_content`;
+CREATE TABLE IF NOT EXISTS `web_menu_content` (
+  `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `server_sn` int(11) unsigned DEFAULT NULL,
+  `comm_id` char(8) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '社區序號',
+  `id` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parent_sn` int(11) unsigned DEFAULT NULL,
+  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `brief` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `brief2` text COLLATE utf8_unicode_ci,
+  `content_type` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `img_filename` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '圖片名稱',
+  `img_filename2` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '圖片名稱2',
+  `filename` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '檔案名稱',
+  `start_date` datetime NOT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `dir` tinyint(1) NOT NULL DEFAULT '0',
+  `forever` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `launch` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已刪除  1:yes,0:no',
+  `sort` int(10) unsigned NOT NULL DEFAULT '500',
+  `url` text COLLATE utf8_unicode_ci,
+  `target` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `content` text COLLATE utf8_unicode_ci,
+  `hot` tinyint(1) NOT NULL DEFAULT '0',
+  `is_sync` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否同步 1:yes,0:no',
+  `is_edoma` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否為富網通資料 1:yes,0:no',
+  `update_date` datetime NOT NULL,
+  `create_date` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- 正在導出表  edoma.web_menu_content 的資料：0 rows
+/*!40000 ALTER TABLE `web_menu_content` DISABLE KEYS */;
+/*!40000 ALTER TABLE `web_menu_content` ENABLE KEYS */;
+
+
+-- 導出  表 edoma.web_menu_photo 結構
+DROP TABLE IF EXISTS `web_menu_photo`;
+CREATE TABLE IF NOT EXISTS `web_menu_photo` (
+  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序號',
+  `content_sn` int(10) NOT NULL,
+  `img_filename` varchar(60) NOT NULL COMMENT '檔名',
+  `title` varchar(60) NOT NULL COMMENT '說明',
+  `updated` datetime NOT NULL,
+  `updated_by` varchar(50) NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='照片';
+
+-- 正在導出表  edoma.web_menu_photo 的資料：0 rows
+/*!40000 ALTER TABLE `web_menu_photo` DISABLE KEYS */;
+/*!40000 ALTER TABLE `web_menu_photo` ENABLE KEYS */;
 
 
 -- 導出  表 edoma.sys_user_belong_group 結構
@@ -689,29 +821,6 @@ CREATE TABLE IF NOT EXISTS `sys_user_func_auth` (
 /*!40000 ALTER TABLE `sys_user_func_auth` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sys_user_func_auth` ENABLE KEYS */;
 
-
--- 導出  表 edoma.sys_user_group 結構
-DROP TABLE IF EXISTS `sys_user_group`;
-CREATE TABLE IF NOT EXISTS `sys_user_group` (
-  `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(50) DEFAULT NULL,
-  `launch` tinyint(1) DEFAULT '1',
-  `id` varchar(10) DEFAULT NULL,
-  `sort` smallint(5) unsigned NOT NULL DEFAULT '500',
-  `update_date` datetime DEFAULT NULL,
-  `creare_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-
--- 正在導出表  edoma.sys_user_group 的資料：~5 rows (大約)
-/*!40000 ALTER TABLE `sys_user_group` DISABLE KEYS */;
-INSERT INTO `sys_user_group` (`sn`, `title`, `launch`, `id`, `sort`, `update_date`, `creare_date`) VALUES
-	(1, '住戶', 1, 'user', 500, '2015-03-18 16:17:58', NULL),
-	(2, '管委會', 1, 'advuser', 400, '2015-03-17 17:08:04', NULL),
-	(3, '總幹事', 1, 'secretary', 100, '2015-03-18 10:35:16', NULL),
-	(4, '警衛', 1, 'guard', 300, '2015-08-31 09:49:02', NULL),
-	(5, '富網通', 1, 'fu', 501, '2015-08-05 11:42:02', NULL);
-/*!40000 ALTER TABLE `sys_user_group` ENABLE KEYS */;
 
 
 -- 導出  表 edoma.sys_user_group_b_auth 結構
@@ -903,6 +1012,12 @@ INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `la
 /*!40000 ALTER TABLE `sys_user_group_b_auth` ENABLE KEYS */;
 
 
+
+
+
+
+
+
 -- 導出  表 edoma.sys_user_group_f_auth 結構
 DROP TABLE IF EXISTS `sys_user_group_f_auth`;
 CREATE TABLE IF NOT EXISTS `sys_user_group_f_auth` (
@@ -1052,115 +1167,6 @@ CREATE TABLE IF NOT EXISTS `voting_record` (
 /*!40000 ALTER TABLE `voting_record` ENABLE KEYS */;
 
 
--- 導出  表 edoma.web_menu 結構
-DROP TABLE IF EXISTS `web_menu`;
-CREATE TABLE IF NOT EXISTS `web_menu` (
-  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_sn` int(11) unsigned DEFAULT NULL COMMENT '父層序號',
-  `level` tinyint(4) NOT NULL DEFAULT '0' COMMENT '層級',
-  `title` varchar(100) NOT NULL COMMENT '名稱',
-  `id` varchar(20) DEFAULT NULL COMMENT 'id',
-  `img_filename` varchar(100) DEFAULT NULL COMMENT '圖片',
-  `dir` tinyint(1) NOT NULL DEFAULT '0' COMMENT '目錄 (0:否,1:是)',
-  `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:網頁單元,1:連結',
-  `url` varchar(255) DEFAULT NULL COMMENT 'URL(type=1時使用)',
-  `target` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'target',
-  `sort` smallint(6) NOT NULL DEFAULT '500' COMMENT '排序',
-  `allow_internet` tinyint(1) NOT NULL DEFAULT '0',
-  `launch` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1:啟用,0:停用',
-  `update_date` datetime NOT NULL,
-  `create_date` datetime NOT NULL,
-  PRIMARY KEY (`sn`),
-  KEY `parent_sn` (`parent_sn`),
-  CONSTRAINT `web_menu_ibfk_1` FOREIGN KEY (`parent_sn`) REFERENCES `web_menu` (`sn`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='前端單元';
-
--- 正在導出表  edoma.web_menu 的資料：~0 rows (大約)
-/*!40000 ALTER TABLE `web_menu` DISABLE KEYS */;
-/*!40000 ALTER TABLE `web_menu` ENABLE KEYS */;
-
-
--- 導出  表 edoma.web_menu_banner 結構
-DROP TABLE IF EXISTS `web_menu_banner`;
-CREATE TABLE IF NOT EXISTS `web_menu_banner` (
-  `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `banner_id` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `filename` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '檔案名稱',
-  `start_date` datetime NOT NULL,
-  `end_date` datetime DEFAULT NULL,
-  `forever` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `launch` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `sort` int(10) unsigned NOT NULL DEFAULT '500',
-  `url` text COLLATE utf8_unicode_ci,
-  `target` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `content` text COLLATE utf8_unicode_ci,
-  `update_date` datetime NOT NULL,
-  `create_date` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- 正在導出表  edoma.web_menu_banner 的資料：~0 rows (大約)
-/*!40000 ALTER TABLE `web_menu_banner` DISABLE KEYS */;
-/*!40000 ALTER TABLE `web_menu_banner` ENABLE KEYS */;
-
-
--- 導出  表 edoma.web_menu_content 結構
-DROP TABLE IF EXISTS `web_menu_content`;
-CREATE TABLE IF NOT EXISTS `web_menu_content` (
-  `sn` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `server_sn` int(11) unsigned DEFAULT NULL,
-  `comm_id` char(8) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '社區序號',
-  `id` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `parent_sn` int(11) unsigned DEFAULT NULL,
-  `title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `brief` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `brief2` text COLLATE utf8_unicode_ci,
-  `content_type` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `img_filename` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '圖片名稱',
-  `img_filename2` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '圖片名稱2',
-  `filename` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '檔案名稱',
-  `start_date` datetime NOT NULL,
-  `end_date` datetime DEFAULT NULL,
-  `dir` tinyint(1) NOT NULL DEFAULT '0',
-  `forever` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `launch` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  `del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已刪除  1:yes,0:no',
-  `sort` int(10) unsigned NOT NULL DEFAULT '500',
-  `url` text COLLATE utf8_unicode_ci,
-  `target` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `content` text COLLATE utf8_unicode_ci,
-  `hot` tinyint(1) NOT NULL DEFAULT '0',
-  `is_sync` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否同步 1:yes,0:no',
-  `is_edoma` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否為富網通資料 1:yes,0:no',
-  `update_date` datetime NOT NULL,
-  `create_date` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- 正在導出表  edoma.web_menu_content 的資料：0 rows
-/*!40000 ALTER TABLE `web_menu_content` DISABLE KEYS */;
-/*!40000 ALTER TABLE `web_menu_content` ENABLE KEYS */;
-
-
--- 導出  表 edoma.web_menu_photo 結構
-DROP TABLE IF EXISTS `web_menu_photo`;
-CREATE TABLE IF NOT EXISTS `web_menu_photo` (
-  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序號',
-  `content_sn` int(10) NOT NULL,
-  `img_filename` varchar(60) NOT NULL COMMENT '檔名',
-  `title` varchar(60) NOT NULL COMMENT '說明',
-  `updated` datetime NOT NULL,
-  `updated_by` varchar(50) NOT NULL,
-  `created` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='照片';
-
--- 正在導出表  edoma.web_menu_photo 的資料：0 rows
-/*!40000 ALTER TABLE `web_menu_photo` DISABLE KEYS */;
-/*!40000 ALTER TABLE `web_menu_photo` ENABLE KEYS */;
-
-
 -- 導出  表 edoma.web_setting 結構
 DROP TABLE IF EXISTS `web_setting`;
 CREATE TABLE IF NOT EXISTS `web_setting` (
@@ -1199,10 +1205,37 @@ INSERT INTO `web_setting` (`sn`, `title`, `key`, `value`, `memo`, `type`, `sort`
 	(18, '郵件類型', 'mail_box_type', '掛號信,包裹,代收包裹,送洗衣物', '請以逗點(,)隔開，例如：掛號信,包裹,代收包裹 ，若欲增加新的類型，請勿更改原先順序', 'text', 38, 1, '2016-07-18 00:32:04'),
 	(20, '社區電話', 'comm_tel', '02-88511988', '', 'text', 32, 1, '2016-07-18 00:32:04'),
 	(21, '社區地址', 'comm_addr', '台北市信義區基隆路二段100號', '', 'text', 35, 1, '2016-07-18 00:32:04'),
-	(22, '地址識別_門牌號碼', 'addr_part_01', '中武路1號,中武路3號,環中路104巷1號', '請以逗點(,)隔開', 'text', 50, 1, '2016-07-18 00:32:04'),
+	(22, '地址識別_門牌號碼', 'addr_part_01', '環中路100號,環中路102號,環中路104巷1號,環中路104巷2號,中武路1號,中武路3號', '請以逗點(,)隔開', 'text', 50, 1, '2016-07-18 00:32:04'),
 	(23, '地址識別_樓層', 'addr_part_02', '一,二,三,四,五,六,七,八,九,十,十一,十二', '請以逗點(,)隔開，例如：1,2,3', 'text', 52, 1, '2016-07-18 00:32:04');
 /*!40000 ALTER TABLE `web_setting` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- 導出  表 community.web_setting_photo 結構
+DROP TABLE IF EXISTS `web_setting_photo`;
+CREATE TABLE IF NOT EXISTS `web_setting_photo` (
+  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '序號',
+  `img_filename` varchar(60) NOT NULL COMMENT '檔名',
+  `title` varchar(60) NOT NULL COMMENT '說明',
+  `updated` datetime NOT NULL,
+  `updated_by` varchar(50) NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='照片';
+
+-- 正在導出表  community.web_setting_photo 的資料：1 rows
+/*!40000 ALTER TABLE `web_setting_photo` DISABLE KEYS */;
+INSERT INTO `web_setting_photo` (`sn`, `img_filename`, `title`, `updated`, `updated_by`, `created`) VALUES
+	(8, '20160726113125_651303.jpg', '', '2016-07-26 11:31:25', '曹小賢', '2016-07-26 11:31:25');
+/*!40000 ALTER TABLE `web_setting_photo` ENABLE KEYS */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

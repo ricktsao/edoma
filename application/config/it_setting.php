@@ -146,6 +146,7 @@ $config['house_type_array'] = array( 'a'=>'電梯大樓'
 								, 'c'=>'華廈'
 								, 'd'=>'公寓'
 								, 'e'=>'別墅'
+								, 'f'=>'車位'
 								);
 // 型態
 $config['rent_sale_type_array'] = array( 'a'=>'整層住家'

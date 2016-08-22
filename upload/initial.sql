@@ -484,24 +484,24 @@ CREATE TABLE IF NOT EXISTS `sys_module` (
   `sort` smallint(5) unsigned NOT NULL DEFAULT '500',
   `launch` tinyint(3) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`sn`)
-) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- 正在導出表  community.sys_module 的資料：~51 rows (大約)
 /*!40000 ALTER TABLE `sys_module` DISABLE KEYS */;
 INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `title`, `icon_text`, `sort`, `launch`) VALUES
-	(22, NULL, 'auth-dir', 1, 1, 1, '權限設定', 'fa fa-group ', 1, 1),
+	(22, NULL, 'auth-dir', 1, 1, 1, '權限管理', 'fa fa-group ', 1, 1),
 	(26, NULL, 'media', 1, 0, 1, '媒體庫', 'fa fa-cloud ', 3, 0),
-	(30, 51, 'setting', 1, 0, 2, '關於社區', 'fa fa-wrench', 2, 1),
+	(30, 51, 'setting', 1, 0, 2, '片語管理', 'fa fa-wrench', 2, 1),
 	(31, NULL, 'homesetting', 1, 1, 1, '首頁設定', 'fa fa-home', 5, 0),
-	(32, 22, 'auth', 1, 0, 2, '人員管理', 'fa fa-comment', 5, 1),
+	(32, 22, 'auth', 1, 0, 2, '物業人員管理', 'fa fa-comment', 5, 1),
 	(33, 22, 'authgroup', 1, 0, 2, '群組管理', 'fa fa-briefcase', 6, 1),
 	(36, NULL, 'log', 1, 0, 1, '系統記錄', 'fa fa-briefcase', 7, 0),
 	(37, NULL, 'bulletin', 1, 0, 1, '管委公告', 'fa fa-comment-o', 5, 1),
-	(39, NULL, 'repair', 1, 0, 1, '環境修繕', 'fa fa-gavel ', 10, 1),
-	(40, NULL, 'suggestion', 1, 0, 1, '住戶意見箱', 'fa fa-file-text-o', 11, 1),
+	(39, NULL, 'repair', 1, 0, 1, '社區環境修繕', 'fa fa-gavel ', 10, 1),
+	(40, NULL, 'suggestion', 1, 0, 1, '社區意見箱', 'fa fa-file-text-o', 11, 1),
 	(41, NULL, 'data-dir', 1, 1, 1, '社區資料管理', 'icon-coffee', 12, 0),
 	(46, NULL, 'news', 1, 0, 1, '社區公告', 'fa fa-newspaper-o', 4, 1),
-	(48, NULL, 'voting', 1, 0, 1, '社區議題', 'fa fa-bar-chart ', 9, 1),
+	(48, NULL, 'voting', 1, 0, 1, '社區議題投票', 'fa fa-bar-chart ', 9, 1),
 	(49, NULL, 'mailbox-dir', 1, 1, 1, '郵件物品管理', 'fa fa-cubes', 8, 1),
 	(51, NULL, 'setting-dir', 1, 1, 1, '網站設定', 'fa fa-book', 2, 1),
 	(52, 51, 'realtycat', 1, 0, 2, '分類', 'icon-food', 1, 0),
@@ -522,24 +522,23 @@ INSERT INTO `sys_module` (`sn`, `parent_sn`, `id`, `type`, `dir`, `level`, `titl
 	(74, 49, 'mailreg', 1, 0, 2, '郵件登錄', 'fa fa-cubes', 1, 1),
 	(75, 49, 'mail_history', 1, 0, 2, '郵件物品記錄', 'fa fa-cubes', 3, 1),
 	(76, 84, 'userimport', 1, 0, 2, '批次匯入', 'fa fa-wrench', 2, 1),
-	(77, 84, 'parking', 1, 0, 2, '車位查詢', 'icon-coffee', 3, 1),
+	(77, 84, 'parking', 1, 0, 2, '車位管理', 'icon-coffee', 3, 1),
 	(78, NULL, 'house-dir', 1, 1, 1, '房產租售', 'fa fa-newspaper-o', 99, 1),
-	(79, 78, 'rent_house', 1, 0, 2, '租屋登記', 'fa fa-comment', 5, 1),
-	(80, 78, 'sale_house', 1, 0, 2, '售屋登記', 'fa fa-home', 5, 1),
+	(79, 78, 'rent_house', 1, 0, 2, '租屋管理', 'fa fa-comment', 5, 1),
+	(80, 78, 'sale_house', 1, 0, 2, '售屋管理', 'fa fa-home', 5, 1),
 	(81, 60, 'gas_report', 1, 0, 2, '報表查詢', 'icon-coffee', 1, 1),
 	(82, 60, 'gas_company', 1, 0, 2, '瓦斯公司', 'icon-coffee', 2, 1),
-	(83, 84, 'user', 1, 0, 2, '住戶管理', 'fa fa-cloud ', 1, 1),
+	(83, 84, 'user', 1, 0, 2, '社區住戶管理', 'fa fa-cloud ', 1, 1),
 	(84, NULL, 'user-dir', 1, 1, 1, '社區管理', 'fa fa-group', 3, 1),
 	(85, 51, 'gen_parking', 1, 0, 2, '車位設定', 'icon-coffee', 3, 1),
 	(86, 49, 'mailbox', 1, 0, 2, '郵件領取', 'fa fa-cubes', 2, 1),
 	(87, 51, 'watermark', 1, 0, 2, 'pdf浮水印設定', 'icon-coffee', 4, 1),
-	(88, 51, 'about', 1, 0, 2, '關於社區', 'icon-coffee', 1, 0),
+	(88, 51, 'about', 1, 0, 2, '關於社區', 'icon-coffee', 1, 1),
 	(89, 84, 'parkuser', 1, 0, 2, '獨立車位承租人', 'icon-food', 4, 1),
-	(90, 84, 'app', 1, 0, 2, 'APP統計', 'icon-food', 5, 0),
+	(90, 84, 'app', 1, 0, 2, 'APP統計', 'icon-food', 5, 1),
 	(91, 84, 'collect', 1, 0, 2, '住戶磁扣蒐集', 'icon-food', 6, 1),
 	(92, NULL, 'cycle_img', 1, 0, 1, '公告輪播底圖', 'fa fa-newspaper-o', 5, 1),
-	(93, NULL, 'marquee', 1, 0, 1, '跑馬燈', 'fa fa-book', 5, 1),
-	(94, 51, 'landing', 1, 0, 2, '網站靜止頁面背景', 'icon-coffee', 5, 1);
+	(93, NULL, 'marquee', 1, 0, 1, '跑馬燈', 'fa fa-book', 2, 1);
 /*!40000 ALTER TABLE `sys_module` ENABLE KEYS */;
 
 

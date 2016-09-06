@@ -105,7 +105,7 @@
 										<?php
 										} else {
 										?>
-											<a class="btn  btn-minier btn-success" href="<?php echo base_url().$filename ?>">
+											<a class="btn  btn-minier btn-success" href="<?php echo base_url().$filename ?>" download>
 												<i class="icon-edit bigger-120"></i>下載
 											</a>
 										<?php

@@ -826,6 +826,9 @@ CREATE TABLE IF NOT EXISTS `sys_user_group_b_auth` (
 -- 正在導出表  community.sys_user_group_b_auth 的資料：~171 rows (大約)
 /*!40000 ALTER TABLE `sys_user_group_b_auth` DISABLE KEYS */;
 
+
+INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
+
 INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
 (NULL, 3, 32, 1, NOW()),
 (NULL, 3, 33, 1, NOW()),
@@ -1124,7 +1127,7 @@ INSERT INTO `web_setting` (`sn`, `title`, `key`, `value`, `memo`, `type`, `sort`
 	(16, '車位識別2_內容', 'parking_part_02_value', '1F,B1,B2,B3', '請以逗點(,)隔開，例如：B1,B2,B3', 'text', 130, 1, '2016-06-11 03:03:56'),
 	(17, '車位識別3_名稱', 'parking_part_03', '車位編號', '', 'text', 140, 1, '2016-06-11 03:03:56'),
 	(18, '郵件類型', 'mail_box_type', '掛號信,包裹,代收包裹,送洗衣物', '請以逗點(,)隔開，例如：掛號信,包裹,代收包裹 ，若欲增加新的類型，請勿更改原先順序', 'text', 38, 1, '2016-07-18 00:32:04'),
-	(20, '社區電話', 'comm_tel', '請輸入社區電話', '', 'text', 32, 1, '2016-07-18 00:32:04'),
+	(20, '社區電話', 'comm_tel', '02-66668888', '', 'text', 32, 1, '2016-07-18 00:32:04'),
 	(21, '社區地址', 'comm_addr', '請輸入社區地址', '', 'text', 35, 1, '2016-07-18 00:32:04'),
 	(22, '地址識別_門牌號碼', 'addr_part_01', '環中路100號,環中路102號,環中路104巷1號,環中路104巷2號,中武路1號,中武路3號', '請以逗點(,)隔開', 'text', 50, 1, '2016-07-18 00:32:04'),
 	(23, '地址識別_樓層', 'addr_part_02', '一,二,三,四,五,六,七,八,九,十,十一,十二', '請以逗點(,)隔開，例如：1,2,3', 'text', 52, 1, '2016-07-18 00:32:04');

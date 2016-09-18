@@ -826,10 +826,9 @@ CREATE TABLE IF NOT EXISTS `sys_user_group_b_auth` (
 -- 正在導出表  community.sys_user_group_b_auth 的資料：~171 rows (大約)
 /*!40000 ALTER TABLE `sys_user_group_b_auth` DISABLE KEYS */;
 
-
-INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
-
-INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
+INSERT INTO `sys_user_group_b_auth` 
+(`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) 
+VALUES
 (NULL, 3, 32, 1, NOW()),
 (NULL, 3, 33, 1, NOW()),
 (NULL, 3, 30, 1, NOW()),
@@ -1049,6 +1048,7 @@ CREATE TABLE IF NOT EXISTS `voting` (
   `is_del` int(1) NOT NULL DEFAULT '0' COMMENT '是否刪除 1Y/0N',
   `is_sync` int(1) NOT NULL DEFAULT '0' COMMENT '是否同步 1Y/0N',
   `user_sn` int(11) NOT NULL,
+  `user_name` varchar(30) NULL DEFAULT NULL COMMENT '發佈人姓名',
   PRIMARY KEY (`sn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投票主表';
 

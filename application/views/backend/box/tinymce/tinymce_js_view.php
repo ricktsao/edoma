@@ -1,5 +1,6 @@
 <?php
-$selector_string = '';
+$selector_string = 'textarea#content1';
+/*
 if ( empty($elements) === TRUE )
 {
 	$selector_string = 'textarea#content';
@@ -17,7 +18,7 @@ else
 		$selector_string = substr($selector_string, 1);
 	}
 }
-
+*/
 
 ?>
 
@@ -27,11 +28,14 @@ tinymce.init({
     theme: "modern",
     width: 800,
     height: 400,
-    plugins: [
-         "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-         "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-         "save table contextmenu directionality emoticons template paste textcolor"
-   ],
+	menu : { // this is the complete default configuration
+        file   : {title : 'File'  , items : ''},
+        edit   : {title : 'Edit'  , items : ''},
+        insert : {title : 'Insert', items : ''},
+        view   : {title : 'View'  , items : ''},
+        format : {title : 'Format', items : ''}
+    },
+
    toolbar: "insertfile undo redo | styleselect | fontselect fontsizeselect bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link  | print preview media fullpage code | forecolor backcolor emoticons",
    
     add_unload_trigger: false,

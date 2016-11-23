@@ -1,6 +1,60 @@
 
 <?php showOutputBox("tinymce/tinymce_js_view", array('elements' => 'content'));?>
 <form action="<?php echo bUrl("updateContent")?>" method="post"  id="update_form" enctype="multipart/form-data" class="form-horizontal" role="form">
+	
+		
+	<div class="form-group ">
+		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="case_id">發佈社區</label>
+		<div class="col-xs-12 col-sm-8">
+									
+			<select id="drop_city" name="city_code" >
+				<option value="0">縣巿</option>
+	            <?php
+	            if(count($city_list)>0)
+				{
+					foreach ($city_list as $key => $item) 
+		            {
+		            	echo '<option '.(  tryGetData("city_code", $edit_data)==$item["id"]?"selected":"" ).' value="'.$item["id"].'">'.$item["title"].'</option>';					
+		            }
+				}
+	            ?>            	
+            </select>            
+            
+            <select id="drop_town" name="town_sn" >
+            <?php
+            if(count($town_list)>0)
+			{
+				foreach ($town_list as $key => $item) 
+	            {
+	            	echo '<option '.(tryGetData("town_sn", $edit_data)==$item["town_sn"]?"selected":"" ).' value="'.$item["town_sn"].'">'.$item["town_name"].'</option>';					
+	            }
+			}
+			else 
+			{
+				echo '<option value="0">區</option>';
+			}
+            ?>            	
+            </select>
+            
+            <select id="drop_village" name="village_sn" >
+            <?php
+            if(count($village_list)>0)
+			{
+				foreach ($village_list as $key => $item) 
+	            {
+	            	echo '<option '.(tryGetData("section_sn", $edit_data)==$item["sn"]?"selected":"" ).' value="'.$item["sn"].'">'.$item["section_code"].' '.$item["section_name"].'</option>';					
+	            }
+			}
+			else 
+			{
+				echo '<option value="0">段</option>';
+			}
+            ?>            	
+            </select>  
+            
+		</div>
+	</div>
+	
 		
 	<?php
 		$error_css= '';
@@ -10,7 +64,7 @@
 		}
 	?>		
 	<div class="form-group <?php echo $error_css;?>">
-		<label for="url" class="col-xs-12 col-sm-2 control-label no-padding-right">發佈社區</label>
+		<label for="url" class="col-xs-12 col-sm-2 control-label no-padding-right"></label>
 		
 		<div class="col-xs-12 col-sm-8">
 			<select multiple="multiple" size="10" name="comms[]">
@@ -33,8 +87,33 @@
 	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
 	
 	<?php 
-	//echo textOption("標題","title",$edit_data);
-	 ?>
+	echo textOption("主旨","title",$edit_data);
+	?>
+	 
+	<?php 
+	echo textOption("廠商名稱","content",$edit_data);
+	?> 
+	
+	<?php 
+	echo textOption("廠商電話1","brief",$edit_data);
+	?>
+	
+	<?php 
+	echo textOption("廠商電話2","brief2",$edit_data);
+	?>
+	
+	<?php 
+	echo textOption("地址","img_filename2",$edit_data);
+	?>
+	
+	<div class="form-group ">
+		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">收費金額</label>
+		<div class="col-xs-12 col-sm-6">
+			<input id="url" name="url" class="width-40" value="<?php echo tryGetData("url",$edit_data);?>" type="text"> 元			
+		</div>
+		
+				
+	</div>
 	
 	<?php
 	//  echo textAreaOption("內容","content",$edit_data);
@@ -135,5 +214,241 @@
       return false;
     });
 	*/
-  </script>
+
+
+
+//區域查詢連動選單 start
+//------------------------------------------------------------------------------------ 
+
+
+function resetCity()
+{	
+	$("#drop_city option").remove();
+}
+
+function resetTown()
+{
+	$("#drop_town option").remove();      
+
+}
+
+function resetVillage()
+{
+	$("#drop_village option").remove();   
+}
+
+
+
+function queryCityList()
+{
+   $.ajax
+    (
+        {
+            type: "GET",
+            url: "<?php echo bUrl("ajaxGetCityList");?>",
+            timeout: 3000 ,            
+            dataType: "json",
+            error: function( xhr ) 
+            {
+                //不處理
+            },
+            success: function( vData )
+            { 
+                //  移除全部的項目          
+                resetCity();     
+				resetTown();
+				resetVillage();
+                for(i=0;i<vData.length;i++)
+                {
+                    $('#drop_city').append('<option value="'+vData[i]["id"]+'" >'+vData[i]["title"]+'</option>');                   
+                }  
+                
+                $('#drop_city option:eq(0)').attr('selected', true);
+
+                queryTownList();
+            }
+        }
+    );
+}
+
+
+function queryTownList()
+{
+   $.ajax
+    (
+        {
+            type: "GET",
+            url: "<?php echo bUrl("ajaxGetTownList");?>",
+            timeout: 3000 ,        
+            data: {'city_code' :  $('#drop_city').val()  },    
+            dataType: "json",
+            error: function( xhr ) 
+            {
+                //不處理
+            },
+            success: function( vData )
+            { 
+                //  移除全部的項目
+                resetTown();   
+				resetVillage();   
+                for(i=0;i<vData.length;i++)
+                {
+                    $('#drop_town').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["town_name"]+'</option>');                   
+                }                
+                
+                $('#drop_town option:eq(0)').attr('selected', true);
+                
+                queryVillageList();
+            }
+        }
+    );
+}
+
+
+function queryVillageList()
+{
+   $.ajax
+    (
+        {
+            type: "GET",
+            url: "<?php echo bUrl("ajaxGetVillageList");?>",
+            timeout: 3000 ,        
+            data: {'city_code' :  $('#drop_city').val(),'town_sn': $('#drop_town').val() },    
+            dataType: "json",
+            error: function( xhr ) 
+            {
+                //不處理
+            },
+            success: function( vData )
+            { 
+                //  移除全部的項目              
+				resetVillage();
+                for(i=0;i<vData.length;i++)
+                {
+                    $('#drop_village').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["sn"] + ' ' +vData[i]["village_name"]+'</option>');                   
+                }
+                queryCommunityList();
+            }
+        }
+    );
+}
+
+function queryCommunityList()
+{
+	//var demo1 = $('select[name="comms[]"]').bootstrapDualListbox();
+	
+   $.ajax
+    (
+        {
+            type: "GET",
+            url: "<?php echo bUrl("ajaxGetCommunity");?>",
+            timeout: 3000 ,        
+            data: {'city_code' :  $('#drop_city').val(),'town_sn': $('#drop_town').val(),'village_sn' : $('#drop_village').val() },    
+            dataType: "json",
+            error: function( xhr ) 
+            {
+                //不處理
+            },
+            success: function( vData )
+            { 
+                //  移除全部的項目              
+				demo1.find("option").remove(); 
+                for(i=0;i<vData.length;i++)
+                {
+                	
+                	demo1.append('<option value="'+vData[i]["id"]+'" >'+vData[i]["name"]+'</option>');
+                	
+                    //$('#drop_village').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["sn"] + ' ' +vData[i]["village_name"]+'</option>');                   
+                }
+                
+                demo1.bootstrapDualListbox('refresh');
+                
+            }
+        }
+    );
+    
+    
+}
+
+
+
+
+
+$(function() {
+    
+    
+
+    
+    $('#drop_city').change(function()
+    {
+    	//queryCityList();
+    	queryTownList();
+    }); 
   
+   
+   $('#drop_town').change(function()
+   {
+   		//queryTownList();
+   		queryVillageList();
+   });
+   
+   
+   $('#drop_village').change(function()
+   {   	
+   		queryCommunityList();
+		/*
+		$.ajax
+	    (
+	        {
+	            type: "GET",
+	            url: "<?php echo bUrl("ajaxGetCommunity");?>",
+	            timeout: 3000 ,        
+	            data: {'city_code' :  $('#drop_city').val(),'town_sn': $('#drop_town').val(),'village_sn' : $('#drop_village').val() },    
+	            dataType: "json",
+	            error: function( xhr ) 
+	            {
+	                //不處理
+	            },
+	            success: function( vData )
+	            { 
+	                //  移除全部的項目              
+					demo1.find("option").remove(); 
+	                for(i=0;i<vData.length;i++)
+	                {
+	                	
+	                	demo1.append('<option value="'+vData[i]["id"]+'" >'+vData[i]["name"]+'</option>');
+	                	
+	                    //$('#drop_village').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["sn"] + ' ' +vData[i]["village_name"]+'</option>');                   
+	                }
+	                
+	            }
+	        }
+	    );
+		*/
+		
+		   
+		//demo1.find("option").remove();
+		//demo1.append('<option value="oranges" >xxx</option>');
+		//demo1.append('<option value="oranges" >aaa</option>');
+		//demo1.append('<option value="oranges" >ccc</option>');
+  		//demo1.bootstrapDualListbox('refresh');
+	
+   });
+   
+   
+   
+   
+   
+    
+});
+
+<?php if(isNull(tryGetData("sn", $edit_data))){  ?>
+//changeSelectType();   
+<?php } ?>
+
+//------------------------------------------------------------------------------------
+//區域查詢連動選單 end
+  
+</script>
+
+

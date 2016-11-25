@@ -85,12 +85,9 @@
 	</div>
 	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
 	
-	<?php 
-	echo textOption("主旨","title",$edit_data);
-	?>
 	 
 	<?php 
-	echo textOption("廠商名稱","content",$edit_data);
+	echo textOption("廠商名稱","filename",$edit_data);
 	?> 
 	
 	<?php 
@@ -137,17 +134,7 @@
 	
 	
 	
-	
-	<div class="form-group ">
-		<label for="start_date" class="col-xs-12 col-sm-3 control-label no-padding-right">課程日期</label>
-		<div class="col-xs-12 col-sm-4">
-			<input type="text" onclick="WdatePicker()" value="<?php echo showDateFormat(tryGetData("start_date",$edit_data),"Y-m-d")?>" class=width-30" name="start_date" id="start_date">					
-		</div>
-		<div class="help-block col-xs-12 col-sm-reset inline"></div>
-	</div>
-	<?php
-	 //echo textOption("排序","sort",$edit_data); 
-	 ?>
+	<?php echo pickDateOption($edit_data);?>
 	<?php echo checkBoxOption("啟用","launch",$edit_data);?>
 	
 	<input type="hidden" name="sort" value="<? echo tryGetData('sort', $edit_data)?>" />

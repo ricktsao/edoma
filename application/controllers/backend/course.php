@@ -51,7 +51,8 @@ class Course extends Backend_Controller {
 		$data["community_list"] = $community_list["data"];	
 		
 		
-		
+		//使用區域連動選單
+		$this->_useAreaOption($data);
 		
 				
 		if($content_sn == "")

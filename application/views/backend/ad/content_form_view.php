@@ -31,7 +31,7 @@
 			}
 			else 
 			{
-				echo '<option value="0">區</option>';
+				echo '<option value="0">鄉鎮區</option>';
 			}
             ?>            	
             </select>
@@ -47,7 +47,7 @@
 			}
 			else 
 			{
-				echo '<option value="0">段</option>';
+				echo '<option value="0">村里</option>';
 			}
             ?>            	
             </select>  
@@ -380,15 +380,13 @@ $(function() {
 
     
     $('#drop_city').change(function()
-    {
-    	//queryCityList();
+    {    	
     	queryTownList();
     }); 
   
    
    $('#drop_town').change(function()
-   {
-   		//queryTownList();
+   {   		
    		queryVillageList();
    });
    
@@ -396,55 +394,10 @@ $(function() {
    $('#drop_village').change(function()
    {   	
    		queryCommunityList();
-		/*
-		$.ajax
-	    (
-	        {
-	            type: "GET",
-	            url: "<?php echo bUrl("ajaxGetCommunity");?>",
-	            timeout: 3000 ,        
-	            data: {'city_code' :  $('#drop_city').val(),'town_sn': $('#drop_town').val(),'village_sn' : $('#drop_village').val() },    
-	            dataType: "json",
-	            error: function( xhr ) 
-	            {
-	                //不處理
-	            },
-	            success: function( vData )
-	            { 
-	                //  移除全部的項目              
-					demo1.find("option").remove(); 
-	                for(i=0;i<vData.length;i++)
-	                {
-	                	
-	                	demo1.append('<option value="'+vData[i]["id"]+'" >'+vData[i]["name"]+'</option>');
-	                	
-	                    //$('#drop_village').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["sn"] + ' ' +vData[i]["village_name"]+'</option>');                   
-	                }
-	                
-	            }
-	        }
-	    );
-		*/
-		
-		   
-		//demo1.find("option").remove();
-		//demo1.append('<option value="oranges" >xxx</option>');
-		//demo1.append('<option value="oranges" >aaa</option>');
-		//demo1.append('<option value="oranges" >ccc</option>');
-  		//demo1.bootstrapDualListbox('refresh');
-	
    });
-   
-   
-   
-   
    
     
 });
-
-<?php if(isNull(tryGetData("sn", $edit_data))){  ?>
-//changeSelectType();   
-<?php } ?>
 
 //------------------------------------------------------------------------------------
 //區域查詢連動選單 end

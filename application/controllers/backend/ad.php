@@ -29,6 +29,82 @@ class Ad extends Backend_Controller {
 	}
 	
 	/**
+	 * pdf list print
+	 */
+	public function showPdfList()
+	{
+		$condition = "";
+		$ad_list = $this->c_model->GetList( "ad" , $condition ,FALSE, NULL , NULL , array("sort"=>"asc","start_date"=>"desc","sn"=>"desc") );
+		img_show_list($ad_list["data"],'img_filename',$this->router->fetch_class());		
+		
+		
+		if($ad_list["count"]>0)
+		{
+			$ad_list = $ad_list["data"];	
+			$html = "<h1 style='text-align:center'>社區優惠</h1>";
+				
+			
+			$tables = 
+			'<tr>										
+				<th style="width:60px">序號</th>
+				<th>主旨</th>
+				<th>廠商名稱</th>
+				<th>廣告圖</th>								
+				<th>有效日期</th>					
+			</tr>';
+			
+			
+			for($i=0;$i<sizeof($ad_list);$i++)
+			{
+				$tables .= 
+				'<tr>
+					<td>'.($i+1).'</td>
+					<td>'.$ad_list[$i]["title"].'</td>
+					<td>'.$ad_list[$i]["content"].'</td>
+					<td><img border="0" style="height:150px" src="'.$ad_list[$i]["img_filename"].'"></td>
+					<td>'.showEffectiveDate($ad_list[$i]["start_date"], $ad_list[$i]["end_date"], $ad_list[$i]["forever"]).'</td>						
+				</tr>';	
+			}
+			
+			$html .= '<table border="1" width="100%" >'.$tables.'</table>';
+			
+			$this->load->library('pdf');
+			$mpdf = new Pdf();
+			$mpdf = $this->pdf->load();
+			$mpdf->useAdobeCJK = true;
+			$mpdf->autoScriptToLang = true;
+			
+			
+			$water_img = base_url('template/backend/images/watermark.png');
+			$water_info = $this->c_model->GetList( "watermark");			
+			if(count($water_info["data"])>0)
+			{
+				img_show_list($water_info["data"],'img_filename',"watermark");
+				$water_info = $water_info["data"][0];			
+				$water_img = $water_info["img_filename"];
+						
+			}
+			$mpdf->SetWatermarkImage($water_img);
+			$mpdf->watermarkImageAlpha = 0.081;
+			$mpdf->showWatermarkImage = true;		
+			
+			$mpdf->WriteHTML($html);			
+			
+			$time = time();
+			$pdfFilePath = "社區優惠_".$time .".pdf";
+			$mpdf->Output($pdfFilePath,'I');
+		}
+		else
+		{
+			$this->closebrowser();
+		}
+		
+	}
+	
+	
+	
+	
+	/**
 	 * category edit page
 	 */
 	public function editContent()
@@ -50,8 +126,8 @@ class Ad extends Backend_Controller {
 		$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
 		$data["community_list"] = $community_list["data"];	
 		
-		
-		
+		//使用區域連動選單
+		$this->_useAreaOption($data);
 		
 				
 		if($content_sn == "")
@@ -125,6 +201,13 @@ class Ad extends Backend_Controller {
 				if($this->it_model->updateData( "edoma_content" , $edit_data, "sn =".$edit_data["sn"] ))
 				{					
 					$img_filename = $this->uploadImage($edit_data["sn"]);					
+					
+					if(isNull($img_filename))
+					{
+						 
+						$img_filename = $this->input->post("orig_img_filename",TRUE);
+					}
+					
 					$edit_data["img_filename"] = $img_filename;
 					
 					//$this->sync_to_server($edit_data);
@@ -267,7 +350,8 @@ class Ad extends Backend_Controller {
 	{
 		
 		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');				
-
+		
+		$this->form_validation->set_rules( 'title', '主旨', 'required' );	
 		$this->form_validation->set_rules( 'sort', '排序', 'trim|required|numeric|min_length[1]');			
 		$this->form_validation->set_rules( 'comms', '發佈社區', 'required' );	
 		

@@ -1,4 +1,4 @@
-<?php showOutputBox("tinymce/tinymce_js_view", array('elements' => 'content'));?>
+<?php showOutputBox("tinymce/tinymce_js_view", array('elements' => 'do_content'));?>
 <form action="<?php echo bUrl("updateContent")?>" method="post"  id="update_form" enctype="multipart/form-data" class="form-horizontal" role="form">
 	
 		  	
@@ -6,7 +6,7 @@
 	  echo textAreaOption("內容","content",$edit_data);
 	?>	
 	
-	<div class="form-group ">
+	<div class="form-group" style="display: none">
         <label class="col-xs-12 col-sm-2 control-label no-padding-right" for="content">圖片</label>
         <div class="col-xs-12 col-sm-6">
             <input type="file" name="img_filename" size="20" /><br /><br />

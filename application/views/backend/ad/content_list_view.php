@@ -5,7 +5,13 @@
 			<i class="icon-edit bigger-120"></i>新增
 		</a>	
     </div>
-    
+    <?php if(count($list)>0){	?>
+    <div class="btn-group">        
+	    <a class="btn  btn-sm btn-danger btn_margin" target="_blank" href="<?php echo bUrl("showPdfList",TRUE); ?>">
+			<i class="icon-edit bigger-120"></i>PDF報表
+		</a>      
+    </div>  
+    <?php }	?>
     
    
     <div class="btn-group" style="display:none">
@@ -30,6 +36,8 @@
 								<thead>
 									<tr>										
 										<th style="width:100px">序號</th>
+										<th>主旨</th>
+										<th>廠商名稱</th>
 										<th>廣告圖</th>
 									
 																			
@@ -49,6 +57,8 @@
 									<?php for($i=0;$i<sizeof($list);$i++){ ?>
 									<tr>
 										<td><?php echo ($i+1)+(($this->page-1) * 10);?></td>
+										<td><?php echo $list[$i]["title"]; ?></td>
+										<td><?php echo $list[$i]["content"]; ?></td>
 										<td>
 											<?php
 												if($list[$i]["hot"]==1)

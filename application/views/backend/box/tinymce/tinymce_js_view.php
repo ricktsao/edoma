@@ -39,7 +39,7 @@ tinymce.init({
    ],
 
    toolbar: "insertfile undo redo | styleselect | fontselect fontsizeselect bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage code | forecolor backcolor emoticons",
-  
+   
     add_unload_trigger: false,
     remove_linebreaks: false,
 

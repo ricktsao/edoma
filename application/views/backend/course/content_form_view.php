@@ -137,10 +137,10 @@
 	<?php echo pickDateOption($edit_data);?>
 	<?php echo checkBoxOption("啟用","launch",$edit_data);?>
 	
-	<input type="hidden" name="sort" value="<? echo tryGetData('sort', $edit_data)?>" />
-	<input type="hidden" name="sn" value="<? echo tryGetData('sn', $edit_data)?>" />
-	<input type="hidden" name="content_type" value="<? echo tryGetData('content_type', $edit_data)?>" />
-	<input type="hidden" name="forever" value="1" />	
+	<input type="hidden" name="sort" value="<?php echo tryGetData('sort', $edit_data)?>" />
+	<input type="hidden" name="sn" value="<?php echo tryGetData('sn', $edit_data)?>" />
+	<input type="hidden" name="content_type" value="<?php echo tryGetData('content_type', $edit_data)?>" />
+	
 
 	
 	<div class="clearfix form-actions">

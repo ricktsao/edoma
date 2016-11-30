@@ -6,6 +6,16 @@
 
 </style>
 
+
+<article class="well">              
+
+    <div class="btn-group">        
+	    <a class="btn  btn-sm btn-danger btn_margin" target="_blank" href="<?php echo bUrl("showPdfList",TRUE); ?>">
+			<i class="icon-edit bigger-120"></i>PDF報表
+		</a>      
+    </div>                 
+</article>
+
 <div class="row">
 	<div class="col-xs-12">	
 
@@ -17,8 +27,10 @@
 						<tr>
 							<th style="width:150px">社區</th>		
 							<th style="width:100px">住戶數</th>
-							<th style="width:100px">APP開通數</th>							
-							<th style="width:80px">APP登入次數</th>																						
+							<th style="width:100px">app每日登入數量</th>							
+							<th style="width:80px">app安裝數量</th>
+							<th style="width:80px">app活耀用戶數量</th>		
+							<th style="width:80px">社區後台24小時登入狀態</th>																				
 						</tr>
 					</thead>
 
@@ -34,8 +46,10 @@
 						<tr>								
 							<td>'.$comm_info["name"].'</td>						
 							<td>'.$comm_info["user_cnt"].'</td>		
-							<td>'.$comm_info["app_cnt"].'</td>										
-							<td>'.$comm_info["app_use_cnt"].'</td>
+							<td>'.$comm_info["app_daily_cnt"].'</td>										
+							<td>'.$comm_info["app_cnt"].'</td>
+							<td>'.$comm_info["app_active_cnt"].'</td>
+							<td>'.$comm_info["is_24hr_logon"].'</td>
 						</tr>
 						';						
 					}

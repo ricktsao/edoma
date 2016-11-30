@@ -55,7 +55,7 @@ class Feedback extends Backend_Controller {
 		if($list["count"]>0)
 		{
 			$list = $list["data"];	
-			$html = "<h1 style='text-align:center'>課程專區</h1>";
+			$html = "<h1 style='text-align:center'>富網通意見箱</h1>";
 				
 			
 			$tables = 
@@ -126,7 +126,7 @@ class Feedback extends Backend_Controller {
 			$mpdf->WriteHTML($html);			
 			
 			$time = time();
-			$pdfFilePath = "課程專區_".$time .".pdf";
+			$pdfFilePath = "富網通意見箱_".$time .".pdf";
 			$mpdf->Output($pdfFilePath,'I');
 		}
 		else

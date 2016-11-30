@@ -146,6 +146,7 @@ $config['house_type_array'] = array( 'a'=>'電梯大樓'
 								, 'c'=>'華廈'
 								, 'd'=>'公寓'
 								, 'e'=>'別墅'
+								, 'f'=>'車位'
 								);
 // 型態
 $config['rent_sale_type_array'] = array( 'a'=>'整層住家'
@@ -205,3 +206,7 @@ $config['suggestion_to_role'] = array(
 
 // edoma folder path
 $config['edoma_folder_path'] = 'E:/htdocs/commapi/upload/edoma/';
+
+
+// claire
+// $config['edoma_folder_path'] = 'C:/wamp/www/edoma/upload/edoma/';

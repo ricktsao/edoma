@@ -49,11 +49,11 @@
 										<th>序號</th>
 
 										<th style='text-align: center'>社區名稱</th>
-										<th>社區ID</th>
 										<th>電　話</th>
 										<th>手　機</th>
 										<th>地　址</th>
 										<th style="width:150px">操作</th>
+										<th style="width:150px">SQL檔案</th>
 										<th>啟用/停用</th>
 										
 									</tr>
@@ -73,9 +73,6 @@
 										<td>
 										<?php echo tryGetData('name', $item);?>
 										</td>
-										<td style='text-align: center'>
-										<?php echo mask($item['id'] , 1, 6); ?>
-										</td>
 										<td>
 										<?php echo tryGetData('tel', $item);?>
 										</td>
@@ -86,10 +83,30 @@
 										<?php echo tryGetData('addr', $item);?>
 										</td>
 
-										<td style="text-align:left; padding-left:10px;">
-											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editComm",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
-												<i class="icon-edit bigger-120"></i>編輯
+										<td>
+											<a class="btn  btn-minier btn-info" title="修改社區基本資料" href="<?php echo bUrl("editComm",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
+												<i class="icon-edit bigger-120"></i>修改
 											</a>
+										</td>
+										<td>
+										<?php
+										$filename = prepPassword($item['id']);
+										$filename = './upload/comm_sql/'.$filename.'.sql';
+
+										if ( !file_exists($filename) ) {
+										?>
+											<a class="btn  btn-minier btn-yellow" title="產出SQL檔案供系統安裝之用 #<?php echo mask($item['id'] , 1, 6); ?>" href="<?php echo bUrl("generateSql",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
+												<i class="icon-edit bigger-120"></i>產出
+											</a>
+										<?php
+										} else {
+										?>
+											<a class="btn  btn-minier btn-success" title="下載SQL檔案供系統安裝之用 #<?php echo mask($item['id'] , 1, 6); ?>" href="<?php echo base_url().$filename ?>" download>
+												<i class="icon-edit bigger-120"></i>下載
+											</a>
+										<?php
+										}
+										?>
 										</td>
 										<td>
 											<div class="col-xs-3">
@@ -118,7 +135,7 @@
 							
 						</div>
 						
-					</div>					
+					</div>
 				</div>
 				
 			</div>
@@ -127,12 +144,9 @@
 
 </form>        
 
-<script type="text/javascript"> 
-
-	
+<script type="text/javascript">
 	function launch(obj) 
-	{		
-	
+	{
 	 $.ajax({ 
             type : "POST",
             data: {'sn' : obj.value  },
@@ -152,9 +166,8 @@
             	{
             		$(obj).prop("checked", false);
             	}
-           		     
             }
-        });	 
+        });
 	}
 </script>
 

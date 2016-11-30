@@ -13,7 +13,7 @@ class Rent_House extends Backend_Controller {
 	 */
 	public function index()
 	{
-		$condition = '';
+		$condition = ' AND del=0 ';
 
 		// 指定客戶姓名
 		$keyword = $this->input->get('keyword', true);
@@ -452,6 +452,9 @@ class Rent_House extends Backend_Controller {
 		$config['max_height']  = '1000';
 		$config['overwrite']  = true;
 
+		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 );
+		$config['file_name'] = $filename;
+
 		$this->load->library('upload', $config);
 
 		if (!is_dir('./upload/website/house_to_rent/'.$edit_data['edoma_house_to_rent_sn'])) {
@@ -509,6 +512,61 @@ class Rent_House extends Backend_Controller {
 		redirect(bUrl("photoSetting"));
 	}
 
+
+
+	public function deleteHouse()
+	{
+		
+		$del_ary = tryGetData("del",$_POST,array());
+
+		//社區主機刪除
+		//----------------------------------------------------------------------------------------------------
+		foreach ($del_ary as  $house_sn) 
+		{
+			//先同步社區 找出此售屋資訊有發佈到哪些社區
+			$tmp = $this->it_model->listData("edoma_house_to_rent", "sn=".$house_sn);	
+			if( $tmp["count"] == 0) {
+				continue;
+			} 
+			$house_data = $tmp["data"][0];
+
+
+
+			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
+			$comm_id_list = tryGetData("comm_id", $house_data); 
+			$comm_id_array = explode(",", $comm_id_list);		
+			
+			//----------------------------------------------------------------
+			
+			//web_menu_content需要刪除的檔案
+			//----------------------------------------------------------------
+			foreach( $comm_id_array as $key => $del_comm_id )
+			{					
+				if(isNull($del_comm_id)) {
+					continue;
+				}
+				$update_data = array();
+				$update_data["sn"] = $house_sn;
+				$update_data["comm_id"] = $del_comm_id;
+				$update_data["del"] = 1;
+				$this->updateCommRent($update_data);
+			}
+			//exit;
+			//----------------------------------------------------------------
+			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+
+
+
+			$result = $this->it_model->updateData( "edoma_house_to_rent" , array("del"=>1, "updated"=>date("Y-m-d H:i:s")), "sn ='".$house_sn."'" );
+			
+		}
+		//----------------------------------------------------------------------------------------------------
+
+		
+		$this->showSuccessMessage();
+		
+		redirect(bUrl("index", FALSE));	
+	}
 
 
 	/**

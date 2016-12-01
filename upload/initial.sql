@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   `booker` int(10) NOT NULL COMMENT '代收警衛sn',
   `booker_id` varchar(10) NOT NULL,
   `user_sn` int(10) unsigned NOT NULL COMMENT '收件人_sn',
-  `user_app_id` varchar(100) DEFAULT NULL COMMENT '收件人_app_id',
+  `user_app_id` varchar(10) DEFAULT NULL COMMENT '收件人_app_id',
   `user_building_id` varchar(60) NOT NULL COMMENT '收件人_building_id',
   `user_name` varchar(50) NOT NULL COMMENT '收件人',
   `received` datetime DEFAULT NULL COMMENT '領取時間',
@@ -304,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `repair` (
   `server_sn` int(11) unsigned DEFAULT NULL,
   `user_sn` int(11) unsigned DEFAULT NULL,
   `user_name` varchar(20) DEFAULT NULL,
-  `app_id` varchar(100) DEFAULT NULL,
+  `app_id` varchar(10) DEFAULT NULL,
   `type` tinyint(1) DEFAULT '0' COMMENT '1:公共區域,2:住家內部',
   `content` text,
   `reply` text COMMENT '回覆',
@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS `suggestion` (
   `sn` int(11) NOT NULL AUTO_INCREMENT,
   `server_sn` int(11) DEFAULT NULL,
   `comm_id` varchar(10) DEFAULT NULL,
-  `app_id` int(100) DEFAULT NULL,
+  `app_id` int(10) DEFAULT NULL,
   `title` varchar(100) DEFAULT NULL,
   `content` text COMMENT '意見內容',
   `reply` text COMMENT '回覆',
@@ -573,7 +573,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `addr` varchar(50) DEFAULT NULL COMMENT '門牌號碼',
   `title` varchar(20) DEFAULT NULL COMMENT '住戶 or 物業人員(ex秘書, 總幹事, 警衛) or 富網通',
   `id` varchar(10) DEFAULT NULL COMMENT '磁扣卡10碼    [住戶識別號_２]',
-  `app_id` varchar(100) DEFAULT NULL COMMENT '手機識別碼    [住戶識別號_３]',
+  `app_id` varchar(50) DEFAULT NULL COMMENT '手機識別碼    [住戶識別號_３]',
   `act_code` char(12) DEFAULT NULL COMMENT '手機開通碼',
   `gender` tinyint(1) unsigned DEFAULT NULL COMMENT '１:男　２:女',
   `account` varchar(10) DEFAULT NULL COMMENT '帳號（物業人員登入）',
@@ -826,10 +826,9 @@ CREATE TABLE IF NOT EXISTS `sys_user_group_b_auth` (
 -- 正在導出表  community.sys_user_group_b_auth 的資料：~171 rows (大約)
 /*!40000 ALTER TABLE `sys_user_group_b_auth` DISABLE KEYS */;
 
-
-INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
-
-INSERT INTO `sys_user_group_b_auth` (`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) VALUES
+INSERT INTO `sys_user_group_b_auth` 
+(`sn`, `sys_user_group_sn`, `module_sn`, `launch`, `update_date`) 
+VALUES
 (NULL, 3, 32, 1, NOW()),
 (NULL, 3, 33, 1, NOW()),
 (NULL, 3, 30, 1, NOW()),
@@ -968,7 +967,7 @@ CREATE TABLE `user_message` (
 	`sn` BIGINT(20) NOT NULL AUTO_INCREMENT,
 	`edit_user_sn` BIGINT(20) NULL DEFAULT NULL COMMENT '訊息編輯者',
 	`to_user_sn` INT(11) NOT NULL,
-	`to_user_app_id` VARCHAR(100) NULL DEFAULT NULL,
+	`to_user_app_id` VARCHAR(10) NULL DEFAULT NULL,
 	`to_user_name` VARCHAR(10) NULL DEFAULT NULL,
 	`title` VARCHAR(50) NULL DEFAULT NULL,
 	`msg_content` TEXT NOT NULL COMMENT '訊息',
@@ -1039,22 +1038,19 @@ CREATE TABLE IF NOT EXISTS `user_parking` (
 -- 導出  表 edoma.voting 結構
 DROP TABLE IF EXISTS `voting`;
 CREATE TABLE IF NOT EXISTS `voting` (
-	`sn` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`subject` VARCHAR(100) NOT NULL,
-	`description` VARCHAR(200) NOT NULL,
-	`start_date` DATE NOT NULL,
-	`end_date` DATE NOT NULL,
-	`allow_anony` TINYINT(1) UNSIGNED NOT NULL COMMENT '0 表記名投票   1 表匿名投票 ',
-	`is_multiple` TINYINT(1) NOT NULL COMMENT '0 表單選   1 表複選',
-	`is_del` INT(1) NOT NULL DEFAULT '0' COMMENT '是否刪除 1Y/0N',
-	`is_sync` INT(1) NOT NULL DEFAULT '0' COMMENT '是否同步 1Y/0N',
-	`user_sn` INT(11) NOT NULL,
-	`user_name` VARCHAR(60) NULL DEFAULT NULL COMMENT '議題發佈人姓名',
-	PRIMARY KEY (`sn`)
-)
-COMMENT='投票主表'
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB ;
+  `sn` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `subject` varchar(100) NOT NULL,
+  `description` varchar(200) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `allow_anony` tinyint(1) unsigned NOT NULL COMMENT '0 表記名投票   1 表匿名投票 ',
+  `is_multiple` tinyint(1) NOT NULL COMMENT '0 表單選   1 表複選',
+  `is_del` int(1) NOT NULL DEFAULT '0' COMMENT '是否刪除 1Y/0N',
+  `is_sync` int(1) NOT NULL DEFAULT '0' COMMENT '是否同步 1Y/0N',
+  `user_sn` int(11) NOT NULL,
+  `user_name` varchar(30) NULL DEFAULT NULL COMMENT '發佈人姓名',
+  PRIMARY KEY (`sn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='投票主表';
 
 -- 正在導出表  edoma.voting 的資料：~0 rows (大約)
 /*!40000 ALTER TABLE `voting` DISABLE KEYS */;

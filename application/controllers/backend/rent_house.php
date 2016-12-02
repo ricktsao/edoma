@@ -185,9 +185,7 @@ class Rent_House extends Backend_Controller {
         {
 
 			$comm_id_list = NULL;
-				dprint('@'.__LINE__);
 			if ( isNotNull(tryGetData("comms", $edit_data, NULL)) ) {
-				dprint('@'.__LINE__);
 				$comm_id_array = $edit_data['comms'];
 				$comm_id_list = implode(",", $comm_id_array);
 			}
@@ -258,7 +256,7 @@ class Rent_House extends Backend_Controller {
 				//$this->logData("新增人員[".$arr_data["id"]."]");
 
 				if($rent_sn > 0) {
-					$edit_data["sn"] = $rent_sn;
+					$arr_data["sn"] = $rent_sn;
 					$this->showSuccessMessage();
 
 						/* 同步 同步 同步 同步 同步 */
@@ -413,7 +411,7 @@ class Rent_House extends Backend_Controller {
 
 				## 既有照片list
 				$exist_parking_list = $this->it_model->listData( "edoma_house_to_rent h LEFT JOIN edoma_house_to_rent_photo p ON h.sn = p.edoma_house_to_rent_sn" 
-														, "del=0 and edoma_house_to_rent_sn = ".$edoma_house_to_rent_sn 
+														, "h.del=0 and p.del=0 and edoma_house_to_rent_sn = ".$edoma_house_to_rent_sn 
 														, NULL , NULL , array("p.sn"=>"asc"));
 
 				$data["exist_photo_array"] = count($exist_parking_list["data"]) > 0 ? $exist_parking_list["data"] : array();

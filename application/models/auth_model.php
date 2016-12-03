@@ -2,14 +2,37 @@
 
 class Auth_Model extends IT_Model
 {
-	
-	function __construct() 
+
+	function __construct()
 	{
-		parent::__construct();	  
+		parent::__construct();
 	}
 
 
-	// ���o�٦��Ī����� SN
+    // ¨ú±oÁÙ¦³®Äªº¨®¦ì SN
+    public function getVillageText( $city_code=Null, $town_sn=0, $village_sn=0 )
+    {
+        if ( isNotNull($city_code) && $town_sn > 0 && $village_sn > 0 ) {
+            $query = 'SELECT t.city_name, t.town_name, v.village_name '
+                    .'  FROM village v  '
+                    .'  LEFT JOIN town t ON v.city_code=t.city_code AND v.town_sn=t.sn '
+                    .' WHERE t.status=1 '
+                    .'   AND v.city_code="'.$city_code.'" '
+                    .'   AND v.town_sn='.$town_sn.' '
+                    .'   AND v.sn='.$village_sn.' '
+                    ;
+            $result = $this->it_model->runSql( $query );
+
+            if ( $result['count'] > 0) {
+                $data = $result['data'][0];
+                return $data;
+            }
+        }
+        return false;
+    }
+
+
+	// ¨ú±oÁÙ¦³®Äªº¨®¦ì SN
 	public function getFreeParkingSn( $parking_id )
 	{
 		if (isNotNull($parking_id)) {
@@ -27,7 +50,9 @@ class Auth_Model extends IT_Model
 		}
 		return false;
 	}
-	
+
+
+
 	public function getWebSetting( $key )
 	{
 		if (isNotNull($key)) {
@@ -38,13 +63,13 @@ class Auth_Model extends IT_Model
 		}
 		return false;
 	}
-	
+
 	public function GetWebAdminList( $condition = NULL , $rows = NULL , $page = NULL , $sort = array() )
 	{
 		echo $condition;
 		$sql = "	SELECT 	SQL_CALC_FOUND_ROWS
 							sys_admin_group.*
-					FROM 	sys_admin_group					
+					FROM 	sys_admin_group
 					WHERE ( 1 )
 					";
 
@@ -54,7 +79,7 @@ class Auth_Model extends IT_Model
 		}
 
 		$sql .= $this->getSortSQL( $sort );
-			
+
 		$sql .= $this->getLimitSQL( $rows , $page );
 
 		$data = array
@@ -62,16 +87,16 @@ class Auth_Model extends IT_Model
 			"sql" => $sql ,
 			"data" => $this->readQuery( $sql ) ,
 			"count" => $this->getRowsCount()
-		);		
+		);
 
 		return $data;
 	}
-	
-	
+
+
 	public function GetGroupAuthorityList( $condition = NULL , $rows = NULL , $page = NULL , $sort = array() )
 	{
 		$sql = "	select sys_user_group_b_auth.*, sys_module.id from sys_user_group_b_auth
-					left join sys_module on sys_user_group_b_auth.module_sn = sys_module.sn										
+					left join sys_module on sys_user_group_b_auth.module_sn = sys_module.sn
 					WHERE ( 1 )
 					";
 
@@ -79,12 +104,12 @@ class Auth_Model extends IT_Model
 		{
 			$sql .= " AND ( ".$condition." ) ";
 		}
-		
-		$sql .= "group by sys_module.id"; 
-		
+
+		$sql .= "group by sys_module.id";
+
 
 		$sql .= $this->getSortSQL( $sort );
-			
+
 		$sql .= $this->getLimitSQL( $rows , $page );
 
 		$data = array
@@ -92,13 +117,13 @@ class Auth_Model extends IT_Model
 			"sql" => $sql ,
 			"data" => $this->readQuery( $sql ) ,
 			"count" => $this->getRowsCount()
-		);		
+		);
 
 		return $data;
 	}
-	
-	
-	
-	
+
+
+
+
 
 }

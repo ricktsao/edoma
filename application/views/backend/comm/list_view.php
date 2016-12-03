@@ -8,7 +8,7 @@
 		社區管理
 		<small>
 			<i class="ace-icon fa fa-angle-double-right"></i>
-			
+
 		</small>
 	</h1>
 </div>
@@ -25,37 +25,38 @@
 
     <div class="btn-group">
 		關鍵字：<input type='text' name='keyword' value='<?php echo $given_keyword;?>'>
-    </div>    
-	
+    </div>
+
 
     <div class="btn-group">
 		<button type="submit" class="btn btn-primary btn-sm btn_margin"><i class="icon-search nav-search-icon"></i>搜尋</button>
     </div>
-</article>	
+</article>
 
 </form>
 
 
-<form action="" id="update_form" method="post" class="contentForm"> 
+<form action="" id="update_form" method="post" class="contentForm">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="table-responsive">
-							
+
 							<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 								<thead>
 									<tr>
 										<th>序號</th>
 
+										<th style="width:180px">地理位置</th>
 										<th style='text-align: center'>社區名稱</th>
 										<th>電　話</th>
 										<th>手　機</th>
 										<th>地　址</th>
-										<th style="width:150px">操作</th>
-										<th style="width:150px">SQL檔案</th>
+										<th style="width:60px">操作</th>
+										<th style="width:80px">SQL檔案</th>
 										<th>啟用/停用</th>
-										
+
 									</tr>
 								</thead>
 								<tbody>
@@ -70,6 +71,9 @@
 									?>
 									<tr>
 										<td style='text-align: center'><?php echo ($i+1)+(($this->page-1) * 10);?></td>
+										<td>
+										<?php echo tryGetData('village', $item);?>
+										</td>
 										<td>
 										<?php echo tryGetData('name', $item);?>
 										</td>
@@ -116,51 +120,51 @@
 												</label>
 											</div>
 										</td>
-										
+
 									</tr>
 									<?php
 										$i++;
 									}
 									?>
-										
-									
+
+
 								</tbody>
 								<tr>
 					              	<td colspan="8">
 									<?php echo showBackendPager($pager)?>
 					                </td>
 								</tr>
-								
+
 							</table>
-							
+
 						</div>
-						
+
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
-	
 
-</form>        
+
+</form>
 
 <script type="text/javascript">
-	function launch(obj) 
+	function launch(obj)
 	{
-	 $.ajax({ 
+	 $.ajax({
             type : "POST",
             data: {'sn' : obj.value  },
             url: "<?php echo bUrl("launchComm");?>",
             timeout: 3000 ,
-            error: function( xhr ) 
+            error: function( xhr )
             {
                 //不處理
             },
-            success : function(result) 
+            success : function(result)
             {
             	if(result == 1)
             	{
-            		$(obj).prop("checked", true);	
+            		$(obj).prop("checked", true);
             	}
             	else
             	{

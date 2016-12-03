@@ -29,6 +29,80 @@ class Course extends Backend_Controller {
 	}
 	
 	/**
+	 * pdf list print
+	 */
+	public function showPdfList()
+	{
+		$condition = "";
+		$list = $this->c_model->GetList( "course" , $condition ,FALSE, NULL , NULL , array("sort"=>"asc","start_date"=>"desc","sn"=>"desc") );
+		img_show_list($list["data"],'img_filename',$this->router->fetch_class());		
+		
+		
+		if($list["count"]>0)
+		{
+			$list = $list["data"];	
+			$html = "<h1 style='text-align:center'>課程專區</h1>";
+				
+			
+			$tables = 
+			'<tr>										
+				<th style="width:60px">序號</th>
+				<th>課程主旨</th>
+				<th>廠商名稱</th>
+				<th>收費金額</th>								
+				<th>有效日期</th>					
+			</tr>';
+			
+			
+			for($i=0;$i<sizeof($list);$i++)
+			{
+				$tables .= 
+				'<tr>
+					<td>'.($i+1).'</td>
+					<td>'.$list[$i]["title"].'</td>
+					<td>'.$list[$i]["filename"].'</td>
+					<td>'.$list[$i]["url"].'</td>
+					<td>'.showEffectiveDate($list[$i]["start_date"], $list[$i]["end_date"], $list[$i]["forever"]).'</td>						
+				</tr>';	
+			}
+			
+			$html .= '<table border="1" width="100%" >'.$tables.'</table>';
+			
+			$this->load->library('pdf');
+			$mpdf = new Pdf();
+			$mpdf = $this->pdf->load();
+			$mpdf->useAdobeCJK = true;
+			$mpdf->autoScriptToLang = true;
+			
+			
+			$water_img = base_url('template/backend/images/watermark.png');
+			$water_info = $this->c_model->GetList( "watermark");			
+			if(count($water_info["data"])>0)
+			{
+				img_show_list($water_info["data"],'img_filename',"watermark");
+				$water_info = $water_info["data"][0];			
+				$water_img = $water_info["img_filename"];
+						
+			}
+			$mpdf->SetWatermarkImage($water_img);
+			$mpdf->watermarkImageAlpha = 0.081;
+			$mpdf->showWatermarkImage = true;		
+			
+			$mpdf->WriteHTML($html);			
+			
+			$time = time();
+			$pdfFilePath = "課程專區_".$time .".pdf";
+			$mpdf->Output($pdfFilePath,'I');
+		}
+		else
+		{
+			$this->closebrowser();
+		}
+		
+	}
+	
+	
+	/**
 	 * category edit page
 	 */
 	public function editContent()
@@ -51,7 +125,8 @@ class Course extends Backend_Controller {
 		$data["community_list"] = $community_list["data"];	
 		
 		
-		
+		//使用區域連動選單
+		$this->_useAreaOption($data);
 		
 				
 		if($content_sn == "")
@@ -268,9 +343,7 @@ class Course extends Backend_Controller {
 		
 		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');		
 		
-		$this->form_validation->set_rules( 'title', '名稱', 'required' );	
-		$this->form_validation->set_rules( 'content', '內容', 'required' );	
-		$this->form_validation->set_rules( 'sort', '排序', 'trim|required|numeric|min_length[1]');			
+		$this->form_validation->set_rules( 'title', '課程主旨', 'required' );			
 		$this->form_validation->set_rules( 'comms', '發佈社區', 'required' );	
 		
 		return ($this->form_validation->run() == FALSE) ? FALSE : TRUE;

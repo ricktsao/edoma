@@ -19,6 +19,8 @@ class App_log extends Backend_Controller {
 		
 		foreach ($comm_list["data"] as $key => $comm_info) 
 		{
+			//用戶數
+			//--------------------------------------------------------------------------------
 			$query = "select SQL_CALC_FOUND_ROWS count(*) as user_cnt FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
 			$user_cnt_info = $this->it_model->runSql( $query);
 			if($user_cnt_info["count"] > 0)
@@ -30,8 +32,11 @@ class App_log extends Backend_Controller {
 				$user_cnt_info = array();
 			}			
 			$comm_list["data"][$key]["user_cnt"] = tryGetData("user_cnt", $user_cnt_info,0);
+			//--------------------------------------------------------------------------------
 			
 			
+			//app安裝數量
+			//--------------------------------------------------------------------------------
 			$query = "SELECT SQL_CALC_FOUND_ROWS  count(*) as app_cnt	FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I' and app_id is not null and app_id != '' and launch = 1";	
 			$appopen_cnt_info = $this->it_model->runSql( $query);
 			if($appopen_cnt_info["count"] > 0)
@@ -43,8 +48,67 @@ class App_log extends Backend_Controller {
 				$appopen_cnt_info = array();
 			}
 			$comm_list["data"][$key]["app_cnt"] = tryGetData("app_cnt", $appopen_cnt_info,0);
+			//--------------------------------------------------------------------------------
 			
 			
+			
+			//app每日登入數量,有效用戶數量(30天內登入算有效用戶)		
+			//--------------------------------------------------------------------------------
+			$query = "SELECT * FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
+			$app_use_list = $this->it_model->runSql( $query);
+			$app_use_list = $app_use_list["data"];
+			
+			$app_daily_cnt = 0;//app每日登入數量
+			$app_active_cnt = 0;//有效用戶數量(30天內登入算有效用戶)			
+			foreach ($app_use_list as $item) 
+			{
+				if(showDateFormat($item["app_login_time"],"Y-m-d") == date("Y-m-d"))
+				{
+					$app_daily_cnt++;
+				}
+				
+				
+				if ( isNotNull(tryGetData('app_login_time', $item, NULL)) ) 
+				{								
+					$last_visit_day = calcDiffDate($item["app_login_time"], date("Y-m-d m:i:s"));
+					if($last_visit_day <= 30 )
+					{
+						$app_active_cnt++;
+					}
+				}
+			}
+			
+			$comm_list["data"][$key]["app_daily_cnt"] = $app_daily_cnt;
+			$comm_list["data"][$key]["app_active_cnt"] = $app_active_cnt;
+			//--------------------------------------------------------------------------------
+			
+
+			
+			//24小時未登入者顯示 提示Y/N
+			//--------------------------------------------------------------------------------
+			$one_day_login = "<span style='color:red'>N</span>";
+			if(isNull(tryGetData("backend_login_time", $comm_info)))
+			{
+				$one_day_login = "<span style='color:red'>N</span>";
+			}
+			else 
+			{
+				$hour_cnt = calcDiffDate($comm_info["backend_login_time"], date("Y-m-d m:i:s"),"HOUR");
+			
+				if($hour_cnt<=24)
+				{
+					$one_day_login = "<span style='color:blue'>Y</span>";
+				}
+				else
+				{
+					$one_day_login = "<span style='color:red'>N</span>";
+				}
+			}
+			$comm_list["data"][$key]["is_24hr_logon"] = $one_day_login;			
+			//--------------------------------------------------------------------------------
+			
+			
+			/*
 			$query = "SELECT SQL_CALC_FOUND_ROWS sum(app_use_cnt) as app_use_cnt FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
 			$app_use_cnt_info = $this->it_model->runSql( $query);
 			if($app_use_cnt_info["count"] > 0)
@@ -56,7 +120,7 @@ class App_log extends Backend_Controller {
 				$app_use_cnt_info = array();
 			}
 			$comm_list["data"][$key]["app_use_cnt"] = tryGetData("app_use_cnt", $app_use_cnt_info,0);
-			
+			*/
 		}
 		
 		
@@ -70,6 +134,193 @@ class App_log extends Backend_Controller {
 		
 		$this->display("content_list_view",$data);
 	}
+	
+	
+	
+	/**
+	 * pdf list print
+	 */
+	public function showPdfList()
+	{
+$condition = "";
+		$comm_list = $this->it_model->listData("community","status = 1");
+		
+		foreach ($comm_list["data"] as $key => $comm_info) 
+		{
+			//用戶數
+			//--------------------------------------------------------------------------------
+			$query = "select SQL_CALC_FOUND_ROWS count(*) as user_cnt FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
+			$user_cnt_info = $this->it_model->runSql( $query);
+			if($user_cnt_info["count"] > 0)
+			{
+				$user_cnt_info = $user_cnt_info["data"][0];
+			}
+			else 
+			{				
+				$user_cnt_info = array();
+			}			
+			$comm_list["data"][$key]["user_cnt"] = tryGetData("user_cnt", $user_cnt_info,0);
+			//--------------------------------------------------------------------------------
+			
+			
+			//app安裝數量
+			//--------------------------------------------------------------------------------
+			$query = "SELECT SQL_CALC_FOUND_ROWS  count(*) as app_cnt	FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I' and app_id is not null and app_id != '' and launch = 1";	
+			$appopen_cnt_info = $this->it_model->runSql( $query);
+			if($appopen_cnt_info["count"] > 0)
+			{
+				$appopen_cnt_info = $appopen_cnt_info["data"][0];
+			}
+			else 
+			{				
+				$appopen_cnt_info = array();
+			}
+			$comm_list["data"][$key]["app_cnt"] = tryGetData("app_cnt", $appopen_cnt_info,0);
+			//--------------------------------------------------------------------------------
+			
+			
+			
+			//app每日登入數量,有效用戶數量(30天內登入算有效用戶)		
+			//--------------------------------------------------------------------------------
+			$query = "SELECT * FROM sys_user WHERE comm_id = '".$comm_info["id"]."' and role = 'I'";	
+			$app_use_list = $this->it_model->runSql( $query);
+			$app_use_list = $app_use_list["data"];
+			
+			$app_daily_cnt = 0;//app每日登入數量
+			$app_active_cnt = 0;//有效用戶數量(30天內登入算有效用戶)			
+			foreach ($app_use_list as $item) 
+			{
+				if(showDateFormat($item["app_login_time"],"Y-m-d") == date("Y-m-d"))
+				{
+					$app_daily_cnt++;
+				}
+				
+				
+				if ( isNotNull(tryGetData('app_login_time', $item, NULL)) ) 
+				{								
+					$last_visit_day = calcDiffDate($item["app_login_time"], date("Y-m-d m:i:s"));
+					if($last_visit_day <= 30 )
+					{
+						$app_active_cnt++;
+					}
+				}
+			}
+			
+			$comm_list["data"][$key]["app_daily_cnt"] = $app_daily_cnt;
+			$comm_list["data"][$key]["app_active_cnt"] = $app_active_cnt;
+			//--------------------------------------------------------------------------------
+			
+
+			
+			//24小時未登入者顯示 提示Y/N
+			//--------------------------------------------------------------------------------
+			$one_day_login = "<span style='color:red'>N</span>";
+			if(isNull(tryGetData("backend_login_time", $comm_info)))
+			{
+				$one_day_login = "<span style='color:red'>N</span>";
+			}
+			else 
+			{
+				$hour_cnt = calcDiffDate($comm_info["backend_login_time"], date("Y-m-d m:i:s"),"HOUR");
+			
+				if($hour_cnt<=24)
+				{
+					$one_day_login = "<span style='color:blue'>Y</span>";
+				}
+				else
+				{
+					$one_day_login = "<span style='color:red'>N</span>";
+				}
+			}
+			$comm_list["data"][$key]["is_24hr_logon"] = $one_day_login;			
+			//--------------------------------------------------------------------------------
+
+		}	
+			
+
+		
+		if($comm_list["count"]>0)
+		{
+			$comm_list = $comm_list["data"];	
+			$html = "<h1 style='text-align:center'>APP統計</h1>";
+				
+			
+			$tables = 
+			'<tr>										
+				<th style="width:150px">社區</th>		
+				<th style="width:100px">住戶數</th>
+				<th style="width:100px">app每日登入數量</th>							
+				<th style="width:80px">app安裝數量</th>
+				<th style="width:80px">app活耀用戶數量</th>		
+				<th style="width:80px">社區後台24小時登入狀態</th>					
+			</tr>';
+			
+			
+			
+			/*
+			 echo '<hr>回覆:<br>';
+												echo '<span style="color:red;">	';												
+												echo nl2br($list[$i]["brief2"]);
+												echo '<br>['.$list[$i]["update_date"].']';
+												echo '</span>'; 
+			 * */
+			
+			
+			foreach ($comm_list as $comm_info)
+			{							
+				
+				
+				$tables .= 
+				'<tr>								
+					<td>'.$comm_info["name"].'</td>						
+					<td>'.$comm_info["user_cnt"].'</td>		
+					<td>'.$comm_info["app_daily_cnt"].'</td>										
+					<td>'.$comm_info["app_cnt"].'</td>
+					<td>'.$comm_info["app_active_cnt"].'</td>
+					<td>'.$comm_info["is_24hr_logon"].'</td>
+				</tr>';	
+			}
+			
+			$html .= '<table border="1" width="100%" >'.$tables.'</table>';
+			
+			$this->load->library('pdf');
+			$mpdf = new Pdf();
+			$mpdf = $this->pdf->load();
+			$mpdf->useAdobeCJK = true;
+			$mpdf->autoScriptToLang = true;
+			
+			
+			$water_img = base_url('template/backend/images/watermark.png');
+			$water_info = $this->c_model->GetList( "watermark");			
+			if(count($water_info["data"])>0)
+			{
+				img_show_list($water_info["data"],'img_filename',"watermark");
+				$water_info = $water_info["data"][0];			
+				$water_img = $water_info["img_filename"];
+						
+			}
+			$mpdf->SetWatermarkImage($water_img);
+			$mpdf->watermarkImageAlpha = 0.081;
+			$mpdf->showWatermarkImage = true;		
+			
+			$mpdf->WriteHTML($html);			
+			
+			$time = time();
+			$pdfFilePath = "APP統計_".$time .".pdf";
+			$mpdf->Output($pdfFilePath,'I');
+		}
+		else
+		{
+			$this->closebrowser();
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * category edit page

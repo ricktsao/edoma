@@ -1559,4 +1559,87 @@ abstract class Backend_Controller extends IT_Controller
 		$this->output->enable_profiler(TRUE);	
 	}
 	
+	
+	
+	//ajax 取得縣市
+    public function ajaxGetCityList()
+    {		
+		$list = $this->it_model->listData( "city" , "" , NULL , NULL , array("id"=>"asc"));	
+		echo json_encode($list["data"]); 
+    }
+	
+	
+	//ajax 取得鄉鎮區
+    public function ajaxGetTownList()
+    {
+    	$city_code = $this->input->get('city_code');
+				
+		$list = $this->it_model->listData( "town" , "city_code = '".$city_code."'" , NULL , NULL , array("town_code"=>"asc"));	
+		//echo $list["sql"]; 
+		echo json_encode($list["data"]); 
+    }
+	
+	
+	public function ajaxGetVillageList()
+    {
+    	$city_code = $this->input->get('city_code');
+		$town_sn = $this->input->get('town_sn');
+				
+		$list = $this->it_model->listData( "village" , "city_code = '".$city_code."' and town_sn = '".$town_sn."'" , NULL , NULL , array("sn"=>"asc"));	
+		//echo $list["sql"]; 
+		echo json_encode($list["data"]); 
+    }
+
+
+	public function ajaxGetCommunity()
+    {
+    	$city_code = $this->input->get('city_code');
+		$town_sn = $this->input->get('town_sn');
+		$village_sn = $this->input->get('village_sn');
+		
+		$condition = "";
+		if(isNotNull($city_code))
+		{
+			$condition = "city_code = '".$city_code."' ";
+			
+			if(isNotNull($town_sn))
+			{
+				$condition .= "AND town_sn = '".$town_sn."' ";
+				
+				if(isNotNull($village_sn))
+				{
+					$condition .= "AND village_sn = '".$village_sn."' ";
+				}
+			}
+		}
+		
+		
+		
+		
+		$list = $this->it_model->listData( "community" , $condition , NULL , NULL , array("name"=>"asc"));	
+		//echo $list["sql"]; 
+		echo json_encode($list["data"]); 
+    }
+
+    
+	public function _useAreaOption(&$data = array())
+	{
+		
+		$city_list = array();		
+		
+		$city_list = $this->it_model->listData( "city" , "" , NULL , NULL , array("id"=>"asc"));
+		$city_list = $city_list["data"];
+		
+		
+		$town_list = array();
+		$village_list = array();
+		
+		$data["city_list"] = $city_list;
+		$data["town_list"] = $town_list;
+		$data["village_list"] = $village_list;
+		
+	} 
+	
+	
+	
 }

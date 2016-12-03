@@ -13,6 +13,10 @@ class Rent_House extends Backend_Controller {
 	 */
 	public function index()
 	{
+		
+		//檢查client是否有po聯賣資訊
+		$this->checkClientPublish();
+		
 		$condition = ' AND del=0 ';
 
 		// 指定客戶姓名
@@ -72,7 +76,29 @@ class Rent_House extends Backend_Controller {
 		$this->display("index_view",$data);
 	}
 
-
+	/**
+	 * 檢查client是否有po聯賣資訊
+	 */
+	public function checkClientPublish()
+	{
+		$publish_list = $this->it_model->listData("house_to_rent","del=0 and is_post=1");
+						
+		foreach ($publish_list["data"] as $key => $arr_data) 
+		{
+			$sn = $arr_data["sn"];
+			unset($arr_data["sn"]);
+			unset($arr_data["edoma_sn"]);
+			unset($arr_data["client_sync"]);
+			$arr_data["post_comm_id"] = $arr_data["comm_id"];
+			
+			$add_row = $this->it_model->addData("edoma_house_to_rent",$arr_data);
+			if($add_row > 0 )
+			{
+				$this->it_model->updateData("house_to_rent",array("is_post"=>2,"updated"=>date("Y-m-d H:i:s")),"sn = ".$sn );
+			}
+		}
+	}
+	
 	public function edit()
 	{
 		$this->addCss("css/chosen.css");

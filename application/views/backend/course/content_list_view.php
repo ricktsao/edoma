@@ -5,7 +5,13 @@
 			<i class="icon-edit bigger-120"></i>新增
 		</a>	
     </div>
-   
+    <?php if(count($list)>0){	?>
+    <div class="btn-group">        
+	    <a class="btn  btn-sm btn-danger btn_margin" target="_blank" href="<?php echo bUrl("showPdfList",TRUE); ?>">
+			<i class="icon-edit bigger-120"></i>PDF報表
+		</a>      
+    </div>  
+    <?php }	?>
     <div class="btn-group" style="display:none">        
           <button type="submit" class="btn btn-primary btn-sm btn_margin"><i class="icon-search nav-search-icon"></i>搜尋</button>        
     </div>                
@@ -26,8 +32,9 @@
 									<tr>										
 										<th style="width:100px">序號</th>
 										<th>課程主旨</th>									
-										<th>收費標示</th>									
-										<th style="width:200px"><i class="icon-time bigger-110 hidden-480"></i>課程日期</th>
+										<th>廠商名稱</th>
+										<th>收費金額</th>																		
+										<th style="width:200px"><i class="icon-time bigger-110 hidden-480"></i>有效日期</th>
 
 										<th style="width:120px">操作</th>
 										<th style="width:120px">啟用/停用</th>										
@@ -43,32 +50,10 @@
 									<?php for($i=0;$i<sizeof($list);$i++){ ?>
 									<tr>
 										<td><?php echo ($i+1)+(($this->page-1) * 10);?></td>
-										<td>
-											<?php
-												if($list[$i]["hot"]==1)
-												{
-													echo '<span class="label label-sm label-warning">Hot</span>';
-												}
-											
-												echo $list[$i]["title"];
-											 
-											 ?>
-										</td>
-
-										<td>
-										<?php
-										if($list[$i]["brief"]==1)
-										{
-											echo '需收費';
-										}
-										else 
-										{
-											echo '不需收費';
-										}
-										?>
-										</td>
-
-										<td><?php echo showDateFormat($list[$i]["start_date"],"Y-m-d") ?></td>
+										<td><?php echo $list[$i]["title"]; ?></td>
+										<td><?php echo $list[$i]["filename"]; ?></td>
+										<td><?php echo tryGetData("url", $list[$i],"-"); ?></td>
+										<td><?php echo showEffectiveDate($list[$i]["start_date"], $list[$i]["end_date"], $list[$i]["forever"]) ?></td>
 
 										<td>
 											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editContent",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
@@ -98,7 +83,7 @@
 									<?php } ?>
 									
 									<tr>
-										<td colspan="6">
+										<td colspan="7">
 											
 										</td>	
 										<td class="center">

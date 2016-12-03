@@ -2,142 +2,28 @@
 <?php showOutputBox("tinymce/tinymce_js_view", array('elements' => 'content'));?>
 <form action="<?php echo bUrl("updateContent")?>" method="post"  id="update_form" enctype="multipart/form-data" class="form-horizontal" role="form">
 	
+		
 	<div class="form-group ">
-		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="case_id">發佈社區</label>
-		<div class="col-xs-12 col-sm-8">
-									
-			<select id="drop_city" name="city_code" >
-				<option value="0">縣巿</option>
-	            <?php
-	            if(count($city_list)>0)
-				{
-					foreach ($city_list as $key => $item) 
-		            {
-		            	echo '<option '.(  tryGetData("city_code", $edit_data)==$item["id"]?"selected":"" ).' value="'.$item["id"].'">'.$item["title"].'</option>';					
-		            }
-				}
-	            ?>            	
-            </select>            
-            
-            <select id="drop_town" name="town_sn" >
-            <?php
-            if(count($town_list)>0)
-			{
-				foreach ($town_list as $key => $item) 
-	            {
-	            	echo '<option '.(tryGetData("town_sn", $edit_data)==$item["town_sn"]?"selected":"" ).' value="'.$item["town_sn"].'">'.$item["town_name"].'</option>';					
-	            }
-			}
-			else 
-			{
-				echo '<option value="0">鄉鎮區</option>';
-			}
-            ?>            	
-            </select>
-            
-            <select id="drop_village" name="village_sn" >
-            <?php
-            if(count($village_list)>0)
-			{
-				foreach ($village_list as $key => $item) 
-	            {
-	            	echo '<option '.(tryGetData("section_sn", $edit_data)==$item["sn"]?"selected":"" ).' value="'.$item["sn"].'">'.$item["section_code"].' '.$item["section_name"].'</option>';					
-	            }
-			}
-			else 
-			{
-				echo '<option value="0">村里</option>';
-			}
-            ?>            	
-            </select>  
-            
-		</div>
-	</div>
-	
-		
-	<?php
-		$error_css= '';
-		if(isNotNull(form_error("comms")))
-		{
-			$error_css = 'has-error';			
-		}
-	?>		
-	<div class="form-group <?php echo $error_css;?>">
-		<label for="url" class="col-xs-12 col-sm-2 control-label no-padding-right">發佈社區</label>
-		
-		<div class="col-xs-12 col-sm-8">
-			<select multiple="multiple" size="10" name="comms[]">
-			<?php 
-			
-				$comm_ids = tryGetData('comm_id',$edit_data);
-				$comm_id_ary = explode(",", $comm_ids);
-				
-              	foreach ($community_list as $key => $item) 
-              	{
-					echo '<option value="'.$item["id"].'"  '.(in_array($item["id"], $comm_id_ary)?"selected":"").'  >'.$item["name"].'</option>';
-				}
-            ?>	    
-
-			</select>
-			<div class="help-block col-xs-12 col-sm-reset inline"><p><?php echo form_error("comms")?></p></div>
-		</div>
-		
-	</div>
-	<input type="hidden" name="orig_comm_id" value="<?php echo tryGetData('comm_id',$edit_data)?>"  />
-	
-	 
-	<?php 
-	echo textOption("廠商名稱","filename",$edit_data);
-	?> 
-	
-	<?php 
-	echo textOption("廠商電話1","brief",$edit_data);
-	?>
-	
-	<?php 
-	echo textOption("廠商電話2","brief2",$edit_data);
-	?>
-	
-	<?php 
-	echo textOption("地址","img_filename2",$edit_data);
-	?>
-	
-	<div class="form-group ">
-		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">收費金額</label>
+		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">主旨</label>
 		<div class="col-xs-12 col-sm-6">
-			<input id="url" name="url" class="width-40" value="<?php echo tryGetData("url",$edit_data);?>" type="text"> 元			
+			<?php echo tryGetData("title", $edit_data) ?>			
 		</div>
 	</div>
 	
-	<?php echo textOption("課程主旨","title",$edit_data); ?>
+	<div class="form-group ">
+		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">內容</label>
+		<div class="col-xs-12 col-sm-6">
+			<?php echo nl2br(tryGetData("content", $edit_data)) ?>			
+		</div>
+	</div>
 	
 	<?php
-	  echo textAreaOption("課程內容","content",$edit_data);
+	  echo textAreaOption("回覆","brief2",$edit_data);
 	?>	
-	
-	<?php echo checkBoxOption("收費","brief",$edit_data);?>
-	
-	<div class="form-group " style="display:none">
-        <label class="col-xs-12 col-sm-2 control-label no-padding-right" for="content">圖片</label>
-        <div class="col-xs-12 col-sm-6">
-            <input type="file" name="img_filename" size="20" /><br /><br />
-				<input type="hidden" name="orig_img_filename" value="<?php echo tryGetData('orig_img_filename',$edit_data)?>"  />
-				<?php if(isNotNull(tryGetData('img_filename',$edit_data))){ ?>
-				<img  border="0" style="width:200px;" src="<?php echo tryGetData('img_filename',$edit_data); ?>"><br />		
-				
-            	<?php } ?>
-        <div class="message">
-            <?php echo  form_error('start_date');?>
-        </div>
-        </div>
-    </div>
-	
-	
-	
-	<?php echo pickDateOption($edit_data);?>
-	<?php echo checkBoxOption("啟用","launch",$edit_data);?>
-	
-	<input type="hidden" name="sort" value="<?php echo tryGetData('sort', $edit_data)?>" />
+	<input type="hidden" name="comm_id" value="<?php echo tryGetData("comm_id", $edit_data) ?>" />
+	<input type="hidden" name="title" value="<?php echo tryGetData("title", $edit_data) ?>" />
+	<input type="hidden" name="content" value="<?php echo tryGetData("content", $edit_data) ?>" />
+	<input type="hidden" name="target" value="1" />
 	<input type="hidden" name="sn" value="<?php echo tryGetData('sn', $edit_data)?>" />
 	<input type="hidden" name="content_type" value="<?php echo tryGetData('content_type', $edit_data)?>" />
 	

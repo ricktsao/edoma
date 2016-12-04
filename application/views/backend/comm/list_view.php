@@ -48,7 +48,7 @@
 									<tr>
 										<th>序號</th>
 
-										<th style="width:180px">地理位置</th>
+										<th style="width:180px">所在區域</th>
 										<th style='text-align: center'>社區名稱</th>
 										<th>電　話</th>
 										<th>手　機</th>

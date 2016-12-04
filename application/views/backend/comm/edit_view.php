@@ -17,71 +17,67 @@
 ?>
 <form action="<?php echo bUrl("updateUser")?>" method="post"  id="update_form" class="form-horizontal" role="form">
 
-<?php
-echo form_hidden('old_city_code', tryGetData('city_code', $edit_data));
-echo form_hidden('old_town_sn', tryGetData('town_sn', $edit_data));
-echo form_hidden('old_village_sn', tryGetData('village_sn', $edit_data));
-$tmp = '';
-if (form_error('city_code') || form_error('town_sn') || form_error('village_sn') ) {
-	$tmp = 'has-error';
-}
-?>
+	<?php
+	echo form_hidden('old_city_code', tryGetData('city_code', $edit_data));
+	echo form_hidden('old_town_sn', tryGetData('town_sn', $edit_data));
+	echo form_hidden('old_village_sn', tryGetData('village_sn', $edit_data));
+	$tmp = '';
+	if (form_error('city_code') || form_error('town_sn') || form_error('village_sn') ) {
+		$tmp = 'has-error';
+	}
+	?>
 	<div class="form-group <?php echo $tmp;?>">
-		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="case_id">地理位置</label>
+		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="case_id">所在區域</label>
 		<div class="col-xs-12 col-sm-5">
-<?php
-if (tryGetData('sn', $edit_data) > 0) {
-	echo '<p>目前為 &raquo; '.$edit_data["village"];
-	echo '<p>變更為 &raquo; ';
-}
-?>
-			<select id="drop_city" name="city_code" >
-				<option value="0">縣巿</option>
-	            <?php
-	            if(count($city_list)>0)
-				{
-					foreach ($city_list as $key => $item)
-		            {
-		            	//echo '<option '.(  tryGetData("city_code", $edit_data, 0)==$item["id"]?"selected":"" ).' value="'.$item["id"].'">'.$item["title"].'</option>';
-		            	echo '<option value="'.$item["id"].'">'.$item["title"].'</option>';
-		            }
-				}
-	            ?>
-            </select>
-
-            <select id="drop_town" name="town_sn" >
+		<?php
+		if (tryGetData('sn', $edit_data) > 0) {
+			echo '<p>目前為 &raquo; '.$edit_data["village"];
+			echo '<p>變更為 &raquo; ';
+		}
+		?>
+		<select id="drop_city" name="city_code" >
+			<option value="0">縣巿</option>
             <?php
-            if(count($town_list)>0)
+            if(count($city_list)>0)
 			{
-				foreach ($town_list as $key => $item)
+				foreach ($city_list as $key => $item)
 	            {
-	            	//echo '<option '.(tryGetData("town_sn", $edit_data)==$item["town_sn"]?"selected":"" ).' value="'.$item["town_sn"].'">'.$item["town_name"].'</option>';
-	            	echo '<option  value="'.$item["town_sn"].'">'.$item["town_name"].'</option>';
+	            	//echo '<option '.(  tryGetData("city_code", $edit_data, 0)==$item["id"]?"selected":"" ).' value="'.$item["id"].'">'.$item["title"].'</option>';
+	            	echo '<option value="'.$item["id"].'">'.$item["title"].'</option>';
 	            }
 			}
-			else
-			{
-				echo '<option value="0">鄉鎮區</option>';
-			}
             ?>
-            </select>
+        </select>
 
-            <select id="drop_village" name="village_sn" >
-            <?php
-            if(count($village_list)>0)
-			{
-				foreach ($village_list as $key => $item)
-	            {
-	            	//echo '<option '.(tryGetData("village_sn", $edit_data)==$item["sn"]?"selected":"" ).' value="'.$item["sn"].'">'.$item["section_code"].' '.$item["section_name"].'</option>';
-	            	echo '<option  value="'.$item["sn"].'">'.$item["section_code"].' '.$item["section_name"].'</option>';
-	            }
-			}
-			else
-			{
-				echo '<option value="0">村里</option>';
-			}
-            ?>
-            </select>
+        <select id="drop_town" name="town_sn" >
+        <?php
+        if(count($town_list)>0)
+		{
+			foreach ($town_list as $key => $item)
+            {
+            	//echo '<option '.(tryGetData("town_sn", $edit_data)==$item["town_sn"]?"selected":"" ).' value="'.$item["town_sn"].'">'.$item["town_name"].'</option>';
+            	echo '<option  value="'.$item["town_sn"].'">'.$item["town_name"].'</option>';
+            }
+		}
+		else
+		{
+			echo '<option value="0">鄉鎮區</option>';
+		}
+        ?>
+        </select>
+
+        <select id="drop_village" name="village_sn" >
+        <?php
+        if(count($village_list)>0) {
+			foreach ($village_list as $key => $item) {
+            	//echo '<option '.(tryGetData("village_sn", $edit_data)==$item["sn"]?"selected":"" ).' value="'.$item["sn"].'">'.$item["section_code"].' '.$item["section_name"].'</option>';
+            	echo '<option  value="'.$item["sn"].'">'.$item["section_code"].' '.$item["section_name"].'</option>';
+            }
+		} else {
+			echo '<option value="0">村里</option>';
+		}
+        ?>
+        </select>
 		</div>
 		<div class="col-xs-12 col-sm-3">
             <?php

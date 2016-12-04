@@ -37,7 +37,7 @@ class Comm extends Backend_Controller
 		$result = $this->it_model->runSql( $query,  $this->per_page_rows , $this->page , array('status'=>'desc', 'name'=>'asc'));
 		$list = array();
 		foreach ($result['data'] as $item) {
-			// 取得地理位置的文字(縣市鄉鎮村里)
+			// 取得所在區域的文字(縣市鄉鎮村里)
 			$this->load->model('auth_model');
 			$village = $this->auth_model->getVillageText($item['city_code'], $item['town_sn'], $item['village_sn']);
 			$village_text = '';

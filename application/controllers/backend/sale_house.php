@@ -1,13 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Sale_House extends Backend_Controller {
-	
-	function __construct() 
+
+	function __construct()
 	{
-		parent::__construct();		
-		
+		parent::__construct();
+
 	}
-	
+
 	/**
 	 * faq list page
 	 */
@@ -81,13 +81,16 @@ class Sale_House extends Backend_Controller {
 	{
 		$this->addCss("css/chosen.css");
 		$this->addJs("js/chosen.jquery.min.js");
-		
+
 
 		$this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
 		$this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
-		
-		$this->addCss("css/bootstrap-fonts.css");		
-			
+
+		$this->addCss("css/bootstrap-fonts.css");
+
+        //使用區域連動選單
+        $this->_useAreaOption($data);
+
 		//社區
 		$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
 		$data["community_list"] = $community_list["data"];
@@ -109,8 +112,8 @@ class Sale_House extends Backend_Controller {
 		$data["group_list"] = count($group_list["data"]) > 0 ? $group_list["data"] : array();
 		//---------------------------------------------------------------------------------------------------------------
 
-		$sys_user_group = array();		
-						
+		$sys_user_group = array();
+
 		if($sn == "")
 		{
 			$data["edit_data"] = array
@@ -120,27 +123,27 @@ class Sale_House extends Backend_Controller {
 				'forever' => 1,
 				'launch' => 1
 			);
-			
+
 			$data["sys_user_group"] = $sys_user_group;
 			$this->display("edit_view",$data);
 		}
-		else 
+		else
 		{
 			$result = $this->it_model->listData( "edoma_house_to_sale" , "sn =".$sn);
-			
-			if (count($result["data"]) > 0) {			
+
+			if (count($result["data"]) > 0) {
 				$edit_data = $result["data"][0];
-				
+
 				$edit_data["start_date"] = $edit_data["start_date"]==NULL?"": date( "Y-m-d" , strtotime( $edit_data["start_date"] ) );
 				$edit_data["end_date"] = $edit_data["end_date"]==NULL?"": date( "Y-m-d" , strtotime( tryGetData('end_date',$edit_data, '+1 month' ) ) );
-				
-				
+
+
 				$data['edit_data'] = $edit_data;
 				$this->display("edit_view",$data);
 			}
 			else
 			{
-				redirect(bUrl("index"));	
+				redirect(bUrl("index"));
 			}
 		}
 	}
@@ -150,21 +153,37 @@ class Sale_House extends Backend_Controller {
 	public function update()
 	{
 		$this->load->library('encrypt');
-		
+
 		foreach( $_POST as $key => $value )
 		{
-			$edit_data[$key] = $this->input->post($key,TRUE);			
+			$edit_data[$key] = $this->input->post($key,TRUE);
 		}
 
 		if ( ! $this->_validateData() ) {
 
+        $this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
+        $this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
+
+        $this->addCss("css/bootstrap-fonts.css");
+
+        //使用區域連動選單
+        $this->_useAreaOption($data);
+
+        //社區
+        $community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
+        $data["community_list"] = $community_list["data"];
+
+
+        $sn = $this->input->get("sn", TRUE);
+        $role = $this->input->get("role", TRUE);
+
 			$data["edit_data"] = $edit_data;
-			
+
 			$data["sys_user_group"] = array();
-			
+
 			$this->display("edit_view",$data);
 		}
-        else 
+        else
         {
 			$comm_id = NULL;
 			if ( isNotNull(tryGetData("comms", $edit_data, NULL)) ) {
@@ -209,7 +228,7 @@ class Sale_House extends Backend_Controller {
 				, "launch"		=>	tryGetData("launch", $edit_data, 0)
 				, "created" =>  date( "Y-m-d H:i:s" )
 				, "updated" =>  date( "Y-m-d H:i:s" )
-			);        	
+			);
 
 			if($edit_data["sn"] != FALSE)
 			{
@@ -219,16 +238,16 @@ class Sale_House extends Backend_Controller {
 				{
 					$this->showSuccessMessage();
 				}
-				else 
+				else
 				{
 					$this->showFailMessage();
 				}
-					
+
 			}
-			else 
+			else
 			{
-				$arr_data["created"] = date( "Y-m-d H:i:s" ); 	
-				
+				$arr_data["created"] = date( "Y-m-d H:i:s" );
+
 				$sale_sn = $this->it_model->addData( "edoma_house_to_sale" , $arr_data );
 				//$this->logData("新增人員[".$arr_data["id"]."]");
 
@@ -237,7 +256,7 @@ class Sale_House extends Backend_Controller {
 					$this->showSuccessMessage();
 
 				}
-				else 
+				else
 				{
 					$this->showFailMessage();
 				}
@@ -246,10 +265,10 @@ class Sale_House extends Backend_Controller {
 
 
 			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
-			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data); 
-			$orig_comm_id_array = explode(",", $orig_comm_id_list);		
-			
-			
+			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data);
+			$orig_comm_id_array = explode(",", $orig_comm_id_list);
+
+
 			//需要更新至web_menu_content的資料
 			//----------------------------------------------------------------
 			//dprint($comm_id_array);
@@ -267,13 +286,13 @@ class Sale_House extends Backend_Controller {
 			}
 			//$comm_id_ary
 			//----------------------------------------------------------------
-			
+
 			//web_menu_content需要刪除的檔案
 			//----------------------------------------------------------------
 			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
 			//dprint($del_comm_ary);
 			foreach( $del_comm_ary as $key => $del_comm_id )
-			{					
+			{
 				if(isNull($del_comm_id))
 				{
 					continue;
@@ -302,13 +321,13 @@ class Sale_House extends Backend_Controller {
 		$forever = tryGetValue($this->input->post('forever',TRUE), 0);
 
 		$this->form_validation->set_message('checkAdminAccountExist', 'Error Message');
-		
-		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');	
-		
-		
+
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+
+
 		$forever = tryGetValue($this->input->post('forever',TRUE),0);
 		if($forever!=1) {
-			$this->form_validation->set_rules( 'end_date', $this->lang->line("field_end_date"), 'required' );	
+			$this->form_validation->set_rules( 'end_date', $this->lang->line("field_end_date"), 'required' );
 		}
 		$this->form_validation->set_rules( 'start_date', $this->lang->line("field_start_date"), 'required' );
 
@@ -353,35 +372,35 @@ class Sale_House extends Backend_Controller {
 	public function photoSetting()
 	{
 		$this->addCss("css/chosen.css");
-		$this->addJs("js/chosen.jquery.min.js");		
-		
+		$this->addJs("js/chosen.jquery.min.js");
+
 		$edoma_house_to_sale_sn = tryGetData('sn', $_GET, NULL);
-		
+
 		if ( isNotNull($edoma_house_to_sale_sn) ) {
 			## 物件基本資料
 			$admin_info = $this->it_model->listData( "edoma_house_to_sale" , "sn =".$edoma_house_to_sale_sn);
-			
+
 			if (count($admin_info["data"]) > 0) {
 				$edit_data =$admin_info["data"][0];
-				
+
 				$data['house_data'] = $edit_data;
 
 				## 既有照片list
-				$exist_parking_list = $this->it_model->listData( "edoma_house_to_sale h LEFT JOIN edoma_house_to_sale_photo p ON h.sn = p.edoma_house_to_sale_sn" 
+				$exist_parking_list = $this->it_model->listData( "edoma_house_to_sale h LEFT JOIN edoma_house_to_sale_photo p ON h.sn = p.edoma_house_to_sale_sn"
 														, "h.del=0 and p.del=0 and edoma_house_to_sale_sn = ".$edoma_house_to_sale_sn , NULL , NULL , array("p.sn"=>"asc"));
 
 				$data["exist_photo_array"] = count($exist_parking_list["data"]) > 0 ? $exist_parking_list["data"] : array();
-				
+
 				$this->display("photo_setting_view",$data);
 			}
 			else
 			{
-				redirect(bUrl("index"));	
+				redirect(bUrl("index"));
 			}
 
 		} else {
 
-			redirect(bUrl("index"));	
+			redirect(bUrl("index"));
 		}
 	}
 
@@ -394,7 +413,7 @@ class Sale_House extends Backend_Controller {
 	{
 		$edit_data = array();
 		foreach( $_POST as $key => $value ) {
-			$edit_data[$key] = $this->input->post($key,TRUE);			
+			$edit_data[$key] = $this->input->post($key,TRUE);
 		}
 
 		$edoma_house_to_sale_sn = tryGetData('edoma_house_to_sale_sn', $edit_data, NULL);
@@ -450,7 +469,7 @@ class Sale_House extends Backend_Controller {
 						mkdir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/', 0777, true);
 				}
 				copy('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename , $this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename);
-				
+
 				// dest : C:/wamp2/www/commapi/upload/edoma/house_to_sale/1/20160627013812_628277.jpg
 
 				$update_data = $arr_data;
@@ -473,32 +492,32 @@ class Sale_House extends Backend_Controller {
 
 	public function deleteHouse()
 	{
-		
+
 		$del_ary = tryGetData("del",$_POST,array());
 
 		//社區主機刪除
 		//----------------------------------------------------------------------------------------------------
-		foreach ($del_ary as  $house_sn) 
+		foreach ($del_ary as  $house_sn)
 		{
 			//先同步社區 找出此售屋資訊有發佈到哪些社區
-			$tmp = $this->it_model->listData("edoma_house_to_sale", "sn=".$house_sn);	
+			$tmp = $this->it_model->listData("edoma_house_to_sale", "sn=".$house_sn);
 			if( $tmp["count"] == 0) {
 				continue;
-			} 
+			}
 			$house_data = $tmp["data"][0];
 
 
 
 			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
-			$comm_id_list = tryGetData("comm_id", $house_data); 
-			$comm_id_array = explode(",", $comm_id_list);		
-			
+			$comm_id_list = tryGetData("comm_id", $house_data);
+			$comm_id_array = explode(",", $comm_id_list);
+
 			//----------------------------------------------------------------
-			
+
 			//web_menu_content需要刪除的檔案
 			//----------------------------------------------------------------
 			foreach( $comm_id_array as $key => $del_comm_id )
-			{					
+			{
 				if(isNull($del_comm_id)) {
 					continue;
 				}
@@ -515,14 +534,14 @@ class Sale_House extends Backend_Controller {
 
 
 			$result = $this->it_model->updateData( "edoma_house_to_sale" , array("del"=>1, "updated"=>date("Y-m-d H:i:s")), "sn ='".$house_sn."'" );
-			
+
 		}
 		//----------------------------------------------------------------------------------------------------
 
-		
+
 		$this->showSuccessMessage();
-		
-		redirect(bUrl("index", FALSE));	
+
+		redirect(bUrl("index", FALSE));
 	}
 
 
@@ -539,14 +558,14 @@ class Sale_House extends Backend_Controller {
 			$sn = $tmp[0];
 			$edoma_house_to_sale_sn = $tmp[1];
 			$filename = $tmp[2];
-			
+
 			@unlink('./upload/website/house_to_sale/'.$house_to_sale_sn.'/'.$filename);
 			//unlink('./upload/website/house_to_sale/'.$house_to_sale_sn.'/thumb_'.$filename);
 
 			$del = $this->it_model->updateDB( "edoma_house_to_sale_photo" , array('del' => 1), "sn =".$sn." and edoma_house_to_sale_sn ='".$edoma_house_to_sale_sn."'" );
 
 			if ($del) {
-			
+
 				/* 同步 同步 同步 同步 同步 */
 				$update_data = $arr_data;
 				$update_data["edoma_sn"] = $sn;
@@ -574,13 +593,13 @@ class Sale_House extends Backend_Controller {
 
 
 	public function GenerateTopMenu()
-	{		
+	{
 		$this->addTopMenu(array("contentList", "updateLandSummary"));
 	}
 
 
 
-	
+
 }
 
 

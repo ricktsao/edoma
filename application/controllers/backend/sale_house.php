@@ -13,6 +13,10 @@ class Sale_House extends Backend_Controller {
 	 */
 	public function index()
 	{
+		//檢查client是否有po聯賣資訊
+		$this->checkClientPublish();
+		
+		
 		$condition = ' AND del=0 ';
 
 		// 指定客戶姓名
@@ -76,7 +80,65 @@ class Sale_House extends Backend_Controller {
 		$this->display("index_view",$data);
 	}
 
+	/**
+	 * 檢查client是否有po聯賣資訊
+	 */
+	public function checkClientPublish()
+	{
+		$publish_list = $this->it_model->listData("house_to_sale","del=0 and is_post=1");
 
+		foreach ($publish_list["data"] as $key => $arr_data)
+		{
+			$sn = $arr_data["sn"];
+			unset($arr_data["sn"]);
+			unset($arr_data["edoma_sn"]);
+			unset($arr_data["client_sync"]);
+			$arr_data["post_comm_id"] = $arr_data["comm_id"];
+
+			$add_sn = $this->it_model->addData("edoma_house_to_sale",$arr_data);
+			if($add_sn > 0 )
+			{
+				$upd_ok = $this->it_model->updateData("house_to_sale",array("is_post"=>2,"updated"=>date("Y-m-d H:i:s")),"sn = ".$sn );
+				
+				if($upd_ok)
+				{
+					$condition = 'del=0 AND comm_id="'.$arr_data["comm_id"].'" AND client_sn='.$arr_data['client_sn'];
+					$photo_list = $this->it_model->listData('house_to_sale_photo', $condition, NULL, NULL, array('filename'=>'asc'));
+					
+					foreach ($photo_list["data"] as $pho_info)
+					{
+						//圖片處理 img_filename	
+						$org_img_path = "/home/edoma/public_html/commapi/upload/".$arr_data["comm_id"]."/house_to_sale/".$pho_info["client_sn"]."/".$pho_info['filename'];
+						$new_img_path = "/home/edoma/public_html/edoma/upload/website/house_to_sale/".$add_sn."/".$pho_info['filename'];
+						
+						if (!is_dir("/home/edoma/public_html/edoma/upload/website/house_to_sale/".$add_sn))
+						{
+							mkdir("/home/edoma/public_html/edoma/upload/website/house_to_sale/".$add_sn,0777,true);
+						}
+						
+						copy( $org_img_path, $new_img_path);
+						
+						$pho_arr = array(
+							"edoma_house_to_sale_sn" => $add_sn,
+							"filename" => $pho_info['filename'],
+							"del" => 0,
+							"updated" => date("Y-m-d H:i:s"),
+							"updated_by" =>$pho_info['updated_by']
+						);
+						
+						$this->it_model->addData("edoma_house_to_sale_photo",$pho_arr);
+						
+					}
+					
+					
+				}
+				
+				
+			}
+		}
+	}
+	
+	
 	public function edit()
 	{
 		$this->addCss("css/chosen.css");

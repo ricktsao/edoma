@@ -102,12 +102,7 @@
 	echo textOption("地址","img_filename2",$edit_data);
 	?>
 	
-	<div class="form-group ">
-		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">收費金額</label>
-		<div class="col-xs-12 col-sm-6">
-			<input id="url" name="url" class="width-40" value="<?php echo tryGetData("url",$edit_data);?>" type="text"> 元			
-		</div>
-	</div>
+	
 	
 	<?php echo textOption("課程主旨","title",$edit_data); ?>
 	
@@ -115,7 +110,16 @@
 	  echo textAreaOption("課程內容","content",$edit_data);
 	?>	
 	
-	<?php echo checkBoxOption("收費","brief",$edit_data);?>
+	<div class="form-group ">
+		<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">收費金額</label>
+		<div class="col-xs-12 col-sm-6">
+			<input id="url" name="url" class="width-40" value="<?php echo tryGetData("url",$edit_data);?>" type="text"> 元			
+		</div>
+	</div>
+	
+	<?php 
+	//echo checkBoxOption("收費","brief",$edit_data);
+	?>
 	
 	<div class="form-group " style="display:none">
         <label class="col-xs-12 col-sm-2 control-label no-padding-right" for="content">圖片</label>

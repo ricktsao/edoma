@@ -288,6 +288,8 @@ function queryTownList()
                 //  移除全部的項目
                 resetTown();   
 				resetVillage();   
+				
+				$('#drop_town').append('<option value="" >鄉鎮區</option>');
                 for(i=0;i<vData.length;i++)
                 {
                     $('#drop_town').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["town_name"]+'</option>');                   
@@ -320,11 +322,13 @@ function queryVillageList()
             { 
                 //  移除全部的項目              
 				resetVillage();
+				
+				$('#drop_village').append('<option value="" >村里</option>');
                 for(i=0;i<vData.length;i++)
                 {
                     $('#drop_village').append('<option value="'+vData[i]["sn"]+'" >'+vData[i]["sn"] + ' ' +vData[i]["village_name"]+'</option>');                   
                 }
-                queryCommunityList();
+                //queryCommunityList();
             }
         }
     );
@@ -379,12 +383,14 @@ $(function() {
     $('#drop_city').change(function()
     {    	
     	queryTownList();
+		queryCommunityList();
     }); 
   
    
    $('#drop_town').change(function()
    {   		
    		queryVillageList();
+		queryCommunityList();
    });
    
    

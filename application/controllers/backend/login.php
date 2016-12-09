@@ -71,21 +71,9 @@ class Login extends CI_Controller {
 					";		
 				}
 				else 
-				{
-					$str_conditions = "account = ".$this->db->escape(strtolower($edit_data["id"]))." AND password = ".$this->db->escape(prepPassword($edit_data["password"]))." 
-					AND	
-						(
-							(	 
-								launch = 1
-								AND NOW() > start_date 
-								AND ( ( NOW() < end_date ) OR ( forever = '1' ) )
-							)
-							OR
-							(							
-								 is_default = 1
-							)
-						)
-					";
+				{	
+					//echo prepPassword($edit_data["password"]);die();
+					$str_conditions = "account = ".$this->db->escape(strtolower($edit_data["id"]))." AND password = ".$this->db->escape(prepPassword($edit_data["password"]));
 				}
 				
 				

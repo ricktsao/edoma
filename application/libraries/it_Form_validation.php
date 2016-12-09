@@ -55,11 +55,11 @@ class IT_Form_validation extends CI_Form_validation {
 	function checkAdminAccountExist()
 	{		
 		
-		$user_id = $this->CI->input->post("id",TRUE);		
+		$user_id = $this->CI->input->post("account",TRUE);		
 			
-		$condition = "id = '".$user_id."'";		
+		$condition = "account = '".$user_id."'";		
 		
-		$admin_list = $this->CI->it_model->listdata("sys_user", $condition);
+		$admin_list = $this->CI->it_model->listdata("edoma_user", $condition);
 		
 		
 		if ($admin_list["count"] > 0)

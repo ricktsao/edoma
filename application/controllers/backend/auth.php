@@ -18,26 +18,9 @@ class Auth extends Backend_Controller
 		$query_key = array();
 		foreach( $_GET as $key => $value ) {
 			$query_key[$key] = $this->input->get($key,TRUE);			
-		}
+		}	
 
-		$condition .= ' AND role != "I"' ;
-
-		// 指定客戶姓名
-		$keyword = tryGetData('keyword', $query_key, NULL);	
-		$data['given_keyword'] = '';
-		if(isNotNull($keyword)) {
-			$data['given_keyword'] = $keyword;
-			$condition .= " AND ( `id` like '%".$keyword."%' "
-						."      OR `name` like '%".$keyword."%' "
-						."      OR `account` like '%".$keyword."%'  ) "
-						;
-		}
-
-		$query = "select SQL_CALC_FOUND_ROWS s.* "
-						."    FROM sys_user s " //left join unit u on s.unit_sn = u.sn
-						."   where 1 ".$condition
-						."   order by field(`role`, 'I', 'M') ASC, s.building_id, s.name "
-						;
+		$query = "SELECT * FROM edoma_user";
 
 		$admin_list = $this->it_model->runSql( $query,  $this->per_page_rows , $this->page );
 //dprint( $admin_list["sql"]);
@@ -208,62 +191,35 @@ class Auth extends Backend_Controller
 		$this->addJs("js/chosen.jquery.min.js");		
 		
 		$admin_sn = $this->input->get("sn", TRUE);
-		$role = $this->input->get("role", TRUE);
-		//權組list
-		//---------------------------------------------------------------------------------------------------------------
-		if ( $role == 'I') {
-			$condi = ' AND title IN ("住戶", "管委會") AND title != "富網通" ';
-		} else {
-			$condi = ' AND title NOT IN ("住戶", "管委會") AND title != "富網通" ';
-		}
-
-		$group_list = $this->it_model->listData( "sys_user_group" , "launch = 1 ".$condi , NULL , NULL , array("sort"=>"asc","sn"=>"desc"));
-
-		$data["group_list"] = count($group_list["data"]) > 0 ? $group_list["data"] : array();
+		
 		//---------------------------------------------------------------------------------------------------------------
 		$sys_user_group = array();		
 						
 		if($admin_sn == "")
 		{
 			$data["edit_data"] = array
-			(
-				'role' => $role,
-				'gender' => 1,
-				'is_owner' => 1,
-				'is_contact' => 1,
-				'is_manager' => 0,
-				'gas_right' => 0,
-				'voting_right' => 0,
+			(			
 				'start_date' => date( "Y-m-d" ),
 				'forever' => 1,
 				'launch' => 1
 			);
 			
-			$data["sys_user_group"] = $sys_user_group;
-			$data['role'] = $role;
+			
+			
 			$this->display("admin_edit_view",$data);
 		}
 		else 
 		{
-			$admin_info = $this->it_model->listData( "sys_user" , "sn =".$admin_sn);
+			$admin_info = $this->it_model->listData( "edoma_user" , "sn =".$admin_sn);
 			
 			if (count($admin_info["data"]) > 0) {			
 				$edit_data =$admin_info["data"][0];
 				
 				$edit_data["start_date"] = $edit_data["start_date"]==NULL?"": date( "Y-m-d" , strtotime( $edit_data["start_date"] ) );
 				$edit_data["end_date"] = $edit_data["end_date"]==NULL?"": date( "Y-m-d" , strtotime( $edit_data["end_date"] ) );
-				
-						
-				$sys_user_belong_group = $this->it_model->listData("sys_user_belong_group","sys_user_sn = ".$edit_data["sn"]." and launch = 1" );				
-				foreach($sys_user_belong_group["data"] as $item)
-				{
-					array_push($sys_user_group,$item["sys_user_group_sn"]);	
-				}
-				
-				//dprint($sys_user_group);
-				$data["sys_user_group"] = $sys_user_group;
+			
 				$data['edit_data'] = $edit_data;
-				$data['role'] = tryGetData('role', $edit_data, $role);
+			
 				$this->display("admin_edit_view",$data);
 			}
 			else
@@ -276,7 +232,7 @@ class Auth extends Backend_Controller
 
 	public function updateAdmin()
 	{
-		$this->load->library('encrypt');
+		//$this->load->library('encrypt');
 		
 		foreach( $_POST as $key => $value )
 		{
@@ -285,18 +241,7 @@ class Auth extends Backend_Controller
 		
 		if ( ! $this->_validateAdmin())
 		{
-			//權組list
-			//---------------------------------------------------------------------------------------------------------------		
-			$group_list = $this->it_model->listData( "sys_user_group" , "launch = 1" , NULL , NULL , array("sort"=>"asc","sn"=>"desc"));		
-			$data["group_list"] = count($group_list["data"])>0?$group_list["data"]:array();
-			//---------------------------------------------------------------------------------------------------------------
-			
-			$role = $this->input->get("role", TRUE);
-
 			$data["edit_data"] = $edit_data;
-			$data['role'] = tryGetData('role', $edit_data, $role);
-			
-			$data["sys_user_group"] = array();
 			
 			//dprint($edit_data);
 			$this->display("admin_edit_view",$data);
@@ -305,32 +250,25 @@ class Auth extends Backend_Controller
         {	
         	$arr_data = array(				
         		//"email" =>$edit_data["email"]
-				  "name"		=>	tryGetData("name", $edit_data)
-				, "phone"		=>	tryGetData("phone", $edit_data)
-
-				, "gender"		=>	tryGetData("gender", $edit_data)
-				, "is_contact"		=>	tryGetData("is_contact", $edit_data)
-				, "voting_right"		=>	tryGetData("voting_right", $edit_data)
-				, "gas_right"		=>	tryGetData("gas_right", $edit_data)
-				, "is_manager"		=>	tryGetData("is_manager", $edit_data)
-				, "manager_title"		=>	tryGetData("manager_title", $edit_data)
-				, "is_owner"		=>	tryGetData("is_owner", $edit_data)
-				, "owner_addr"		=>	tryGetData("owner_addr", $edit_data)
-				, "start_date"	=>	tryGetData("start_date", $edit_data, NULL)
-				, "end_date"	=>	tryGetData("end_date", $edit_data, NULL)
-				, "forever"		=>	tryGetData("forever", $edit_data, 0)
-				, "launch"		=>	tryGetData("launch", $edit_data, 0)
-				, "updated" =>  date( "Y-m-d H:i:s" ) 				
+				  "name"		=>	tryGetData("name", $edit_data)				
+				, "forever"		=>	tryGetData("forever", $edit_data, 1)
+				, "launch"		=>	tryGetData("launch", $edit_data, 1)
+				, "updated" =>  date( "Y-m-d H:i:s" )
 			);        	
 			
 			if($edit_data["sn"] != FALSE)
 			{
-				//dprint($arr_data);
-				$arr_return = $this->it_model->updateDB( "sys_user" , $arr_data, "sn =".$edit_data["sn"] );
+				dprint($edit_data);
+				//echo $arr_data['password'];
+				if($edit_data['password']!=''){
+					$arr_data['password'] =  prepPassword($edit_data["password"]);
+				}				
+
+				$arr_return = $this->it_model->updateDB( "edoma_user" , $arr_data, "sn =".$edit_data["sn"] );
 				//dprint($this->db->last_query());
 				if($arr_return['success'])			
 				{					
-					$this->_updateWebAdminGroup($edit_data);
+				//	$this->_updateWebAdminGroup($edit_data);
 					$this->showSuccessMessage();					
 				}
 				else 
@@ -343,22 +281,17 @@ class Auth extends Backend_Controller
 			}
 			else 
 			{
-				if ( $edit_data["id"] == 'I') {			//住戶用 key code
-					$arr_data["id"] = $edit_data["id"];
-
-				} elseif ( in_array($edit_data["id"], array('G','M','S')) ) {
-					$arr_data["account"] = $edit_data["account"];
-					$arr_data["password"] = prepPassword($edit_data["password"]);	
-				}
-
-				$arr_data["created"] = date( "Y-m-d H:i:s" ); 	
+				$arr_data["account"] = $edit_data["account"];
+				$arr_data["password"] = prepPassword($edit_data["password"]);
+				$arr_data['created'] = 	 date( "Y-m-d H:i:s" );
+				$arr_data['created_by'] = "";
 				
-				$sys_user_sn = $this->it_model->addData( "sys_user" , $arr_data );
+				$sys_user_sn = $this->it_model->addData( "edoma_user" , $arr_data );
 				//$this->logData("新增人員[".$arr_data["id"]."]");
 				if($sys_user_sn > 0)
 				{				
 					$edit_data["sn"] = $sys_user_sn;
-					$this->_updateWebAdminGroup($edit_data);
+				//	$this->_updateWebAdminGroup($edit_data);
 					$this->showSuccessMessage();
 				}
 				else 
@@ -425,25 +358,17 @@ class Auth extends Backend_Controller
 
 	function _validateAdmin()
 	{
-		$sn = tryGetValue($this->input->post('sn',TRUE),0);
-		$role = tryGetValue($this->input->post('role',TRUE), 'M');
-		$is_manager = tryGetValue($this->input->post('is_manager',TRUE), 0);
-		$end_date = tryGetValue($this->input->post('end_date',TRUE), 0);
-		$forever = tryGetValue($this->input->post('forever',TRUE), 0);
+		$sn = tryGetValue($this->input->post('sn',TRUE),0);	
 
 
-		$this->form_validation->set_message('checkAdminAccountExist', 'Error Message');
+		$this->form_validation->set_message('checkAdminAccountExist', '帳號重複');
 		
 		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');	
 		
 		if($sn==0)
 		{
-			if ($role == 'I') {
-				$this->form_validation->set_rules('id', $this->lang->line("field_account"), 'trim|required|checkAdminAccountExist' );
-			} else {
-				$this->form_validation->set_rules('account', $this->lang->line("field_account"), 'trim|required|checkAdminAccountExist' );
-				$this->form_validation->set_rules('password', $this->lang->line("field_password"), 'trim|required|min_length[4]|max_length[10]' );
-			}
+			$this->form_validation->set_rules('account', $this->lang->line("field_account"), 'trim|required|checkAdminAccountExist' );
+			$this->form_validation->set_rules('password', $this->lang->line("field_password"), 'trim|required|min_length[4]|max_length[10]' );
 		}
 		
 		/*	
@@ -457,19 +382,8 @@ class Auth extends Backend_Controller
 		}
 		*/
 		$this->form_validation->set_rules( 'name', $this->lang->line("field_name"), 'required|max_length[30]' );
-		$this->form_validation->set_rules( 'phone', $this->lang->line("field_phone"), 'required|max_length[20]' );
-		if ($role != 'I') {
-			$this->form_validation->set_rules( 'title', $this->lang->line("field_title"), 'required|max_length[30]' );
-		}
-
-		if ($is_manager == 1) {
-			$this->form_validation->set_rules( 'manager_title', $this->lang->line("field_manager_title"), 'required|max_length[30]' );
-			$this->form_validation->set_rules( 'start_date', $this->lang->line("field_start_date"), 'required');
-			
-			if ($forever != 1) {
-				$this->form_validation->set_rules( 'end_date', $this->lang->line("field_end_date"), 'required' );
-			}
-		}
+		
+		
 
 		//$this->form_validation->set_rules('email', $this->lang->line("field_email"), 'trim|required|valid_email|checkAdminEmailExist' );
 		//$this->form_validation->set_rules( 'sys_user_group', $this->lang->line("field_admin_belong_group"), 'required' );
@@ -489,6 +403,16 @@ class Auth extends Backend_Controller
 		}
 		$this->showSuccessMessage();
 		redirect(bUrl("admin", FALSE));	
+	}
+
+	public function delAdmin(){
+		$sn = $this->input->get('sn',TRUE);
+		$query ="DELETE FROM edoma_user WHERE sn={$sn}";
+		echo $query;
+
+		$this->it_model->runSqlCmd($query);
+		redirect(bUrl("auth", FALSE));	
+
 	}
 
 	public function launchAdmin()

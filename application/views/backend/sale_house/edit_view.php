@@ -27,10 +27,11 @@
     }
     ?>
     <div class="form-group <?php echo $tmp;?>">
-        <label class="col-xs-12 col-sm-2 control-label no-padding-right" for="case_id">所在區域</label>
+        <label class="col-xs-12 col-sm-2 control-label no-padding-right" for="case_id">依區域篩選社區</label>
         <div class="col-xs-12 col-sm-5">
         <?php
-        if (tryGetData('sn', $edit_data) > 0) {
+        //if (tryGetData('sn', $edit_data) > 0) {
+        if (false) {
             echo '<p>目前為 &raquo; '.$edit_data["village"];
             echo '<p>變更為 &raquo; ';
         }

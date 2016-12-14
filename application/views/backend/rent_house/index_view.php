@@ -13,7 +13,7 @@
 </div>
 
 <form  role="search" action="<?php echo bUrl('index');?>">
-<article class="well">              
+<article class="well">
     <div class="btn-group">
 		<a class="btn  btn-sm btn-purple" href="<?php echo bUrl("edit", false);?>">
 			<i class="icon-edit bigger-120"></i>新增
@@ -28,21 +28,21 @@
 		<input type='text' size='1' name='livingroom' value='<?php echo $given_livingroom;?>'>廳
 		<input type='text' size='1' name='bathroom' value='<?php echo $given_bathroom;?>'>衛
 		<input type='text' size='1' name='balcony' value='<?php echo $given_balcony;?>'>陽台
-    </div>  
+    </div>
     <div class="btn-group">
 		<button type="submit" class="btn btn-primary btn-sm btn_margin"><i class="icon-search nav-search-icon"></i>搜尋</button>
     </div>
-</article>	
+</article>
 
 </form>
 
-<form action="" id="update_form" method="post" class="contentForm"> 
+<form action="" id="update_form" method="post" class="contentForm">
 		<div class="row">
 			<div class="col-xs-12">
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="table-responsive">
-							
+
 							<table id="sample-table-1" class="table table-striped table-bordered table-hover">
 								<thead>
 									<tr>
@@ -71,10 +71,18 @@
 									?>
 									<tr>
 										<td style='text-align: center'><?php echo ($i+1)+(($this->page-1) * 10);?></td>
-										<td style='text-align: center'><?php echo tryGetData('title', $item, '-');?></td>
+										<td style='text-align: center'>
+                                        <?php
+                                        if ( tryGetData('is_post', $item, 0) == 1) {
+                                            echo '<span class="label label-lg label-pink arrowed-right arrowed-in">聯賣</span>&nbsp;';
+                                        }
+                                        echo tryGetData('title', $item, '-');
+                                        ?>
+
+                                        </td>
 										<td>
 										<?php
-										echo sprintf('%d 房　<br />  %d 廳　<br />  %d 衛　<br /> %d 陽台' 
+										echo sprintf('%d 房　<br />  %d 廳　<br />  %d 衛　<br /> %d 陽台'
 													, tryGetData('room', $item)
 													, tryGetData('livingroom', $item)
 													, tryGetData('bathroom', $item)
@@ -96,9 +104,22 @@
 										</td>
 										<td><?php echo showEffectiveDate($item["start_date"], $item["end_date"], $item["forever"]) ?></td>
 										<td>
-											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("edit",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
-												<i class="icon-edit bigger-120"></i>編輯
-											</a>
+                                        <?php
+
+                                        if ( tryGetData('is_post', $item, 0) == 1) {
+                                        ?>
+                                            <a class="btn  btn-minier btn-pink" href="<?php echo bUrl("check",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
+                                                <i class="icon-edit bigger-120"></i>審核
+                                            </a>
+                                        <?php
+                                        } else {
+                                        ?>
+                                            <a class="btn  btn-minier btn-info" href="<?php echo bUrl("edit",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
+                                                <i class="icon-edit bigger-120"></i>編輯
+                                            </a>
+                                        <?php
+                                        }
+                                        ?>
 											<a class="btn  btn-minier btn-purple" href="<?php echo bUrl("photoSetting",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
 												<i class="icon-edit bigger-120"></i>物件照片
 											</a>
@@ -111,7 +132,7 @@
 										</td>
 										<?php
 										/*
-										<td>					
+										<td>
 											<div class="col-xs-3">
 												<label>
 													<input name="switch-field-1" class="ace ace-switch" type="checkbox"  <?php echo tryGetData('launch', $item)==1?"checked":"" ?> value="<?php echo tryGetData('sn', $item) ?>" onClick='javascript:launch(this);' />
@@ -138,11 +159,11 @@
 								</tr>
 								</tfoot>
 							</table>
-							
+
 						</div>
-						
-					</div>					
+
+					</div>
 				</div>
-				
+
 			</div>
 		</div>

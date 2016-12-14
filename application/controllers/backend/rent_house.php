@@ -90,6 +90,10 @@ class Rent_House extends Backend_Controller {
 			unset($arr_data["edoma_sn"]);
 			unset($arr_data["client_sync"]);
 			$arr_data["post_comm_id"] = $arr_data["comm_id"];
+            $arr_data["start_date"] = NULL;
+            $arr_data["end_date"] = NULL;
+            $arr_data["forever"] = 0;
+            $arr_data["launch"] = 0;
 
 			$add_row = $this->it_model->addData("edoma_house_to_rent",$arr_data);
 			if($add_row > 0 )
@@ -98,6 +102,7 @@ class Rent_House extends Backend_Controller {
 			}
 		}
 	}
+
 
 	public function edit()
 	{
@@ -174,7 +179,6 @@ class Rent_House extends Backend_Controller {
 	}
 
 
-
 	public function update()
 	{
 		$this->load->library('encrypt');
@@ -185,6 +189,7 @@ class Rent_House extends Backend_Controller {
 		}
 
 		if ( ! $this->_validateData() ) {
+
 			//權組list
 			//---------------------------------------------------------------------------------------------------------------
 			//$group_list = $this->it_model->listData( "sys_user_group" , "launch = 1" , NULL , NULL , array("sort"=>"asc","sn"=>"desc"));
@@ -210,12 +215,31 @@ class Rent_House extends Backend_Controller {
 			$data["edit_data"] = $edit_data;
 
 			$data["sys_user_group"] = array();
+            if (tryGetData('check', $edit_data, 1) == 1) {
+                //若為社區發佈上來的聯賣，需秀該社區資料以供聯繫 - - - - - - -
+                $comm_data = null;
+                if (tryGetData('is_post', $edit_data) == 1) {
+                    $post_comm_id = $edit_data['post_comm_id'];
+                    $query_comm = $this->it_model->listData('community', 'id="'.$post_comm_id.'"');
+                    $comm_data = $query_comm['data'][0];
 
-			$this->display("edit_view",$data);
+                }
+                $data['comm_data'] = $comm_data;
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+                $this->display("check_view", $data);
+                /**/
+                /*$this->showFailMessage();
+                redirect(bUrl('check'));*/
+
+            } else {
+                $this->display("edit_view", $data);
+            }
 		}
         else
         {
 
+dprint('there');die;
 			$comm_id_list = NULL;
 			if ( isNotNull(tryGetData("comms", $edit_data, NULL)) ) {
 				$comm_id_array = $edit_data['comms'];
@@ -308,11 +332,6 @@ class Rent_House extends Backend_Controller {
 
 
 
-
-
-
-
-
 			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
 			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data);
 			$orig_comm_id_array = explode(",", $orig_comm_id_list);
@@ -366,6 +385,7 @@ class Rent_House extends Backend_Controller {
 	}
 
 
+
 	function _validateData()
 	{
 		$sn = tryGetValue($this->input->post('sn',TRUE),0);
@@ -417,6 +437,97 @@ class Rent_House extends Backend_Controller {
 		//$this->form_validation->set_rules( 'sys_user_group', $this->lang->line("field_admin_belong_group"), 'required' );
 		return ($this->form_validation->run() == FALSE) ? FALSE : TRUE;
 	}
+
+
+
+
+
+
+    public function check()
+    {
+        $this->addCss("css/chosen.css");
+        $this->addJs("js/chosen.jquery.min.js");
+
+        $sn = $this->input->get("sn", TRUE);
+        $role = $this->input->get("role", TRUE);
+
+        $this->addCss("css/duallistbox/bootstrap-duallistbox.min.css");
+        $this->addJs("js/duallistbox/jquery.bootstrap-duallistbox.min.js");
+
+        $this->addCss("css/bootstrap-fonts.css");
+
+        //使用區域連動選單
+        $this->_useAreaOption($data);
+
+        //社區
+        $community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
+        $data["community_list"] = $community_list["data"];
+
+
+        //權組list
+        //---------------------------------------------------------------------------------------------------------------
+        if ( $role == 'I') {
+            $condi = ' AND title IN ("住戶", "管委會") AND title != "富網通" ';
+        } else {
+            $condi = ' AND title NOT IN ("住戶", "管委會") AND title != "富網通" ';
+        }
+
+        $group_list = $this->it_model->listData( "sys_user_group" , "launch = 1 ".$condi , NULL , NULL , array("sort"=>"asc","sn"=>"desc"));
+
+        $data["group_list"] = count($group_list["data"]) > 0 ? $group_list["data"] : array();
+        //---------------------------------------------------------------------------------------------------------------
+
+        $sys_user_group = array();
+
+        if($sn == "")
+        {
+            $data["edit_data"] = array
+            (
+                'start_date' => date( "Y-m-d" ),
+                'end_date' => date( "Y-m-d", strtotime("+1 month") ),
+                'forever' => 1,
+                'launch' => 1,
+                //'rent_type' => array(),
+                //'house_type' => array(),
+                'furniture' => '',
+                'electric' => ''
+            );
+
+            $data["sys_user_group"] = $sys_user_group;
+            $this->display("edit_view",$data);
+        }
+        else
+        {
+            $result = $this->it_model->listData( "edoma_house_to_rent" , "sn =".$sn);
+
+            if (count($result["data"]) > 0) {
+                $edit_data = $result["data"][0];
+
+                $edit_data["start_date"] = $edit_data["start_date"]==NULL?"": date( "Y-m-d" , strtotime( $edit_data["start_date"] ) );
+                $edit_data["end_date"] = $edit_data["end_date"]==NULL?"": date( "Y-m-d" , strtotime( tryGetData('end_date',$edit_data, '+1 month' ) ) );
+
+                //若為社區發佈上來的聯賣，需秀該社區資料以供聯繫 - - - - - - -
+                $comm_data = null;
+                if (tryGetData('is_post', $edit_data) == 1) {
+                    $post_comm_id = $edit_data['post_comm_id'];
+                    $query_comm = $this->it_model->listData('community', 'id="'.$post_comm_id.'"');
+                    $comm_data = $query_comm['data'][0];
+
+                }
+                $data['comm_data'] = $comm_data;
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+                $data['edit_data'] = $edit_data;
+                $this->display("check_view",$data);
+            }
+            else
+            {
+                redirect(bUrl("index"));
+            }
+        }
+    }
+
+
 
 	/**************************************************/
 	/**************************************************/

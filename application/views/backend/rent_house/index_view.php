@@ -73,9 +73,9 @@
 										<td style='text-align: center'><?php echo ($i+1)+(($this->page-1) * 10);?></td>
 										<td style='text-align: center'>
                                         <?php
-                                        if ( tryGetData('is_post', $item, 0) == 1) {
-                                            echo '<span class="label label-lg label-pink arrowed-right arrowed-in">聯賣</span>&nbsp;';
-                                        }
+                                        //if ( tryGetData('is_post', $item, 0) == 1) {
+                                        //    echo '<span class="label label-lg label-pink arrowed-right arrowed-in">聯賣</span>&nbsp;';
+                                        //}
                                         echo tryGetData('title', $item, '-');
                                         ?>
 
@@ -105,11 +105,17 @@
 										<td><?php echo showEffectiveDate($item["start_date"], $item["end_date"], $item["forever"]) ?></td>
 										<td>
                                         <?php
-
                                         if ( tryGetData('is_post', $item, 0) == 1) {
                                         ?>
                                             <a class="btn  btn-minier btn-pink" href="<?php echo bUrl("check",TRUE,NULL,array("sn"=>tryGetData('sn', $item))); ?>">
-                                                <i class="icon-edit bigger-120"></i>審核
+                                                <i class="icon-edit bigger-120"></i>
+                                                <?php
+                                                if ( tryGetData('launch', $item, 0) == 1) {
+                                                    echo '已發佈聯賣';
+                                                } else {
+                                                    echo '聯賣審核';
+                                                }
+                                                ?>
                                             </a>
                                         <?php
                                         } else {

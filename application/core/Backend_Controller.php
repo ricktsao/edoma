@@ -1516,7 +1516,7 @@ abstract class Backend_Controller extends IT_Controller
 		unset($edit_data["sn"]);
 		
 		
-		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_photo_sn ='".$edit_data["edoma_photo_sn"]."' " );
+		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' " );
 		
 		if($result === FALSE)
 		{
@@ -1602,11 +1602,11 @@ abstract class Backend_Controller extends IT_Controller
 		{
 			$condition = "city_code = '".$city_code."' ";
 			
-			if(isNotNull($town_sn))
+			if(isNotNull($town_sn) && $town_sn != '0')
 			{
 				$condition .= "AND town_sn = '".$town_sn."' ";
 				
-				if(isNotNull($village_sn))
+				if(isNotNull($village_sn)  && $village_sn != '0')
 				{
 					$condition .= "AND village_sn = '".$village_sn."' ";
 				}

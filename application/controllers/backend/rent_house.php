@@ -76,32 +76,75 @@ class Rent_House extends Backend_Controller {
 		$this->display("index_view",$data);
 	}
 
+
 	/**
 	 * 檢查client是否有po聯賣資訊
 	 */
-	public function checkClientPublish()
-	{
-		$publish_list = $this->it_model->listData("house_to_rent","del=0 and is_post=1");
+    public function checkClientPublish()
+    {
+        $publish_list = $this->it_model->listData("house_to_rent","del=0 and is_post=1");
 
-		foreach ($publish_list["data"] as $key => $arr_data)
-		{
-			$sn = $arr_data["sn"];
-			unset($arr_data["sn"]);
-			unset($arr_data["edoma_sn"]);
-			unset($arr_data["client_sync"]);
-			$arr_data["post_comm_id"] = $arr_data["comm_id"];
+        foreach ($publish_list["data"] as $key => $arr_data) {
+            $sn = $arr_data["sn"];
+            unset($arr_data["sn"]);
+            unset($arr_data["edoma_sn"]);
+            unset($arr_data["client_sync"]);
+            $arr_data["post_comm_id"] = $arr_data["comm_id"];
             $arr_data["start_date"] = NULL;
             $arr_data["end_date"] = NULL;
             $arr_data["forever"] = 0;
             $arr_data["launch"] = 0;
 
-			$add_row = $this->it_model->addData("edoma_house_to_rent",$arr_data);
-			if($add_row > 0 )
-			{
-				$this->it_model->updateData("house_to_rent",array("is_post"=>2,"updated"=>date("Y-m-d H:i:s")),"sn = ".$sn );
-			}
-		}
-	}
+
+            $add_sn = $this->it_model->addData("edoma_house_to_rent",$arr_data);
+            if ( $add_sn > 0 ) {
+                $upd_ok = $this->it_model->updateData("house_to_rent",array("is_post"=>2,"updated"=>date("Y-m-d H:i:s")),"sn = ".$sn );
+
+                if($upd_ok) {
+                    $condition = 'del=0 AND comm_id="'.$arr_data["comm_id"].'" AND client_sn='.$arr_data['client_sn'];
+                    $photo_list = $this->it_model->listData('house_to_rent_photo', $condition, NULL, NULL, array('filename'=>'asc'));
+
+                    foreach ($photo_list["data"] as $pho_info) {
+                        //圖片處理 img_filename
+
+                        $org_img_path = "/home/edoma/public_html/commapi/upload/".$arr_data["comm_id"]."/house_to_rent/".$pho_info["client_sn"]."/".$pho_info['filename'];
+                        $new_img_path = "/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn."/".$pho_info['filename'];
+
+                        if (!is_dir("/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn)) {
+                            mkdir("/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn,0777,true);
+                        }
+/*
+                        $org_img_path = "D:/wamp64/www/commapi/upload/".$arr_data["comm_id"]."/house_to_rent/".$pho_info["client_sn"]."/".$pho_info['filename'];
+                        $new_img_path = "D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn."/".$pho_info['filename'];
+
+                        if (!is_dir("D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn)) {
+                            mkdir("D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn,0777,true);
+                        }
+*/
+                        copy( $org_img_path, $new_img_path);
+
+                        $pho_arr = array(
+                        "edoma_house_to_rent_sn" => $add_sn,
+                        "filename" => $pho_info['filename'],
+                        "title" => $pho_info['title'],
+                        "del" => 0,
+                        "updated" => date("Y-m-d H:i:s"),
+                        "updated_by" =>$pho_info['updated_by']
+                        );
+                        $this->it_model->addData("edoma_house_to_rent_photo",$pho_arr);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 
 
 	public function edit()
@@ -239,7 +282,6 @@ class Rent_House extends Backend_Controller {
         else
         {
 
-dprint('there');die;
 			$comm_id_list = NULL;
 			if ( isNotNull(tryGetData("comms", $edit_data, NULL)) ) {
 				$comm_id_array = $edit_data['comms'];
@@ -341,12 +383,22 @@ dprint('there');die;
 			//----------------------------------------------------------------
 			//dprint($comm_id_array);
 			//dprint($orig_comm_id_array);
+            $post_comm_id = NULL;
+            if (tryGetData('is_post',$house_data)==1) {
+                $post_comm_id = tryGetData('post_comm_id', $house_data);
+            }
 			foreach( $comm_id_array as $key => $comm_id )
 			{
 				if(isNull($comm_id))
 				{
 					continue;
 				}
+                //若為社區聯賣，同步時須略過
+                if ( isNotNull($post_comm_id) ){
+                    if ( $post_comm_id == $comm_id){
+                        continue;
+                    }
+                }
 				$update_data = $arr_data;
 				$update_data["comm_id"] = $comm_id;
 				$update_data["del"] = 0;

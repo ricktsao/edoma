@@ -186,7 +186,8 @@ class Ad extends Backend_Controller {
 			$community_list = $this->it_model->listData("community","status =1",NULL,NULL,array("name"=>"asc"));
 			$data["community_list"] = $community_list["data"];	
 			
-			
+			//使用區域連動選單
+			$this->_useAreaOption($data);
 			
 			$data["edit_data"] = $edit_data;		
 			$this->display("content_form_view",$data);

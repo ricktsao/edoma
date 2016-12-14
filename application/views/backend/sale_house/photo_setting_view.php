@@ -26,10 +26,14 @@
 
 <div class="page-header">
 	<h1>
-		物件照片設定
+		物件照片
 		<small>
 			<i class="ace-icon fa fa-angle-double-right"></i>
-			
+            <?php
+            if (tryGetData('is_post',$house_data)==1) {
+                echo '此則為聯賣，故無法編修物件照片';
+            }
+            ?>
 		</small>
 	</h1>
 </div>
@@ -64,7 +68,7 @@
 				<div class="col-xs-12 col-sm-2"><span style='font-weight:bold'>
 
 				<?php
-				echo sprintf('%d 房 %d 廳 %d 衛 %d 陽台' 
+				echo sprintf('%d 房 %d 廳 %d 衛 %d 陽台'
 							, tryGetData('room', $house_data)
 							, tryGetData('livingroom', $house_data)
 							, tryGetData('bathroom', $house_data)
@@ -75,7 +79,7 @@
 				<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="url">樓 層：</label>
 				<div class="col-xs-12 col-sm-4"><span style='font-weight:bold'>
 				<?php
-				echo sprintf('共 %d 樓，位於 %d 樓' 
+				echo sprintf('共 %d 樓，位於 %d 樓'
 							, tryGetData('total_level', $house_data)
 							, tryGetData('locate_level', $house_data)
 							);
@@ -86,9 +90,10 @@
 
 
 		<div class="hr hr-16 hr-dotted"></div>
-			
-				
 
+        <?php
+        if (tryGetData('is_post',$house_data)!=1) {
+        ?>
 		<form action="<?php echo bUrl("updatePhoto")?>" method="post"  id="add_form" role="form" enctype="multipart/form-data">
 		<input type='hidden' name='edoma_house_to_sale_sn' value='<?php echo tryGetData('sn', $house_data); ?>'>
 			<div class="form-group">
@@ -114,19 +119,25 @@
 			</div>
 			</div>
 		</form>
+        <?php
+        }
+        ?>
 
 			<div class="form-group">
 				<div class="table-responsive">
 					<label class="col-xs-12 col-sm-2 control-label no-padding-right" for="id">物件照片：</label>
 					<div class="col-xs-12 col-sm-8">
-						<!-- <div style="float:right;" id="click_add_cust">
-							<button class="btn btn-success">新增照片</button>
-						</div> -->
+                        <?php
+                        if (tryGetData('is_post',$house_data)!=1) {
+                        ?>
 						<form method="post"  id="update_form" role="form">
 						<input type="hidden" name="cases_sn" value="<?php //echo $cases_sn;?>">
+                        <?php
+                        }
+                        ?>
 						<table id="sample-table-2" class="table table-striped table-bordered table-hover">
 							<thead>
-								<tr>										
+								<tr>
 									<th class="center" style="width:80px">
 										<label>
 											<input id="checkDelAll_custs" type="checkbox" class="ace"  />
@@ -162,17 +173,20 @@
 									?>
 									<tr>
 										<td class="center">
-											<?php
-											//if ( sizeof($exist_lands_array) < 1 && sizeof($exists_custs_array) > 0) {
-											?>
+                                            <?php
+                                            if (tryGetData('is_post',$house_data)!=1) {
+                                            ?>
 											<label>
-												<input type="checkbox" class="ace" name="del[]" value="<?php echo $sn.'!@'.$edoma_house_to_sale_sn.'!@'.$filename;?>" />
+												<input type="checkbox" class="ace"  name="del[]" value="<?php echo $sn.'!@'.$edoma_house_to_sale_sn.'!@'.$filename;?>" />
 												<span class="lbl"></span>
 											</label>
+                                            <?php
+                                            }
+                                            ?>
 										</td>
 										<td><?php echo '<a href="'.$url.'" title="檢視大圖" target=_blank><img border="0" width="150" src="'.$thumb.'?"></a>'; ?></td>
 										<td><?php echo tryGetData('title', $photo, '-');?></td>
-										
+
 										<td><?php echo tryGetData('updated', $photo, '-');?></td>
 										<td><?php echo tryGetData('updated_by', $photo, '-');?></td>
 									</tr>
@@ -183,6 +197,9 @@
 								<?php
 								}
 								?>
+                                <?php
+                                if (tryGetData('is_post',$house_data)!=1) {
+                                ?>
 								<tfoot>
 									<tr>
 										<td class="center">
@@ -193,8 +210,17 @@
 										<td colspan="7"></td>
 									</tr>
 								</tfoot>
+                                <?php
+                                }
+                                ?>
 						</table>
+                        <?php
+                        if (tryGetData('is_post',$house_data)!=1) {
+                        ?>
 						</form>
+                        <?php
+                        }
+                        ?>
 					</div>
 				</div>
 			</div>

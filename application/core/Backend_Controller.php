@@ -1,61 +1,61 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-abstract class Backend_Controller extends IT_Controller 
+abstract class Backend_Controller extends IT_Controller
 {
-	public $title = "";	//標題	
+	public $title = "";	//標題
 
 	public $left_menu_list = array();
 	public $top_menu_list = array();
 	public $module_id = "home";
-	public $module_sn = 0;	
-	public $module_parent_sn = 0;	
+	public $module_sn = 0;
+	public $module_parent_sn = 0;
 	public $module_item_map = array();
-	
+
 	public $module_info;
-	public $sub_title = "";	
+	public $sub_title = "";
 	public $page = 1;
 	public $per_page_rows = 20;
-		
+
 	public $img_config = array();
-	
+
 	public $navi = array();
 	public $navi_path = '';
-	
+
 	public $style_css = array();
 	public $style_js = array();
 
-	public $building_part_01 = "";	
-	public $building_part_02 = "";	
+	public $building_part_01 = "";
+	public $building_part_02 = "";
 	public $building_part_01_array = array();
 	public $building_part_02_array = array();
 
-	function __construct() 
+	function __construct()
 	{
 		parent::__construct();
-		
+
 		if(!checkUserLogin())
 		{
 			redirect(backendUrl("login","index",FALSE));
-		}		
-		
+		}
+
 		$this->initNavi();
 		$this->initBackend();
 		$this->getParameter();
-		$this->generateTopMenu();	
+		$this->generateTopMenu();
 		$this->lang->load("common");
 		//$this->traceLog();
-		//$this->config->set_item('language', $this->language_value);	
+		//$this->config->set_item('language', $this->language_value);
 
 	}
-	
-	
+
+
 	function initBackend()
 	{
 		$this->getLeftMenu();
 		$this->module_info = $this->getModuleInfo();
-		
+
 		/*
-		
+
 		// 取得戶別相關參數
 		$this->load->model('auth_model');
 		$this->building_part_01 = $this->auth_model->getWebSetting('building_part_01');
@@ -73,7 +73,7 @@ abstract class Backend_Controller extends IT_Controller
 		}
 
 
-		
+
 		$this->parking_part_01 = $this->auth_model->getWebSetting('parking_part_01');
 		$parking_part_01_value = $this->auth_model->getWebSetting('parking_part_01_value');
 		$this->parking_part_02 = $this->auth_model->getWebSetting('parking_part_02');
@@ -86,14 +86,14 @@ abstract class Backend_Controller extends IT_Controller
 		if (isNotNull($parking_part_02_value)) {
 			$this->parking_part_02_array = array_merge(array(0=>' -- '), explode(',', $parking_part_02_value));
 		}
-		
-		
+
+
 		*/
 	}
-	
-	
-	
-	
+
+
+
+
 	public function getParameter()
 	{
 		$this->page = $this->input->get('page',TRUE);
@@ -101,155 +101,155 @@ abstract class Backend_Controller extends IT_Controller
 		{
 			$this->page = 1;
 		}
-		$this->per_page_rows =	$this->config->item('per_page_rows','pager');		
+		$this->per_page_rows =	$this->config->item('per_page_rows','pager');
 	}
-	
+
 	private function _checkAuth()
 	{
 		if($this->module_id != "home")
 		{
 			$admin_auth = $this->session->userdata("user_auth");
-		
+
 			if( ! in_array($this->module_id, $admin_auth) )
 			{
 				$this->redirectHome();
 			}
-		}		
-		
+		}
+
 	}
 
-	
-	
-	
+
+
+
 	//取得單元上方子選單
-	abstract public function generateTopMenu();	
+	abstract public function generateTopMenu();
 
 	protected function getModuleInfo()
-	{	
-		$this->module_id = $this->uri->segment(2);				
-		$module_info = $this->it_model->listData("edoma_module" , "id = '".$this->module_id."' ");	
-		
+	{
+		$this->module_id = $this->uri->segment(2);
+		$module_info = $this->it_model->listData("edoma_module" , "id = '".$this->module_id."' ");
+
 		//echo 'test';
 		//dprint($module_info);
-	
+
 		if( sizeof($module_info["data"])>0)
 		{
-			$this->module_sn = $module_info["data"][0]["sn"];			
-			$this->module_parent_sn = $module_info["data"][0]["parent_sn"];		
-			
+			$this->module_sn = $module_info["data"][0]["sn"];
+			$this->module_parent_sn = $module_info["data"][0]["parent_sn"];
+
 			$this->addNavi($module_info["data"][0]["title"], fUrl("index"));
-			//$this->addNavi("test", fUrl("index"));		
+			//$this->addNavi("test", fUrl("index"));
 		  	return $module_info["data"][0];
 		}
-		else 
-		{						
+		else
+		{
 			return array("id"=>"","title"=>"");
 		}
 	}
 
-	
-	
+
+
 	protected function getLeftMenu()
 	{
 		$condition = " type=1 and launch = 1";
-		
+
 		$sort = array
 		(
-			"sort" => "asc" 
-		);		
-		
+			"sort" => "asc"
+		);
+
 		$left_menu_list = $this->it_model->listData("edoma_module"," type=1 and level=1 and launch=1",NULL,NULL,$sort);
 		$this->left_menu_list = $this->_adjustLeftMenu($left_menu_list["data"]);
-		$l2_list = $this->it_model->listData("edoma_module"," type=1 and level=2 and launch=1",NULL,NULL,$sort);	
+		$l2_list = $this->it_model->listData("edoma_module"," type=1 and level=2 and launch=1",NULL,NULL,$sort);
 		$l2_list = $this->_adjustLeftMenu($l2_list["data"]);
-		
-		foreach ($l2_list as $item) 
+
+		foreach ($l2_list as $item)
 		{
 			$this->module_item_map[$item["parent_sn"]]["item_list"][]=$item;
 		}
-		
+
 		//dprint($this->module_item_map);
-		
+
 		//$this->module_item_map = $this->it_model->convertArrayToKeyArray($module_item_list,"module_sn");
 
 		//dprint($this->module_item_map);
-		
+
 	}
-	
+
 	private function _adjustLeftMenu($left_menu_list)
-	{				
+	{
 		if($left_menu_list!=FALSE)
 		{
 			for($i=0; $i<sizeof($left_menu_list);$i++)
 			{
 				$left_menu_list[$i]["url"] = base_url().$this->config->item('backend_name')."/".$left_menu_list[$i]["id"];
 			}
-		}		
+		}
 		return $left_menu_list;
 	}
-	
-	
-	
+
+
+
 	function initNavi()
-	{	
-		$this->navi["首頁"] = backendUrl();		
+	{
+		$this->navi["首頁"] = backendUrl();
 	}
-	
+
 	function addNavi($key,$url)
 	{
-		$this->navi[$key] = $url;	
+		$this->navi[$key] = $url;
 	}
-	
-	
+
+
 	function buildNavi()
 	{
 		$navi_size = count($this->navi);
 		$navi_count = 0;
-		foreach ($this->navi as $key => $value) 
+		foreach ($this->navi as $key => $value)
 		{
 			$navi_count++;
-			
+
 			if($navi_count == 1)
 			{
-				$this->navi_path .= 
+				$this->navi_path .=
 				'<li>
 					<i class="icon-home home-icon"></i>
 					<a href="'.backendUrl().'">'.$key.'</a>
 				</li>';
-				
-			}			
+
+			}
 			else if($navi_size != $navi_count && $key == "首頁")
 			{
-				$this->navi_path .= 
-				'<li class="active">			
+				$this->navi_path .=
+				'<li class="active">
 					<a href="'.$value.'">'.$key.'</a>
 				</li>';
 			}
-			else 
+			else
 			{
-				$this->navi_path .= 
+				$this->navi_path .=
 				'<li class="active">'.$key.'</li>';
 			}
 
 		}
-		
+
 		$this->navi_path = '<ul class="breadcrumb">'.$this->navi_path.'</ul>';
-		
-		
+
+
 	}
-	
-	
-		
+
+
+
 	/**
 	 * 回到backend 首頁
-	 */	
+	 */
 	public function redirectHome()
 	{
 		header("Location:".base_url().$this->config->item('backend_name')."/home");
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 登出
 	 */
@@ -259,11 +259,11 @@ abstract class Backend_Controller extends IT_Controller
 		logData("後台登出-".$who, 1);
 
 		$this->sysLogout();
-	}	
+	}
 
-	
-	
-	
+
+
+
 	/**
 	 * output view
 	 */
@@ -271,50 +271,50 @@ abstract class Backend_Controller extends IT_Controller
 	{
 		if(strrpos($view, "/") === FALSE)
 		{
-			$view = $this->config->item('backend_name').'/'.$this->router->fetch_class()."/".$view;	
-		}		
-		
-		
+			$view = $this->config->item('backend_name').'/'.$this->router->fetch_class()."/".$view;
+		}
+
+
 		$data['templateUrl'] = $this->config->item("template_backend_path");
-		
+
 		$data['module_info'] = $this->getModuleInfo();
-		$data['module_id'] = $this->module_id;		
-		$data['module_sn'] = $this->module_sn;	
-		$data['module_parent_sn'] = $this->module_parent_sn;	
-		
-		
-		$data['backend_message'] =$this->session->flashdata('backend_message');		
-		$data['top_menu_list'] = $this->top_menu_list;	
+		$data['module_id'] = $this->module_id;
+		$data['module_sn'] = $this->module_sn;
+		$data['module_parent_sn'] = $this->module_parent_sn;
+
+
+		$data['backend_message'] =$this->session->flashdata('backend_message');
+		$data['top_menu_list'] = $this->top_menu_list;
 		$data['left_menu_list'] = $this->left_menu_list;
 		$data['module_item_map'] = $this->module_item_map;
-		
+
 		//麵包屑
 		$this->buildNavi();
-		$data['navi_path'] = $this->navi_path;		
-		$data['breadcrumb_area'] = $this->load->view($this->config->item('backend_name').'/template_breadcrumb_view', $data, TRUE);	
-		
-		
+		$data['navi_path'] = $this->navi_path;
+		$data['breadcrumb_area'] = $this->load->view($this->config->item('backend_name').'/template_breadcrumb_view', $data, TRUE);
+
+
 		//內頁title區
 		$data['page_header_area'] = $this->load->view($this->config->item('backend_name').'/template_page_header_view', $data, TRUE);
-		
+
 		//左側選單
 		$data['nvai_menu'] = $this->load->view($this->config->item('backend_name').'/template_navi_view', $data, TRUE);
-		
+
 		//提示訊提
 		$data['alert_message_area'] = $this->load->view($this->config->item('backend_name').'/template_alert_message_view', $data, TRUE);
-		
+
 		//js & css
-		$this->_bulidJsCss($data);	
-		
-		
-		$data['page_content'] = $this->load->view($view, $data, TRUE);		
-		
-		//$data['header_area'] = $this->load->view($this->config->item('backend_name').'/template_header_view', $data, TRUE);		
+		$this->_bulidJsCss($data);
+
+
+		$data['page_content'] = $this->load->view($view, $data, TRUE);
+
+		//$data['header_area'] = $this->load->view($this->config->item('backend_name').'/template_header_view', $data, TRUE);
 		//$data['left_menu'] = $this->load->view($this->config->item('backend_name').'/template_left_menu_view', $data, TRUE);
-		
-		
-		 //dprint($this->left_menu_list); 
-		
+
+
+		 //dprint($this->left_menu_list);
+
 		// 讓瀏覽器不快取
 		$this->output->set_header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 		$this->output->set_header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
@@ -323,37 +323,37 @@ abstract class Backend_Controller extends IT_Controller
 
 		return $this->load->view($this->config->item('backend_name').'/template_index_view', $data);
 	}
-	
+
 	/*2代*/
 	function displayPlus($view, $data = array() )
-	{	
+	{
 		$data["language_value"] = $this->language_value;
-		
+
 		$view="/backend/".$this->router->fetch_class()."/".$view;
 		$data['content'] = $this->load->view($view, $data, TRUE);
-		
+
 		$data['backend_message'] =$this->session->flashdata('backend_message');
-		$data['language_select_list'] = $this->language_select_list;	
-		$data['top_menu_list'] = $this->top_menu_list;	
-		$data['left_menu_list'] = $this->left_menu_list;	
-		$data['header_area'] = $this->load->view('backend/template_header_view', $data, TRUE);		
+		$data['language_select_list'] = $this->language_select_list;
+		$data['top_menu_list'] = $this->top_menu_list;
+		$data['left_menu_list'] = $this->left_menu_list;
+		$data['header_area'] = $this->load->view('backend/template_header_view', $data, TRUE);
 		$data['left_menu'] = $this->load->view('backend/template_left_menu_view', $data, TRUE);
-		
+
 		return $this->load->view('backend/template_index_view', $data);
 	}
-	
+
 	function addCss($css_value)
 	{
 		array_push($this->style_css, $css_value);
-		
+
 	}
-	
+
 	function addJs($js_value)
 	{
 		array_push($this->style_js, $js_value);
 	}
-	
-	
+
+
 	/**
 	 * 組view所需css及js
 	 */
@@ -361,61 +361,61 @@ abstract class Backend_Controller extends IT_Controller
 	{
 		$data['style_css'] = '';
 		$data['style_js'] = '';
-		foreach ($this->style_css as $value) 
+		foreach ($this->style_css as $value)
 		{
-			$data['style_css'] .= '<link href="'.base_url().$this->config->item("template_backend_path").$value.'" rel="stylesheet" type="text/css" />';    	
+			$data['style_css'] .= '<link href="'.base_url().$this->config->item("template_backend_path").$value.'" rel="stylesheet" type="text/css" />';
 		}
-		
-		
-		foreach ($this->style_js as $value) 
+
+
+		foreach ($this->style_js as $value)
 		{
 			$data['style_js'] .= '<script type="text/javascript" src="'.base_url().$this->config->item("template_backend_path").$value.'"></script>';
 		}
 	}
-	
-	
-	
+
+
+
 	/**
-	 * items:相關action  
+	 * items:相關action
 	 */
 	public function addTopMenu($items = array())
 	{
-		
+
 		$action = "index";
 		if(sizeof($items)>0)
 		{
 			$action = $items[0];
-		}				
-		
+		}
+
 		$url = base_url().$this->config->item('backend_name')."/".$this->router->fetch_class()."/".$action;
-		
+
 		$this->top_menu_list[] = array("url"=>$url,"items"=>$items);
 	}
-	
+
 	public function setSubTitle($sub_title = "")
 	{
 		$this->sub_title = $sub_title;
 	}
-	
-	
+
+
 	public function index()
 	{
 		if($this->top_menu_list!= FALSE && sizeof($this->top_menu_list) > 0)
 		{
-			redirect($this->top_menu_list[0]["url"]);	
-		}			
+			redirect($this->top_menu_list[0]["url"]);
+		}
 		else
 		{
-			$this->redirectHome();	
-		}		
+			$this->redirectHome();
+		}
 	}
-		
-	
+
+
 	/**
 	 * launch item
 	 * @param	string : launch table
 	 * @param	string : redirect action
-	 * 
+	 *
 	 */
 	public function launchItems($launch_str_table,$redirect_action)
 	{
@@ -423,58 +423,58 @@ abstract class Backend_Controller extends IT_Controller
 		if( isset( $_POST['launch_org'] ) )
 		{
 			$launch_org = $_POST['launch_org'];
-		}			
+		}
 		else
 		{
 			$launch_org = array();
 		}
-			
-		
+
+
 		//被設為啟用的
 		if( isset( $_POST['launch'] ) )
 		{
 			$launch = $_POST['launch'];
 		}
-		else 
+		else
 		{
 			$launch = array();
-		}		
-		
-		
+		}
+
+
 		//要更改為啟用的
 		$launch_on = array_values( array_diff( $launch , $launch_org ) );
-		
+
 		//要更改為停用的
 		$launch_off = array_values( array_diff( $launch_org , $launch ) );
-		
-		
-		
+
+
+
 		//啟用
 		if( sizeof( $launch_on ) > 0 )
 		{
-			$this->it_model->updateData( $launch_str_table , array("launch" => 1),"sn in (".implode(",", $launch_on).")" );	
+			$this->it_model->updateData( $launch_str_table , array("launch" => 1),"sn in (".implode(",", $launch_on).")" );
 		}
-		
-		
+
+
 		//停用
 		if( sizeof( $launch_off ) > 0 )
 		{
-			$this->it_model->updateData( $launch_str_table , array("launch" => 0),"sn in (".implode(",", $launch_off).")" );	
+			$this->it_model->updateData( $launch_str_table , array("launch" => 0),"sn in (".implode(",", $launch_off).")" );
 		}
-		
+
 		//$this->output->enable_profiler(TRUE);
-		
+
 		$this->showSuccessMessage();
-		redirect(bUrl($redirect_action));	
+		redirect(bUrl($redirect_action));
 	}
-	
-	
-	
+
+
+
 	/**
 	 * delete item
 	 * @param	string : launch table
 	 * @param	string : redirect action
-	 * 
+	 *
 	 */
 	public function deleteItem($launch_str_table,$redirect_action)
 	{
@@ -483,18 +483,18 @@ abstract class Backend_Controller extends IT_Controller
 		{
 			foreach ($del_ary as $item_sn)
 			{
-				$this->it_model->deleteData( $launch_str_table , array("sn"=>$item_sn) );	
+				$this->it_model->deleteData( $launch_str_table , array("sn"=>$item_sn) );
 			}
-		}		
+		}
 		$this->showSuccessMessage();
-		redirect(bUrl($redirect_action, FALSE));	
+		redirect(bUrl($redirect_action, FALSE));
 	}
-	
+
 	/**
 	 * delete item
 	 * @param	string : launch table
 	 * @param	string : redirect action
-	 * 
+	 *
 	 */
 	public function deleteItemAndFile($launch_str_table,$redirect_action,$del_forder = '')
 	{
@@ -502,19 +502,19 @@ abstract class Backend_Controller extends IT_Controller
 		if($del_ary!= FALSE && count($del_ary)>0)
 		{
 			foreach ($del_ary as $item_sn)
-			{				
+			{
 				$this->it_model->deleteData( $launch_str_table , array("sn"=>$item_sn) );
-				
+
 				if($this->input->post('del_file_'.$item_sn,TRUE) !== FALSE)
 				{
-					@unlink($del_forder.$this->input->post('del_file_'.$item_sn,TRUE));		
-				}	
+					@unlink($del_forder.$this->input->post('del_file_'.$item_sn,TRUE));
+				}
 			}
-		}		
+		}
 		$this->showSuccessMessage();
-		redirect(bUrl($redirect_action, FALSE));	
+		redirect(bUrl($redirect_action, FALSE));
 	}
-	
+
 	public function showSuccessMessage($msg=null)
 	{
 		if ( isNotNull($msg) ) {
@@ -523,7 +523,7 @@ abstract class Backend_Controller extends IT_Controller
 			$this->showMessage('資料更新成功!!');
 		}
 	}
-	
+
 	public function showFailMessage($msg=null)
 	{
 		if ( isNotNull($msg) ) {
@@ -532,154 +532,154 @@ abstract class Backend_Controller extends IT_Controller
 			$this->showMessage('資料更新失敗，請稍後再試!!','backend_error');
 		}
 	}
-	
+
 	public function showMessage($message = '', $calss = 'backend_message')
 	{
 		$this->session->set_flashdata('backend_message',$message);
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * page edit page
 	 */
 	public function editPage()
 	{
-		
+
 		$page_sn = $this->input->get('sn');
-			
-		$this->sub_title = $this->lang->line("page_form");	
-		
+
+		$this->sub_title = $this->lang->line("page_form");
+
 		$page_info = $this->it_model->listData("html_page","page_id ='".$this->router->fetch_class()."'");
-		
-				
+
+
 		if($page_info["count"] == 0)
 		{
 			$data["edit_data"] = array
 			(
 				'sort' =>500,
 				'launch' =>1
-			);			
+			);
 		}
-		else 
-		{			
-			$data["edit_data"] = $page_info["data"][0];		
+		else
+		{
+			$data["edit_data"] = $page_info["data"][0];
 		}
-		
-		$this->display($this->config->item('backend_name')."/page/page_form_view",$data);		
+
+		$this->display($this->config->item('backend_name')."/page/page_form_view",$data);
 	}
-	
-	
+
+
 	/**
 	 * 更新page
 	 */
 	public function updatePage()
-	{	
+	{
 		foreach( $_POST as $key => $value )
 		{
-			$edit_data[$key] = $this->input->post($key,TRUE);			
+			$edit_data[$key] = $this->input->post($key,TRUE);
 		}
-		$edit_data["content"] = $this->input->post("content");	
-				
+		$edit_data["content"] = $this->input->post("content");
+
 		if ( ! $this->_validatepage())
 		{
-			$data["edit_data"] = $edit_data;		
-				
+			$data["edit_data"] = $edit_data;
+
 			$this->display($this->config->item('backend_name')."/page/page_form_view",$data);
 		}
-        else 
+        else
         {
-        			
+
         	$arr_data = array
-        	(	
-        		  "title" =>  tryGetData("title",$edit_data)     
-				, "page_id" =>  $this->router->fetch_class()  		
+        	(
+        		  "title" =>  tryGetData("title",$edit_data)
+				, "page_id" =>  $this->router->fetch_class()
 				, "start_date" => date( "Y-m-d" )
 				, "end_date" => NULL
-				, "forever" => 1	
-				, "launch" => 1	
+				, "forever" => 1
+				, "launch" => 1
 				, "sort" => tryGetData("sort",$edit_data,500)
 				, "target" => tryGetData("target",$edit_data)
 				, "content" => tryGetData("content",$edit_data)
 				, "update_date" => date( "Y-m-d H:i:s" )
-			);        	
-			
-					
-			
+			);
+
+
+
 			if(isNotNull($edit_data["sn"]))
 			{
 				if($this->it_model->updateData( "html_page" , $arr_data, "sn =".$edit_data["sn"] ))
-				{					
-					$this->showSuccessMessage();					
+				{
+					$this->showSuccessMessage();
 				}
-				else 
+				else
 				{
 					$this->showFailMessage();
-				}				
+				}
 			}
-			else 
-			{			
-				
+			else
+			{
+
 				$page_sn = $this->it_model->addData( "html_page" , $arr_data );
 				if($page_sn > 0)
-				{				
-					$edit_data["sn"] = $page_sn;
-					$this->showSuccessMessage();							
-				}
-				else 
 				{
-					$this->showFailMessage();					
-				}				
-			}			
-			
-			redirect(bUrl("editPage"));		
-        }	
+					$edit_data["sn"] = $page_sn;
+					$this->showSuccessMessage();
+				}
+				else
+				{
+					$this->showFailMessage();
+				}
+			}
+
+			redirect(bUrl("editPage"));
+        }
 	}
-	
+
 	/**
 	 * 驗證page edit 欄位是否正確
 	 */
 	function _validatePage()
 	{
-	
-		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');		
 
-		//$this->form_validation->set_rules( 'page_id', "Page ID", 'required|alpha_dash' );	
-		$this->form_validation->set_rules( 'title', "單元名稱", 'required' );	
-		
+		$this->form_validation->set_error_delimiters('<div class="error">', '</div>');
+
+		//$this->form_validation->set_rules( 'page_id', "Page ID", 'required|alpha_dash' );
+		$this->form_validation->set_rules( 'title', "單元名稱", 'required' );
+
 		return ($this->form_validation->run() == FALSE) ? FALSE : TRUE;
 	}
-	
+
 	/**
 	 * 分頁
-	 */	
+	 */
 	public function getPager($total_count,$cur_page,$per_page,$redirect_action)
 	{
 		$config['total_rows'] = $total_count;
 		$config['cur_page'] = $cur_page;
-		$config['per_page'] = $per_page;		
-		
+		$config['per_page'] = $per_page;
+
 		$this->pagination->initialize($config);
-		$pager = $this->pagination->create_links();		
+		$pager = $this->pagination->create_links();
 		$pager['action'] = $redirect_action;
 		$pager['per_page_rows'] = $per_page;
-		$pager['total_rows'] = $total_count;		
+		$pager['total_rows'] = $total_count;
 		//$offset = $this->pagination->offset;
 		//$per_page = $this->pagination->per_page;
-				
-		return $pager;	
-	} 
-	
-	
+
+		return $pager;
+	}
+
+
 	//記得要加上media bank權限
 	function loadElfinder()
 	{
 		$this->load->helper('path');
-	  
+
 		$opts = array(
 		// 'debug' => true,
-		
+
 			'roots' => array(
 				array(
 					'driver'        => 'LocalFileSystem',   // driver for accessing file system (REQUIRED)
@@ -692,50 +692,50 @@ abstract class Backend_Controller extends IT_Controller
 
 	  $this->load->library('elfinderlib', $opts);
 	}
-	
-	
+
+
 	public function sortContent($table_name = "web_menu_content", $redirect_page = "contentList")
 	{
-		$sort_ary = $this->input->post('sort',TRUE);	
-		$sort_sn_ary = $this->input->post('sort_sn',TRUE);	
-		
-		for ($i=0; $i < count($sort_ary) ; $i++) 
+		$sort_ary = $this->input->post('sort',TRUE);
+		$sort_sn_ary = $this->input->post('sort_sn',TRUE);
+
+		for ($i=0; $i < count($sort_ary) ; $i++)
 		{
 			$this->it_model->updateData( $table_name , array("sort" => $sort_ary[$i]),"sn ='".$sort_sn_ary[$i]."'" );
 		}
 
 		$this->showSuccessMessage();
-		redirect(bUrl($redirect_page, TRUE));	
+		redirect(bUrl($redirect_page, TRUE));
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	function profiler()
 	{
-		$this->output->enable_profiler(TRUE);	
+		$this->output->enable_profiler(TRUE);
 	}
-	
-	
+
+
 	function dealPost()
 	{
 		foreach( $_POST as $key => $value )
 		{
-			$edit_data[$key] = $this->input->post($key,TRUE);			
+			$edit_data[$key] = $this->input->post($key,TRUE);
 		}
-		$edit_data["content"] = $this->input->post("content");	
-		
+		$edit_data["content"] = $this->input->post("content");
+
 		$arr_data = array
-		(				
-		     "sn" => tryGetData("sn",$edit_data,NULL)	
-			, "comm_id" => $this->getCommId()	
-			, "parent_sn" => tryGetData("parent_sn",$edit_data,NULL)	
-			, "title" => tryGetData("title",$edit_data)	
+		(
+		     "sn" => tryGetData("sn",$edit_data,NULL)
+			, "comm_id" => $this->getCommId()
+			, "parent_sn" => tryGetData("parent_sn",$edit_data,NULL)
+			, "title" => tryGetData("title",$edit_data)
 			, "brief" => tryGetData("brief",$edit_data)
-			, "brief2" => tryGetData("brief2",$edit_data)	
-			, "id" => tryGetData("id",$edit_data,NULL)	
-			, "content_type" => tryGetData("content_type",$edit_data)	
+			, "brief2" => tryGetData("brief2",$edit_data)
+			, "id" => tryGetData("id",$edit_data,NULL)
+			, "content_type" => tryGetData("content_type",$edit_data)
 			, "filename" => tryGetData("filename",$edit_data)
 			, "start_date" => tryGetData("start_date",$edit_data,date( "Y-m-d H:i:s" ))
 			, "end_date" => tryGetData("end_date",$edit_data,NULL)
@@ -747,19 +747,19 @@ abstract class Backend_Controller extends IT_Controller
 			, "target" => tryGetData("target",$edit_data,0)
 			, "content" => tryGetData("content",$edit_data)
 			, "update_date" =>  date( "Y-m-d H:i:s" )
-		);        	
-		
+		);
+
 		if(isNotNull(tryGetData("img_filename",$edit_data)))
 		{
 			$arr_data["img_filename"] = tryGetData("img_filename",$edit_data);
 		}
-		
+
 		if(isNotNull(tryGetData("img_filename2",$edit_data)))
 		{
 			$arr_data["img_filename2"] = tryGetData("img_filename2",$edit_data);
-		}	
-		
-		
+		}
+
+
 		return $arr_data;
 	}
 
@@ -780,21 +780,21 @@ abstract class Backend_Controller extends IT_Controller
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 		$is_sync = curl_exec($ch);
 		curl_close ($ch);
-		
-		
+
+
 		//更新同步狀況
 		//------------------------------------------------------------------------------
 		if($is_sync != '1')
 		{
 			$is_sync = '0';
-		}			
-		
+		}
+
 		$this->it_model->updateData( "web_menu_content" , array("is_sync"=>$is_sync,"update_date"=>date("Y-m-d H:i:s")), "sn =".$post_data["sn"] );
 		//------------------------------------------------------------------------------
 	}
-	
-	
-	
+
+
+
 	/**
 	 * web_menu_content 離線同步
 	 */
@@ -806,9 +806,9 @@ abstract class Backend_Controller extends IT_Controller
 			$this->sync_to_server($item);
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 詢問server檔案差異
 	 * $folder : /upload/社區ID 下的資料夾
@@ -823,7 +823,7 @@ abstract class Backend_Controller extends IT_Controller
 		$post_data["file_string"] = $file_string;
 		$post_data["comm_id"] = $this->getCommId();
 		$post_data["folder"] = $folder;
-		
+
 		$url = $this->config->item("api_server_url")."sync/askFile";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -833,10 +833,10 @@ abstract class Backend_Controller extends IT_Controller
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 		$file_list = curl_exec($ch);
 		curl_close ($ch);
-		
+
 		return $file_list;
 	}
-	
+
 	/**
 	 * 檔案同步至server
 	 * $folder : /upload/社區ID 下的資料夾
@@ -847,26 +847,26 @@ abstract class Backend_Controller extends IT_Controller
 		{
 			return;
 		}
-		
+
 		//$folder = "news";
 		$sync_folder = set_realpath("upload/".$this->getCommId()."/".$folder);
 		$files = glob($sync_folder . '*');
-		
+
 		$filename_ary = array();
 		foreach( $files as $key => $file_name_with_full_path )
 		{
 			array_push($filename_ary,basename($file_name_with_full_path));
-		}		
+		}
 
 		$upload_file_list = $this->ask_server_file(implode(",",$filename_ary),$folder);
 		$upload_file_ary = explode(",",$upload_file_list);
-		
+
 		foreach( $upload_file_ary as $key => $file_name )
-		{		
+		{
 			$file_name_with_full_path = set_realpath("upload/".$this->getCommId()."/".$folder).$file_name;
-		
-			$cfile = new CURLFile($file_name_with_full_path);			
-			$params = array($this->getCommId().'<#-#>'.$folder => $cfile );			
+
+			$cfile = new CURLFile($file_name_with_full_path);
+			$params = array($this->getCommId().'<#-#>'.$folder => $cfile );
 
 			$target_url = $this->config->item("api_server_url")."sync/fileUpload";
 			$ch = curl_init();
@@ -875,33 +875,33 @@ abstract class Backend_Controller extends IT_Controller
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
 			$result = curl_exec($ch);
 			curl_close ($ch);
-			
-		
+
+
 			//dprint($result);
-		}		
+		}
 	}
 
 	//ajax 取得
 	public function ajaxChangeStatus($table_name ='', $field_name = ',',$sn)
     {
 
-        
+
         if(isNull($table_name) || isNull($field_name) || isNull($sn) )
         {
             echo json_encode(array());
         }
-        else 
-        {		
+        else
+        {
 
             $data_info = $this->it_model->listData($table_name," sn = '".$sn."'");
 			if($data_info["count"]==0)
 			{
 				echo json_encode(array());
 				return;
-			}			  
-			
+			}
+
 			$data_info = $data_info["data"][0];
-			
+
 			$change_value = 1;
 			if($data_info[$field_name] == 0)
 			{
@@ -911,9 +911,9 @@ abstract class Backend_Controller extends IT_Controller
 			{
 				$change_value = 0;
 			}
-			
-			
-			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );				
+
+
+			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );
 			if($result)
 			{
 				echo json_encode($change_value);
@@ -922,11 +922,11 @@ abstract class Backend_Controller extends IT_Controller
 			{
 				echo json_encode($data_info[$field_name]);
 			}
-			                      
+
         }
     }
-	
-	
+
+
 	//ajax 取得
 	public function ajaxlaunchContent($sn)
     {
@@ -936,18 +936,18 @@ abstract class Backend_Controller extends IT_Controller
         {
             echo json_encode(array());
         }
-        else 
-        {		
+        else
+        {
 
             $data_info = $this->it_model->listData($table_name," sn = '".$sn."'");
 			if($data_info["count"]==0)
 			{
 				echo json_encode(array());
 				return;
-			}			  
-			
+			}
+
 			$data_info = $data_info["data"][0];
-			
+
 			$change_value = 1;
 			if($data_info[$field_name] == 0)
 			{
@@ -957,9 +957,9 @@ abstract class Backend_Controller extends IT_Controller
 			{
 				$change_value = 0;
 			}
-			
-			
-			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );	
+
+
+			$result = $this->it_model->updateData( $table_name , array($field_name => $change_value),"sn ='".$sn."'" );
 			if($result)
 			{
 				$comm_info = $this->it_model->listData("edoma_content","sn ='".$sn."'");
@@ -968,30 +968,30 @@ abstract class Backend_Controller extends IT_Controller
 					$comm_info = $comm_info["data"][0];
 					$del_comm_ary = explode(",",$comm_info["comm_id"]);
 					foreach( $del_comm_ary as $key => $del_comm_id )
-					{					
+					{
 						if(isNull($del_comm_id))
 						{
 							continue;
 						}
 						$update_data = $comm_info;
-						$update_data["comm_id"] = $del_comm_id;						
+						$update_data["comm_id"] = $del_comm_id;
 						$this->updateCommContent($update_data);
 					}
-					
-				}				
+
+				}
 			}
-			
-			
-			
-			
+
+
+
+
 			echo json_encode($change_value);
-			                      
+
         }
     }
-	
-	
-	
-	
+
+
+
+
 
 
 	/**
@@ -1000,7 +1000,7 @@ abstract class Backend_Controller extends IT_Controller
 	function sync_item_to_server($post_data,$func_name,$table_name)
 	{
 		$url = $this->config->item("api_server_url")."sync/".$func_name;
-		
+
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		//curl_setopt($ch, CURLOPT_POST,1);
@@ -1018,18 +1018,18 @@ abstract class Backend_Controller extends IT_Controller
 			die;
 		}
 		*/
-		
+
 		//更新同步狀況
 		//------------------------------------------------------------------------------
 		if($is_sync != '1')
 		{
 			$is_sync = '0';
-		}			
-		
+		}
+
 		$this->it_model->updateData( $table_name , array("is_sync"=>$is_sync,"updated"=>date("Y-m-d H:i:s")), "sn =".$post_data["sn"] );
 		//------------------------------------------------------------------------------
 	}
-	
+
 	/**
 	 * mailbox 離線同步
 	 */
@@ -1041,8 +1041,8 @@ abstract class Backend_Controller extends IT_Controller
 			$this->sync_item_to_server($item,"updateMailbox","mailbox");
 		}
 	}
-	
-	
+
+
 	/**
 	 * repair 離線同步
 	 */
@@ -1051,18 +1051,18 @@ abstract class Backend_Controller extends IT_Controller
 		$wait_sync_list = $this->it_model->listData("repair","is_sync =0");
 		foreach( $wait_sync_list["data"] as $key => $item )
 		{
-			$this->sync_item_to_server($item,"updateRepair","repair");			
+			$this->sync_item_to_server($item,"updateRepair","repair");
 		}
-		
+
 		$sub_wait_sync_list = $this->it_model->listData("repair_reply","is_sync =0");
 		foreach( $sub_wait_sync_list["data"] as $key => $item )
 		{
 			$item["comm_id"] = $this->getCommId();
-			$this->sync_item_to_server($item,"updateRepairReply","repair_reply");			
+			$this->sync_item_to_server($item,"updateRepairReply","repair_reply");
 		}
-		
+
 	}
-	
+
 	/**
 	 * suggestion 離線同步
 	 */
@@ -1071,10 +1071,10 @@ abstract class Backend_Controller extends IT_Controller
 		$wait_sync_list = $this->it_model->listData("suggestion","is_sync =0");
 		foreach( $wait_sync_list["data"] as $key => $item )
 		{
-			$this->sync_item_to_server($item,"updateSuggestion","suggestion");			
-		}		
+			$this->sync_item_to_server($item,"updateSuggestion","suggestion");
+		}
 	}
-	
+
 	/**
 	 * gas 離線同步
 	 */
@@ -1083,12 +1083,12 @@ abstract class Backend_Controller extends IT_Controller
 		$wait_sync_list = $this->it_model->listData("gas","is_sync =0");
 		foreach( $wait_sync_list["data"] as $key => $item )
 		{
-			$this->sync_item_to_server($item,"updateGas","gas");			
-		}		
+			$this->sync_item_to_server($item,"updateGas","gas");
+		}
 	}
-	
 
-	
+
+
 	/**
 	 * User 離線同步
 	 */
@@ -1097,7 +1097,7 @@ abstract class Backend_Controller extends IT_Controller
 		$wait_sync_list = $this->it_model->listData("sys_user","role='I' and is_sync =0");
 		foreach( $wait_sync_list["data"] as $key => $item )
 		{
-			$this->sync_item_to_server($item,"updateUser","sys_user");			
+			$this->sync_item_to_server($item,"updateUser","sys_user");
 		}
 	}
 
@@ -1109,10 +1109,10 @@ abstract class Backend_Controller extends IT_Controller
 		$wait_sync_list = $this->it_model->listData("house_to_rent","is_sync =0");
 		foreach( $wait_sync_list["data"] as $key => $item )
 		{
-			$this->sync_item_to_server($item,"updateRentHouse","house_to_rent");			
+			$this->sync_item_to_server($item,"updateRentHouse","house_to_rent");
 		}
 	}
-	
+
 	/**
 	 * House to Sale 離線同步
 	 */
@@ -1121,87 +1121,87 @@ abstract class Backend_Controller extends IT_Controller
 		$wait_sync_list = $this->it_model->listData("house_to_sale","is_sync =0");
 		foreach( $wait_sync_list["data"] as $key => $item )
 		{
-			$this->sync_item_to_server($item,"updateSaleHouse","house_to_sale");			
+			$this->sync_item_to_server($item,"updateSaleHouse","house_to_sale");
 		}
 	}
-	
+
 	public function updateCommContent($edit_data)
 	{
-		$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["edoma_sn"] = $edit_data["sn"];
 		$edit_data["client_sync"] = 0;
 		unset($edit_data["sn"]);
 		unset($edit_data["sync_comm_id"]);
-		
-		
-		
+
+
+
 		$result = $this->it_model->updateData( "web_menu_content" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
-		
+
 		if($result == FALSE)
 		{
 			$content_sn = $this->it_model->addData( "web_menu_content" , $edit_data );
 		}
 	}
-	
-	
+
+
 
 
 
 	/**
-	 * 租賃資料  
+	 * 租賃資料
 	 * edoma_house_to_rent -> house_to_rent
 	 */
 	public function updateCommRent($edit_data)
 	{
-		$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["edoma_sn"] = $edit_data["sn"];
 		$edit_data["client_sync"] = 0;
 		unset($edit_data["sn"]);
 
 		$result = $this->it_model->updateData( "house_to_rent" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
-		
+
 		if($result == FALSE)
 		{
 			$content_sn = $this->it_model->addData( "house_to_rent" , $edit_data );
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * 設定web_menu_photo照片
 	 */
 	public function contentPhoto()
 	{
 		$this->addCss("css/chosen.css");
-		$this->addJs("js/chosen.jquery.min.js");		
-		
+		$this->addJs("js/chosen.jquery.min.js");
+
 		$content_sn = tryGetData('sn', $_GET, NULL);
-		
+
 		if ( isNotNull($content_sn) ) {
 			## 物件基本資料
 			$content_info = $this->it_model->listData( "edoma_content" , "sn =".$content_sn);
-			
-			if ($content_info["count"] > 0) 
+
+			if ($content_info["count"] > 0)
 			{
 				$edit_data =$content_info["data"][0];
-				
+
 				$data['content_info'] = $edit_data;
 
 				## 既有照片list
 				$photo_list = $this->it_model->listData( "edoma_photo" , "content_sn =".$content_sn);
 				$data["photo_list"] = $photo_list["data"];
-				
+
 				$this->display("photo_setting_view",$data);
 			}
 			else
 			{
-				redirect(bUrl("contentList"));	
+				redirect(bUrl("contentList"));
 			}
 
 		}
-		else 
+		else
 		{
-			redirect(bUrl("contentList"));	
+			redirect(bUrl("contentList"));
 		}
 	}
 
@@ -1213,11 +1213,11 @@ abstract class Backend_Controller extends IT_Controller
 	public function updateContentPhoto()
 	{
 		$edit_data = array();
-		foreach( $_POST as $key => $value ) 
+		foreach( $_POST as $key => $value )
 		{
-			$edit_data[$key] = $this->input->post($key,TRUE);			
+			$edit_data[$key] = $this->input->post($key,TRUE);
 		}
-		
+
 		$content_sn = tryGetData('content_sn', $edit_data, NULL);
 		$comm_id = tryGetData('comm_id', $edit_data, NULL);
 		$config['upload_path'] = './upload/content_photo/'.$edit_data['content_sn'];
@@ -1225,19 +1225,19 @@ abstract class Backend_Controller extends IT_Controller
 		//$config['max_size']	= '1000';
 		$config['max_width']  = '1200';
 		//$config['max_height']  = '1000';
-		
-		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 );	
+
+		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 );
 		$config['file_name'] = $filename;
 		$config['overwrite'] = false;
 
 		$this->load->library('upload', $config);
 
-		if (!is_dir('./upload/content_photo/')) 
+		if (!is_dir('./upload/content_photo/'))
 		{
 			mkdir('./upload/content_photo/', 0777, true);
 		}
-		
-		if (!is_dir('./upload/content_photo/'.$edit_data['content_sn'])) 
+
+		if (!is_dir('./upload/content_photo/'.$edit_data['content_sn']))
 		{
 			mkdir('./upload/content_photo/'.$edit_data['content_sn'], 0777, true);
 		}
@@ -1247,14 +1247,14 @@ abstract class Backend_Controller extends IT_Controller
 			$error = array('error' => $this->upload->display_errors());
 
 			$this->showFailMessage('圖片上傳失敗，請稍後再試　' .$error['error'] );
-		} 
-		else 
+		}
+		else
 		{
 
 			$upload = $this->upload->data();
 			$img_filename = tryGetData('file_name', $upload);
-			
-			$arr_data = array(							
+
+			$arr_data = array(
 							  'content_sn'	=>	tryGetData('content_sn', $edit_data)
 							, 'img_filename'			=>	$img_filename
 							, 'title'				=>	tryGetData('title', $edit_data)
@@ -1264,7 +1264,7 @@ abstract class Backend_Controller extends IT_Controller
 							);
 
 			$photo_sn = $this->it_model->addData('edoma_photo', $arr_data);
-			if ( $this->db->affected_rows() > 0 or $this->db->_error_message() == '') 
+			if ( $this->db->affected_rows() > 0 or $this->db->_error_message() == '')
 			{
 				$this->pingConentPhoto(tryGetData('content_sn', $edit_data));
 				$this->showSuccessMessage('圖片上傳成功');
@@ -1283,9 +1283,9 @@ abstract class Backend_Controller extends IT_Controller
 	{
 		$del_array = $this->input->post("del",TRUE);
 		if(count($del_array)>0)
-		{			
+		{
 			$content_sn = 0;
-			foreach( $del_array as $item ) 
+			foreach( $del_array as $item )
 			{
 
 				$tmp = explode('!@', $item);
@@ -1296,12 +1296,12 @@ abstract class Backend_Controller extends IT_Controller
 				unlink('./upload/content_photo/'.$content_sn.'/'.$filename);
 
 				$del = $this->it_model->deleteData('edoma_photo',  array('sn' => $sn));
-				
-				if ($del) 
-				{			
-					
+
+				if ($del)
+				{
+
 				}
-			}			
+			}
 			$this->pingConentPhoto($content_sn);
 		}
 		$this->showSuccessMessage('圖片刪除成功');
@@ -1309,8 +1309,8 @@ abstract class Backend_Controller extends IT_Controller
 
 		redirect(bUrl("contentPhoto"));
 	}
-	
-	
+
+
 	/**
 	 * 拼接web_menu_photo照片
 	 */
@@ -1323,128 +1323,128 @@ abstract class Backend_Controller extends IT_Controller
 			return;
 		}
 		$content_info = $content_info["data"][0];
-		
+
 		$photo_list = $this->it_model->listData( "edoma_photo" , "content_sn =".$content_sn);
 		$source = array();
-		
+
 		$dest_width = 0;
 		$dest_height = 0;
-		
+
 		$photo_name_ary = array();
-		foreach( $photo_list["data"] as $key => $photo ) 
+		foreach( $photo_list["data"] as $key => $photo )
 		{
 			array_push($photo_name_ary,$photo["img_filename"]);
-			
+
 			$img = set_realpath("upload/content_photo/".$content_sn).$photo["img_filename"];
-			
+
 			$exploded = explode('.',$photo["img_filename"]);
-			$ext = $exploded[count($exploded) - 1]; 
+			$ext = $exploded[count($exploded) - 1];
 
 			if (preg_match('/jpg|jpeg/i',$ext))
 			{
 				$source[$key]['source']=imagecreatefromjpeg($img);
-			}				
+			}
 			else if(preg_match('/png/i',$ext))
 			{
 				$source[$key]['source']=imagecreatefrompng($img);
-			}			
+			}
 			else if (preg_match('/gif/i',$ext))
 			{
 				$source[$key]['source']=imagecreatefromgif($img);
-			}				
+			}
 			else if (preg_match('/bmp/i',$ext))
 			{
 				$source[$key]['source']=imagecreatefrombmp($img);
 			}
-				
+
 
 			$source[$key]['size'] = getimagesize($img);
-			
+
 			if($source[$key]['size'][0] > $dest_width)
 			{
 				$dest_width = (int)$source[$key]['size'][0];
 			}
-			
-			
+
+
 			$dest_height += (int)($source[$key]['size'][1] + 2);
-			
-			
+
+
 			//echo '<br>'.;
 			//echo '<br>'.$photo["img_filename"];
 		}
 		//dprint($source);die;
-		
-		
+
+
 		$dest = imagecreatetruecolor($dest_width, $dest_height);
 		$red = imagecolorallocate($dest, 255, 255, 255);
 		imagefill($dest, 0, 0, $red);
-				
-		
+
+
 		$dest_y = 0;
 		$dest_x = 0;
-		
-		foreach( $source as $key => $item ) 
+
+		foreach( $source as $key => $item )
 		{
 			//echo '<br>-->'.$target_img;
 			//dprint($item);
-			
+
 			/*
 			語法 : int ImageCopy (source dst_im, source src_im, int dst_x, int dst_y, int src_x, int src_y, int src_w, int src_h)
 			說明 :
 			複製 src_im的一部份到 dst_im上，起始點在 src_x , src_y，src_w的寬度，src_y的高度，所定義的這一個部份將會複製到 dst_x , dst_y的位置上。
 
 			*/
-			
+
 			$img_w = $item['size'][0];
 			$img_h = $item['size'][1];
 			imagecopy($dest, $item['source'], $dest_x , $dest_y, 0, 0, $img_w , $img_h);
-			
+
 			$dest_y += ($img_h + 2);
 
-			
+
 		}
-		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 ).".jpg";	
+		$filename = date( "YmdHis" )."_".rand( 100000 , 999999 ).".jpg";
 		$img_url = './upload/tmp/' . $filename;
 		Imagejpeg($dest, $img_url);
-		
-		
-		//sync file 
+
+
+		//sync file
 		//--------------------------------------------------------------------------------
-		//圖片處理 img_filename				
+		//圖片處理 img_filename
 		$folder_name = $content_info["content_type"];
-		$img_config['resize_setting'] =array($folder_name=>array(1024,1024));		
-		$img_filename = resize_img($img_url,$img_config['resize_setting']);	
-		
-		
+		$img_config['resize_setting'] =array($folder_name=>array(1024,1024));
+		$img_filename = resize_img($img_url,$img_config['resize_setting']);
+
+
 		if (!is_dir( $this->config->item('edoma_folder_path') ))
 		{
 			mkdir($this->config->item('edoma_folder_path'),0777);
-		}  		
+		}
 		if (!is_dir( $this->config->item('edoma_folder_path').$folder_name ))
 		{
 			mkdir($this->config->item('edoma_folder_path').$folder_name,0777);
-		}		
+		}
 		//將檔案複製到commapi folder 下
 		copy(set_realpath("upload/website").$folder_name.'/'.$img_filename , $this->config->item('edoma_folder_path').$folder_name.'/'.$img_filename);
-		
-		
-		$this->it_model->updateData( "edoma_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
-			
-		$orig_img_filename = tryGetData("img_filename",$content_info);
-		
 
-		@unlink(set_realpath("upload/website/".$folder_name).$orig_img_filename);	
-		@unlink($this->config->item('edoma_folder_path').$folder_name.'/'.$orig_img_filename);			
-		
+
+		$this->it_model->updateData( "edoma_content" , array("img_filename"=> $img_filename), "sn = '".$content_sn."'" );
+
+		$orig_img_filename = tryGetData("img_filename",$content_info);
+
+
+		@unlink(set_realpath("upload/website/".$folder_name).$orig_img_filename);
+		@unlink($this->config->item('edoma_folder_path').$folder_name.'/'.$orig_img_filename);
+
 		//--------------------------------------------------------------------------------
-		
-		
-		
+
+
+
 		//資料同步至各社區
 		//--------------------------------------------------------------------------------
 		$comm_ids  = tryGetData("comm_id",$content_info);
 		$comm_id_ary = explode(",",$comm_ids);
-		
+
 		foreach( $comm_id_ary as $key => $comm_id )
 		{
 			if(isNull($comm_id))
@@ -1454,78 +1454,142 @@ abstract class Backend_Controller extends IT_Controller
 			$update_data = $content_info;
 			$update_data["comm_id"] = $comm_id;
 			$update_data["img_filename"] = $img_filename;
-			$update_data["brief2"] = implode(",",$photo_name_ary);			
+			$update_data["brief2"] = implode(",",$photo_name_ary);
 			$update_data["del"] = 0;
 			$this->updateCommContent($update_data);
 		}
-		
+
 		//--------------------------------------------------------------------------------
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 租賃物件照片
 	 * edoma_house_to_rent_photo -> house_to_rent_photo
 	 */
 	public function updateCommRentPhoto($edit_data)
 	{
-		//$edit_data["edoma_sn"] = $edit_data["sn"];		
+		//$edit_data["edoma_sn"] = $edit_data["sn"];
 		$edit_data["client_sync"] = 0;
 		unset($edit_data["sn"]);
-		
-		
+
+
 		$result = $this->it_model->updateData( "house_to_rent_photo" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' " );
-		
+
 		if($result === FALSE)
 		{
 			$content_sn = $this->it_model->addData( "house_to_rent_photo" , $edit_data );
 		}
 	}
-	
-	
+
+
 
 
 	/**
 	 * 售屋資料
 	 * edoma_house_to_sale -> house_to_sale
+     * edoma_house_to_sale -> house_to_sale
+     * edoma_house_to_sale -> house_to_sale
 	 */
 	public function updateCommSale($edit_data)
 	{
-		$edit_data["edoma_sn"] = $edit_data["sn"];		
+		$edit_data["edoma_sn"] = $edit_data["sn"];
 		$edit_data["client_sync"] = 0;
 		unset($edit_data["sn"]);
+        $comm_id = $edit_data["comm_id"];
 
 		$result = $this->it_model->updateData( "house_to_sale" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
-		
+
 		if($result == FALSE)
 		{
-			$content_sn = $this->it_model->addData( "house_to_sale" , $edit_data );
-		}
+			$edoma_house_to_sale_sn = $this->it_model->addData( "house_to_sale" , $edit_data );
+		} else {
+            $edoma_house_to_sale_sn = $edit_data['edoma_sn'];
+        }
+
+/**  1218  */
+        ## 售屋物件照片
+        ## edoma_house_to_sale_photo -> house_to_sale_photo
+        ## edoma_house_to_sale_photo -> house_to_sale_photo
+        ## edoma_house_to_sale_photo -> house_to_sale_photo
+        $photo_result = $this->it_model->listData( "edoma_house_to_sale_photo" , "del=0 and edoma_house_to_sale_sn =".$edoma_house_to_sale_sn);
+
+        if (count($photo_result["data"]) > 0) {
+            // 先刪掉原本此則售屋的，再重新新增
+            $this->db->query('delete from house_to_sale_photo '
+                            .'     where comm_id ="'.$comm_id.'" and edoma_house_to_sale_sn='.$edoma_house_to_sale_sn);
+            foreach ($photo_result["data"] as $photo) {
+
+
+                $filename = tryGetData('filename', $photo);
+                $title = tryGetData('title', $photo, '');
+                $del = tryGetData('del', $photo, 0);
+
+                $arr_data = array('comm_id'             =>  $comm_id
+                                , 'edoma_house_to_sale_sn'  =>  $edoma_house_to_sale_sn
+                                , 'filename'            =>  $filename
+                                , 'title'               =>  $title
+                                , 'del'                 =>  $del
+                                , 'updated'             =>  date('Y-m-d H:i:s')
+                                , 'updated_by'          =>  $this->session->userdata('user_id')
+                                );
+
+
+                $sn = $this->it_model->addData('house_to_sale_photo', $arr_data);
+                if ( $sn > 0) {
+
+
+                    //將檔案複製到commapi folder 下  - - - - - - - - - - - - - - - - - -
+                    if (!is_dir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/')) {
+                            mkdir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/', 0777, true);
+                    }
+                    copy('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename
+                        , $this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename);
+
+                    // dest : C:/wamp2/www/commapi/upload/edoma/house_to_sale/1/20160627013812_628277.jpg
+
+                    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+                }
+
+            }
+        }
+/**  1218  */
+
 	}
-	
-	
+
+
 	/**
 	 * 售屋物件照片
 	 * edoma_house_to_sale_photo -> house_to_sale_photo
 	 */
-	public function updateCommSalePhoto($edit_data)
+	public function del__updateCommSalePhoto($edit_data)
 	{
-		//$edit_data["edoma_sn"] = $edit_data["sn"];		
+		//$edit_data["edoma_sn"] = $edit_data["sn"];
 		$edit_data["client_sync"] = 0;
 		unset($edit_data["sn"]);
-		
-		
-		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' " );
-		
+        unset($edit_data["edoma_photo_sn"]);
+
+
+		$result = $this->it_model->updateData( "house_to_sale_photo" , $edit_data, "edoma_house_to_sale_sn ='".$edit_data["edoma_house_to_sale_sn"]."' " );
+
 		if($result === FALSE)
 		{
 			$content_sn = $this->it_model->addData( "house_to_sale_photo" , $edit_data );
 		}
+
+
+
+
+
+
+
 	}
-	
-	
-	
+
+
+
 
 
 
@@ -1539,8 +1603,8 @@ abstract class Backend_Controller extends IT_Controller
 		$comm_id = $this->session->userdata("comm_id");
 		return $comm_id;
 	}
-	
-	
+
+
 		/**
 	 * 關閉瀏覽器
 	 */
@@ -1553,41 +1617,41 @@ abstract class Backend_Controller extends IT_Controller
 		window.close();
 		</script>';
 	}
-	
+
 	function speed()
 	{
-		$this->output->enable_profiler(TRUE);	
+		$this->output->enable_profiler(TRUE);
 	}
-	
-	
-	
+
+
+
 	//ajax 取得縣市
     public function ajaxGetCityList()
-    {		
-		$list = $this->it_model->listData( "city" , "" , NULL , NULL , array("id"=>"asc"));	
-		echo json_encode($list["data"]); 
+    {
+		$list = $this->it_model->listData( "city" , "" , NULL , NULL , array("id"=>"asc"));
+		echo json_encode($list["data"]);
     }
-	
-	
+
+
 	//ajax 取得鄉鎮區
     public function ajaxGetTownList()
     {
     	$city_code = $this->input->get('city_code');
-				
-		$list = $this->it_model->listData( "town" , "city_code = '".$city_code."'" , NULL , NULL , array("town_code"=>"asc"));	
-		//echo $list["sql"]; 
-		echo json_encode($list["data"]); 
+
+		$list = $this->it_model->listData( "town" , "city_code = '".$city_code."'" , NULL , NULL , array("town_code"=>"asc"));
+		//echo $list["sql"];
+		echo json_encode($list["data"]);
     }
-	
-	
+
+
 	public function ajaxGetVillageList()
     {
     	$city_code = $this->input->get('city_code');
 		$town_sn = $this->input->get('town_sn');
-				
-		$list = $this->it_model->listData( "village" , "city_code = '".$city_code."' and town_sn = '".$town_sn."'" , NULL , NULL , array("sn"=>"asc"));	
-		//echo $list["sql"]; 
-		echo json_encode($list["data"]); 
+
+		$list = $this->it_model->listData( "village" , "city_code = '".$city_code."' and town_sn = '".$town_sn."'" , NULL , NULL , array("sn"=>"asc"));
+		//echo $list["sql"];
+		echo json_encode($list["data"]);
     }
 
 
@@ -1596,50 +1660,50 @@ abstract class Backend_Controller extends IT_Controller
     	$city_code = $this->input->get('city_code');
 		$town_sn = $this->input->get('town_sn');
 		$village_sn = $this->input->get('village_sn');
-		
+
 		$condition = "";
 		if(isNotNull($city_code))
 		{
 			$condition = "city_code = '".$city_code."' ";
-			
+
 			if(isNotNull($town_sn) && $town_sn != '0')
 			{
 				$condition .= "AND town_sn = '".$town_sn."' ";
-				
+
 				if(isNotNull($village_sn)  && $village_sn != '0')
 				{
 					$condition .= "AND village_sn = '".$village_sn."' ";
 				}
 			}
 		}
-		
-		
-		
-		
-		$list = $this->it_model->listData( "community" , $condition , NULL , NULL , array("name"=>"asc"));	
-		//echo $list["sql"]; 
-		echo json_encode($list["data"]); 
+
+
+
+
+		$list = $this->it_model->listData( "community" , $condition , NULL , NULL , array("name"=>"asc"));
+		//echo $list["sql"];
+		echo json_encode($list["data"]);
     }
 
-    
+
 	public function _useAreaOption(&$data = array())
 	{
-		
-		$city_list = array();		
-		
+
+		$city_list = array();
+
 		$city_list = $this->it_model->listData( "city" , "" , NULL , NULL , array("id"=>"asc"));
 		$city_list = $city_list["data"];
-		
-		
+
+
 		$town_list = array();
 		$village_list = array();
-		
+
 		$data["city_list"] = $city_list;
 		$data["town_list"] = $town_list;
 		$data["village_list"] = $village_list;
-		
-	} 
-	
-	
-	
+
+	}
+
+
+
 }

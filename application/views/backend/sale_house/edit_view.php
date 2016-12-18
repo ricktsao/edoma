@@ -163,7 +163,7 @@
 		echo textNumberOption(" - 陽台", "balcony", $edit_data, 0, 10, 1,'陽台');
 		echo textNumberOption("<span class='red'>＊</span>面積", "area_ping", $edit_data, 0, 300, 0.01, '坪');
 		echo textNumberOption("<span class='red'>＊</span>公設比", "pub_ratio", $edit_data, 0, 60, 0.1, '%');
-		echo textOption("<span class='red'>＊</span>坪數說明", "area_desc", $edit_data,'ex.主建物、主建物 和 附屬建物坪數');
+		echo textOption("<span class='red'>＊</span>坪數說明", "area_desc", $edit_data,'主建物 和 附屬建物 坪數說明');
 		echo textOption("裝潢程度", "decoration", $edit_data);
 		?>
 		<div class="hr hr-16 hr-dotted"></div>

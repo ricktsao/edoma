@@ -304,6 +304,7 @@ class Sale_House extends Backend_Controller {
 
 			if($edit_data["sn"] != FALSE)
 			{
+                $sale_sn = $edit_data["sn"];
 				$arr_return = $this->it_model->updateDB( "edoma_house_to_sale" , $arr_data, "sn =".$edit_data["sn"] );
 
 				if($arr_return['success'])
@@ -346,8 +347,8 @@ class Sale_House extends Backend_Controller {
 			//dprint($comm_id_array);
 			//dprint($orig_comm_id_array);
             $post_comm_id = NULL;
-            if (tryGetData('is_post',$house_data)==1) {
-                $post_comm_id = tryGetData('post_comm_id', $house_data);
+            if (tryGetData('is_post',$edit_data)==1) {
+                $post_comm_id = tryGetData('post_comm_id', $edit_data);
             }
 			foreach( $comm_id_array as $key => $comm_id )
 			{
@@ -363,7 +364,7 @@ class Sale_House extends Backend_Controller {
 				$update_data = $arr_data;
 				$update_data["comm_id"] = $comm_id;
 				$update_data["del"] = 0;
-				$this->updateCommSale($update_data);
+				$this->updateCommSale($update_data); // 同步照片跟資料
 			}
 			//$comm_id_ary
 			//----------------------------------------------------------------
@@ -381,11 +382,17 @@ class Sale_House extends Backend_Controller {
 				$update_data = $arr_data;
 				$update_data["comm_id"] = $del_comm_id;
 				$update_data["del"] = 1;
-				$this->updateCommSale($update_data);
+				$this->updateCommSale($update_data); // 同步照片跟資料
 			}
 			//exit;
 			//----------------------------------------------------------------
 			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+
+
+
+
+
+
 
 
 			redirect(bUrl("index",TRUE,array("sn")));
@@ -431,7 +438,6 @@ class Sale_House extends Backend_Controller {
 		$this->form_validation->set_rules( 'phone', '聯絡電話', 'required|max_length[50]' );
 		$this->form_validation->set_rules( 'house_age', '屋齡', 'required' );
 		$this->form_validation->set_rules( 'addr', '地址', 'required|max_length[100]' );
-		$this->form_validation->set_rules( 'decoration', '裝潢程度', 'required' );
 		$this->form_validation->set_rules( 'current', '現況', 'required|max_length[60]' );
 		$this->form_validation->set_rules( 'desc', '特色說明', 'required|max_length[500]' );
 
@@ -631,17 +637,24 @@ class Sale_House extends Backend_Controller {
 
 				//將檔案複製到commapi folder 下  - - - - - - - - - - - - - - - - - -
 				if (!is_dir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/')) {
-						mkdir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/', 0777, true);
+					mkdir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/', 0777, true);
 				}
 				copy('./upload/website/house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename , $this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/'.$filename);
 
 				// dest : C:/wamp2/www/commapi/upload/edoma/house_to_sale/1/20160627013812_628277.jpg
 
-				$update_data = $arr_data;
-				$update_data["edoma_photo_sn"] = $sn;
-				$update_data["del"] = 0;
-
-				$this->updateCommSalePhoto($update_data);
+                /* 同步 同步 同步 同步 同步 */
+                $query_comm = $this->it_model->listData('edoma_house_to_sale', 'sn='.tryGetData('edoma_house_to_sale_sn', $edit_data));
+                if ($query_comm['count'] > 0) {
+                    foreach ($query_comm['data'] as $comms) {
+                        $comm_array = explode(',', $comms);
+                        foreach($comm_array as $comm) {
+                            $update_data["comm_id"] = $comm['comm_id'];
+                            $update_data["del"] = 0;
+                            $this->updateCommSale($update_data); // 同步照片跟資料
+                        }
+                    }
+                }
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -731,11 +744,20 @@ class Sale_House extends Backend_Controller {
 
 			if ($del) {
 
-				/* 同步 同步 同步 同步 同步 */
-				$update_data = $arr_data;
-				$update_data["edoma_sn"] = $sn;
-				$update_data["del"] = 1;
-				$this->updateCommSalePhoto($update_data);
+
+                /* 同步 同步 同步 同步 同步 */
+                $query_comm = $this->it_model->listData('edoma_house_to_sale', 'sn='.$edoma_house_to_sale_sn);
+                if ($query_comm['count'] > 0) {
+                    foreach ($query_comm['data'] as $comms) {
+                        $comm_array = explode(',', $comms);
+                        foreach($comm_array as $comm) {
+                            $update_data["comm_id"] = $comm['comm_id'];
+                            $update_data["del"] = 0;
+                            $this->updateCommSale($update_data); // 同步照片跟資料
+                        }
+                    }
+                }
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			}
 
 

@@ -250,11 +250,15 @@ class Comm extends Backend_Controller
 				if ( isNotNull($comm_id) ) {
 
 					// 讀取安裝SQL的原始檔，寫入 comm_id 之後另存新檔
-					$sql_content = read_file('./upload/initial.sql');
+					$sql_content = read_file('./upload/init.sql');
 					$generate_content = sprintf($sql_content, $comm_id, $comm_id);
 
 					$filename = prepPassword($comm_id);
 					$filename = $filename.'.sql';
+
+                    if (!is_dir('./upload/comm_sql/')) {
+                        mkdir('./upload/comm_sql/' , 0777 , true);
+                    }
 
 					if ( ! write_file('./upload/comm_sql/'.$filename, $generate_content) ) {
 						$this->showFailMessage();

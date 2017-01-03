@@ -200,8 +200,9 @@ $config['suggestion_to_role'] = array(
 
 
 // edoma folder path
-$config['edoma_folder_path'] = 'E:/htdocs/commapi/upload/edoma/';
+//$config['edoma_folder_path'] = 'E:/htdocs/commapi/upload/edoma/';
+$config['edoma_folder_path'] = '/home/edoma/public_html/edoma/upload/edoma/';
 
 
 // claire
-// $config['edoma_folder_path'] = 'C:/wamp/www/edoma/upload/edoma/';
+//$config['edoma_folder_path'] = 'D:/wamp64/www/commapi/upload/edoma/';

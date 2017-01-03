@@ -189,7 +189,13 @@ class Sys_news extends Backend_Controller {
 			//$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
 			//move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
 			
-			$img_filename = resize_img($_FILES['img_filename']['tmp_name'],$img_config['resize_setting']);					
+			//圖片處理 img_filename				
+			$uploadedUrl = './upload/tmp/' . $_FILES['img_filename']['name'];
+			move_uploaded_file( $_FILES['img_filename']['tmp_name'], $uploadedUrl);
+			//dprint($_FILES['img_filename']);exit;
+		
+			
+			$img_filename = resize_img($uploadedUrl,$img_config['resize_setting']);					
 			//echo 	$img_filename;exit;
 			
 			if (!is_dir( $this->config->item('edoma_folder_path') ))

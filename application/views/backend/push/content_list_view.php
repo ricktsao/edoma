@@ -41,7 +41,6 @@
 											<a class="btn  btn-minier btn-info" href="<?php echo bUrl("editContent",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
 												<i class="icon-edit bigger-120"></i>編輯
 											</a>
-											
 											<a class="btn  btn-minier btn-danger" href="<?php echo bUrl("del",TRUE,NULL,array("sn"=>$list[$i]["sn"])); ?>">
 												<i class="icon-edit bigger-120"></i>刪除
 											</a>

@@ -106,20 +106,14 @@ class Rent_House extends Backend_Controller {
 
                     foreach ($photo_list["data"] as $pho_info) {
                         //圖片處理 img_filename
-/*
+
                         $org_img_path = "/home/edoma/public_html/commapi/upload/".$arr_data["comm_id"]."/house_to_rent/".$pho_info["client_sn"]."/".$pho_info['filename'];
                         $new_img_path = "/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn."/".$pho_info['filename'];
 
                         if (!is_dir("/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn)) {
                             mkdir("/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn,0777,true);
                         }
-*/
-                        $org_img_path = "D:/wamp64/www/commapi/upload/".$arr_data["comm_id"]."/house_to_rent/".$pho_info["client_sn"]."/".$pho_info['filename'];
-                        $new_img_path = "D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn."/".$pho_info['filename'];
 
-                        if (!is_dir("D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn)) {
-                            mkdir("D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn, 0777,true);
-                        }
 
                         copy( $org_img_path, $new_img_path);
 

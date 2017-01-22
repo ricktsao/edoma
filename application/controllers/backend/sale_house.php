@@ -102,6 +102,7 @@ class Sale_House extends Backend_Controller {
             $arr_data["forever"] = 0;
             $arr_data["launch"] = 0;
 
+
             $add_sn = $this->it_model->addData("edoma_house_to_sale",$arr_data);
             if($add_sn > 0 ) {
                 $upd_ok = $this->it_model->updateData("house_to_sale",array("is_post"=>2,"updated"=>date("Y-m-d H:i:s")),"sn = ".$sn );
@@ -302,7 +303,8 @@ class Sale_House extends Backend_Controller {
 				, "updated" =>  date( "Y-m-d H:i:s" )
 			);
 
-			if($edit_data["sn"] != FALSE)
+
+            if($edit_data["sn"] != FALSE)
 			{
                 $sale_sn = $edit_data["sn"];
 				$arr_return = $this->it_model->updateDB( "edoma_house_to_sale" , $arr_data, "sn =".$edit_data["sn"] );
@@ -315,7 +317,6 @@ class Sale_House extends Backend_Controller {
 				{
 					$this->showFailMessage();
 				}
-
 			}
 			else
 			{
@@ -327,67 +328,68 @@ class Sale_House extends Backend_Controller {
 				if($sale_sn > 0) {
 					$arr_data["sn"] = $sale_sn;
 					$this->showSuccessMessage();
-
 				}
 				else
 				{
 					$this->showFailMessage();
 				}
 			}
-				//dprint($this->db->last_query());
 
 
-			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
-			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data);
-			$orig_comm_id_array = explode(",", $orig_comm_id_list);
+            // 若有勾選 啟用 才是發佈到其他社區
+            if (tryGetData('launch', $edit_data)==1) {
+
+    			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
+    			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data);
+    			$orig_comm_id_array = explode(",", $orig_comm_id_list);
 
 
-			//需要更新至web_menu_content的資料
-			//----------------------------------------------------------------
-			//dprint($comm_id_array);
-			//dprint($orig_comm_id_array);
-            $post_comm_id = NULL;
-            if (tryGetData('is_post',$edit_data)==1) {
-                $post_comm_id = tryGetData('post_comm_id', $edit_data);
-            }
-			foreach( $comm_id_array as $key => $comm_id )
-			{
-				if(isNull($comm_id)){
-					continue;
-				}
-                //若為社區聯賣，同步時須略過
-                if ( isNotNull($post_comm_id) ){
-                    if ( $post_comm_id == $comm_id){
-                        continue;
-                    }
+    			//需要更新至web_menu_content的資料
+    			//----------------------------------------------------------------
+    			//dprint($comm_id_array);
+    			//dprint($orig_comm_id_array);
+                $post_comm_id = NULL;
+                if (tryGetData('is_post', $edit_data)==1) {
+                    $post_comm_id = tryGetData('post_comm_id', $edit_data);
                 }
-				$update_data = $arr_data;
-				$update_data["comm_id"] = $comm_id;
-				$update_data["del"] = 0;
-				$this->updateCommSale($update_data); // 同步照片跟資料
-			}
-			//$comm_id_ary
-			//----------------------------------------------------------------
+    			foreach( $comm_id_array as $key => $comm_id )
+    			{
+    				if(isNull($comm_id)) {
+    					continue;
+    				}
+                    //若為社區聯賣，同步時須略過
+                    if ( isNotNull($post_comm_id) ){
+                        if ( $post_comm_id == $comm_id){
+                            continue;
+                        }
+                    }
+    				$update_data = $arr_data;
+    				$update_data["comm_id"] = $comm_id;
+    				$update_data["del"] = 0;
+    				$this->updateCommSale($update_data); // 同步照片跟資料
+    			}
+    			//$comm_id_ary
+    			//----------------------------------------------------------------
 
-			//web_menu_content需要刪除的檔案
-			//----------------------------------------------------------------
-			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
-			//dprint($del_comm_ary);
-			foreach( $del_comm_ary as $key => $del_comm_id )
-			{
-				if(isNull($del_comm_id))
-				{
-					continue;
-				}
-				$update_data = $arr_data;
-				$update_data["comm_id"] = $del_comm_id;
-				$update_data["del"] = 1;
-				$this->updateCommSale($update_data); // 同步照片跟資料
-			}
-			//exit;
-			//----------------------------------------------------------------
-			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
-
+    			//web_menu_content需要刪除的檔案
+    			//----------------------------------------------------------------
+    			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
+    			//dprint($del_comm_ary);
+    			foreach( $del_comm_ary as $key => $del_comm_id )
+    			{
+    				if(isNull($del_comm_id))
+    				{
+    					continue;
+    				}
+    				$update_data = $arr_data;
+    				$update_data["comm_id"] = $del_comm_id;
+    				$update_data["del"] = 1;
+    				$this->updateCommSale($update_data); // 同步照片跟資料
+    			}
+    			//exit;
+    			//----------------------------------------------------------------
+    			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+            }
 
 
 
@@ -404,7 +406,6 @@ class Sale_House extends Backend_Controller {
 	function _validateData()
 	{
 		$sn = tryGetValue($this->input->post('sn',TRUE),0);
-		$is_manager = tryGetValue($this->input->post('is_manager',TRUE), 0);
 		$end_date = tryGetValue($this->input->post('end_date',TRUE), 0);
 		$forever = tryGetValue($this->input->post('forever',TRUE), 0);
 
@@ -423,15 +424,15 @@ class Sale_House extends Backend_Controller {
 		$this->form_validation->set_rules( 'total_price', '總價 ', 'required' );
 		$this->form_validation->set_rules( 'unit_price', '每坪單價 ', 'required' );
 		$this->form_validation->set_rules( 'manage_fee', '管理費', 'required|max_length[20]' );
-		$this->form_validation->set_rules( 'area_ping', '面積', 'required|less_than[1000]|greater_than[0]' );
+		$this->form_validation->set_rules( 'area_ping', '面積', 'required|greater_than[0]' );
 		$this->form_validation->set_rules( 'area_desc', '坪數說明', 'required' );
 		$this->form_validation->set_rules( 'pub_ratio', '公設比', 'required' );
 		$this->form_validation->set_rules( 'room', '格局-房', 'required|less_than[10]|greater_than[0]' );
 		$this->form_validation->set_rules( 'livingroom', '格局-廳', 'required|less_than[10]|greater_than[0]' );
 		$this->form_validation->set_rules( 'bathroom', '格局-衛', 'required|less_than[10]|greater_than[0]' );
 		$this->form_validation->set_rules( 'balcony', '格局-陽台', 'less_than[10]' );
-		$this->form_validation->set_rules( 'locate_level', '位於幾樓', 'required|less_than[30]|greater_than[0]' );
-		$this->form_validation->set_rules( 'total_level', '總樓層', 'required|less_than[30]|greater_than[0]' );
+		$this->form_validation->set_rules( 'locate_level', '位於幾樓', 'required|less_than[100]|greater_than[0]' );
+		$this->form_validation->set_rules( 'total_level', '總樓層', 'required|less_than[100]|greater_than[0]' );
 
 		$this->form_validation->set_rules( 'title', '售屋標題', 'required|max_length[50]' );
 		$this->form_validation->set_rules( 'name', '聯絡人', 'required|max_length[50]' );

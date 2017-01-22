@@ -1149,21 +1149,88 @@ abstract class Backend_Controller extends IT_Controller
 	/**
 	 * 租賃資料
 	 * edoma_house_to_rent -> house_to_rent
+     * edoma_house_to_rent -> house_to_rent
+     * edoma_house_to_rent -> house_to_rent
 	 */
 	public function updateCommRent($edit_data)
 	{
-		$edit_data["edoma_sn"] = $edit_data["sn"];
+        $edoma_house_to_rent_sn = $edit_data["sn"];
+        $edit_data["edoma_sn"] = $edit_data["sn"];
 		$edit_data["client_sync"] = 0;
 		unset($edit_data["sn"]);
+        $comm_id = $edit_data["comm_id"];
 
-		$result = $this->it_model->updateData( "house_to_rent" , $edit_data, "edoma_sn ='".$edit_data["edoma_sn"]."' and comm_id = '".$edit_data["comm_id"]."'" );
+		$result = $this->it_model->updateData( "house_to_rent" , $edit_data, "edoma_sn ='".$edoma_house_to_rent_sn."' and comm_id = '".$edit_data["comm_id"]."'" );
 
 		if($result == FALSE)
 		{
-			$content_sn = $this->it_model->addData( "house_to_rent" , $edit_data );
-		}
-	}
+			$house_to_rent_sn = $this->it_model->addData( "house_to_rent" , $edit_data );
+        } else {
+            $house_to_rent_sn = $edit_data['edoma_sn'];
+        }
 
+/**  1218  */
+        ## 租屋物件照片
+        ## edoma_house_to_rent_photo -> house_to_rent_photo
+        ## edoma_house_to_rent_photo -> house_to_rent_photo
+        ## edoma_house_to_rent_photo -> house_to_rent_photo
+        $photo_result = $this->it_model->listData( "edoma_house_to_rent_photo" , "del=0 and edoma_house_to_rent_sn =".$edoma_house_to_rent_sn);
+//dprint($photo_result);
+//dprint('租屋物件照片 edoma_house_to_rent_photo -> house_to_rent_photo (comm_id: '.$comm_id.' & edoma_house_to_rent_sn: '.$edoma_house_to_rent_sn.')');
+        if (count($photo_result["data"]) > 0) {
+
+//dprint('開始');
+            // 先刪掉原本此則租屋的，再重新新增
+            $this->db->query('delete from house_to_rent_photo '
+                            //.'     where comm_id ="'.$comm_id.'" and edoma_house_to_rent_sn='.$edoma_house_to_rent_sn);
+                            .'     where comm_id ="'.$comm_id.'" and house_to_rent_sn='.$house_to_rent_sn);
+//dprint('aa');
+            foreach ($photo_result["data"] as $photo) {
+
+
+                $filename = tryGetData('filename', $photo);
+                $title = tryGetData('title', $photo, '');
+                $del = tryGetData('del', $photo, 0);
+
+                $arr_data = array('comm_id'             =>  $comm_id
+                                , 'edoma_house_to_rent_sn'  =>  $edoma_house_to_rent_sn
+                                , 'house_to_rent_sn'        =>  $house_to_rent_sn
+                                , 'filename'            =>  $filename
+                                , 'title'               =>  $title
+                                , 'del'                 =>  $del
+                                , 'updated'             =>  date('Y-m-d H:i:s')
+                                , 'updated_by'          =>  $this->session->userdata('user_id')
+                                );
+
+
+                $sn = $this->it_model->addData('house_to_rent_photo', $arr_data);
+                if ( $sn > 0) {
+
+//dprint('bb');
+
+                    //將檔案複製到commapi folder 下  - - - - - - - - - - - - - - - - - -
+                    if (!is_dir($this->config->item('edoma_folder_path').'house_to_rent/'.$edoma_house_to_rent_sn.'/')) {
+                            mkdir($this->config->item('edoma_folder_path').'house_to_rent/'.$edoma_house_to_rent_sn.'/', 0777, true);
+                    }
+                    copy('./upload/website/house_to_rent/'.$edoma_house_to_rent_sn.'/'.$filename
+                        , $this->config->item('edoma_folder_path').'house_to_rent/'.$edoma_house_to_rent_sn.'/'.$filename);
+
+                    // dest : C:/wamp2/www/commapi/upload/edoma/house_to_rent/1/20160627013812_628277.jpg
+
+                    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+                }
+//else  dprint('cc');
+
+            }
+        }
+/**  1218  */
+
+
+
+
+	}
 
 
 
@@ -1537,8 +1604,8 @@ abstract class Backend_Controller extends IT_Controller
 
 
                 $sn = $this->it_model->addData('house_to_sale_photo', $arr_data);
-                if ( $sn > 0) {
 
+                if ( $sn > 0) {
 
                     //將檔案複製到commapi folder 下  - - - - - - - - - - - - - - - - - -
                     if (!is_dir($this->config->item('edoma_folder_path').'house_to_sale/'.$edit_data['edoma_house_to_sale_sn'].'/')) {

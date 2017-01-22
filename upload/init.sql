@@ -85,6 +85,9 @@ CREATE TABLE IF NOT EXISTS `house_to_rent` (
   `comm_id` varchar(12) NOT NULL COMMENT '社區ID',
   `is_sync` tinyint(1) NOT NULL DEFAULT '0',
   `del` tinyint(1) NOT NULL DEFAULT '0',
+  `server_sn` int(8) DEFAULT NULL,
+  `is_edoma` tinyint(1) NOT NULL DEFAULT '0',
+  `edoma_sn` int(10) DEFAULT NULL,
   `title` varchar(60) DEFAULT NULL COMMENT '標題',
   `name` varchar(60) DEFAULT NULL COMMENT '聯絡人',
   `phone` varchar(60) DEFAULT NULL COMMENT '聯絡方式',
@@ -134,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `house_to_rent_photo` (
   `comm_id` varchar(12) NOT NULL COMMENT '社區ID',
   `house_to_rent_sn` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '房屋序號',
   `filename` varchar(60) NOT NULL COMMENT '檔名',
-  `edoma_house_to_rent_sn` int(11) NOT NULL COMMENT 'Edoma 房屋序號',
+  `edoma_house_to_rent_sn` int(11) DEFAULT NULL COMMENT 'Edoma 房屋序號',
   `title` varchar(60) NOT NULL COMMENT '說明',
   `updated` datetime NOT NULL,
   `updated_by` varchar(20) NOT NULL,
@@ -152,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `house_to_sale` (
   `comm_id` varchar(12) NOT NULL,
   `is_sync` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `del` tinyint(1) NOT NULL DEFAULT '0',
-  `server_sn` int(8) unsigned NOT NULL,
+  `server_sn` int(8) unsigned DEFAULT NULL,
   `is_edoma` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `edoma_sn` int(10) unsigned DEFAULT NULL,
   `sale_type` char(1) DEFAULT NULL,
@@ -192,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `house_to_sale` (
   `updated` datetime DEFAULT NULL,
   PRIMARY KEY (`sn`),
   KEY `sn_comm_id` (`sn`,`comm_id`)
-) ENGINE=InnoDB   DEFAULT CHARSET=utf8 COMMENT='售屋屋資料表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='售屋屋資料表';
 
 -- 資料導出被取消選擇。
 -- 導出  表 edoma.house_to_sale_photo 結構
@@ -210,7 +213,8 @@ CREATE TABLE IF NOT EXISTS `house_to_sale_photo` (
   `del` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`sn`),
   KEY `sn_comm_id_house_to_sale_sn_filename` (`sn`,`comm_id`,`house_to_sale_sn`,`filename`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='售屋照片';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='售屋照片';
+
 
 -- 資料導出被取消選擇。
 -- 導出  表 edoma.it_sessions 結構
@@ -1061,6 +1065,7 @@ CREATE TABLE IF NOT EXISTS `web_setting_photo` (
   `created` datetime NOT NULL,
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='照片';
+
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

@@ -90,17 +90,17 @@ class Rent_House extends Backend_Controller {
             unset($arr_data["edoma_sn"]);
             unset($arr_data["client_sync"]);
             $arr_data["post_comm_id"] = $arr_data["comm_id"];
+
             $arr_data["start_date"] = NULL;
             $arr_data["end_date"] = NULL;
             $arr_data["forever"] = 0;
             $arr_data["launch"] = 0;
 
-
-            $add_sn = $this->it_model->addData("edoma_house_to_rent",$arr_data);
+            $add_sn = $this->it_model->addData("edoma_house_to_rent", $arr_data);
             if ( $add_sn > 0 ) {
                 $upd_ok = $this->it_model->updateData("house_to_rent",array("is_post"=>2,"updated"=>date("Y-m-d H:i:s")),"sn = ".$sn );
 
-                if($upd_ok) {
+                if ($upd_ok) {
                     $condition = 'del=0 AND comm_id="'.$arr_data["comm_id"].'" AND client_sn='.$arr_data['client_sn'];
                     $photo_list = $this->it_model->listData('house_to_rent_photo', $condition, NULL, NULL, array('filename'=>'asc'));
 
@@ -113,14 +113,8 @@ class Rent_House extends Backend_Controller {
                         if (!is_dir("/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn)) {
                             mkdir("/home/edoma/public_html/edoma/upload/website/house_to_rent/".$add_sn,0777,true);
                         }
-/*
-                        $org_img_path = "D:/wamp64/www/commapi/upload/".$arr_data["comm_id"]."/house_to_rent/".$pho_info["client_sn"]."/".$pho_info['filename'];
-                        $new_img_path = "D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn."/".$pho_info['filename'];
 
-                        if (!is_dir("D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn)) {
-                            mkdir("D:/wamp64/www/edoma/upload/website/house_to_rent/".$add_sn,0777,true);
-                        }
-*/
+
                         copy( $org_img_path, $new_img_path);
 
                         $pho_arr = array(
@@ -288,14 +282,30 @@ class Rent_House extends Backend_Controller {
 				$comm_id_list = implode(",", $comm_id_array);
 			}
 
+            // 若為聯賣，$furniture & $electric 會是維持字串類型
+            $furniture = NULL;
+            if ( isNotNull(tryGetData("furniture", $edit_data, NULL))) {
+                $furniture = tryGetData("furniture", $edit_data);
+                if ( is_array($furniture ) ) {
+                    $furniture = implode(',', tryGetData("furniture", $edit_data));
+                }
+            }
+            $electric = NULL;
+            if ( isNotNull(tryGetData("electric", $edit_data, NULL))) {
+                $electric = tryGetData("electric", $edit_data);
+                if ( is_array($electric ) ) {
+                    $electric = implode(',', tryGetData("electric", $edit_data));
+                }
+            }
+
 
         	$arr_data = array(
 				 "sn"				=>	tryGetData("sn", $edit_data, NULL)
 				, 'comm_id'			=>  $comm_id_list
 				, "rent_type"		=>	tryGetData("rent_type", $edit_data)
 				, "house_type"		=>	tryGetData("house_type", $edit_data)
-				, "furniture"		=>	implode(',', tryGetData("furniture", $edit_data, array()))
-				, "electric"		=>	implode(',', tryGetData("electric", $edit_data, array()))
+				, "furniture"		=>	$furniture
+				, "electric"		=>	$electric
 				, "title"		=>	tryGetData("title", $edit_data)
 				, "name"		=>	tryGetData("name", $edit_data)
 				, "phone"		=>	tryGetData("phone", $edit_data)
@@ -333,18 +343,17 @@ class Rent_House extends Backend_Controller {
 
 			if($edit_data["sn"] != FALSE)
 			{
+                $rent_sn = $edit_data["sn"];
 				$arr_return = $this->it_model->updateDB( "edoma_house_to_rent" , $arr_data, "sn =".$edit_data["sn"] );
-				if($arr_return['success'])
+
+                if($arr_return['success'])
 				{
 					$this->showSuccessMessage();
 				}
 				else
 				{
-					//$this->output->enable_profiler(TRUE);
 					$this->showFailMessage();
 				}
-
-				redirect(bUrl("index",TRUE,array("sn")));
 			}
 			else
 			{
@@ -356,92 +365,85 @@ class Rent_House extends Backend_Controller {
 				if($rent_sn > 0) {
 					$arr_data["sn"] = $rent_sn;
 					$this->showSuccessMessage();
-
-						/* 同步 同步 同步 同步 同步 */
-						//$arr_data["sn"] = $rent_sn;
-						//$this->sync_item_to_server($arr_data, 'updateRentHouse', 'house_to_rent');
 				}
 				else
 				{
 					$this->showFailMessage();
 				}
-
 			}
 
+            // 若有勾選 啟用 才是發佈到其他社區
+            if (tryGetData('launch', $edit_data)==1) {
+
+    			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
+    			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data);
+    			$orig_comm_id_array = explode(",", $orig_comm_id_list);
 
 
-
-
-
-
-			/* 同步 同步 同步 同步 同步  ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ */
-			$orig_comm_id_list = tryGetData("orig_comm_id", $edit_data);
-			$orig_comm_id_array = explode(",", $orig_comm_id_list);
-
-
-			//需要更新至web_menu_content的資料
-			//----------------------------------------------------------------
-			//dprint($comm_id_array);
-			//dprint($orig_comm_id_array);
-            $post_comm_id = NULL;
-            if (tryGetData('is_post',$house_data)==1) {
-                $post_comm_id = tryGetData('post_comm_id', $house_data);
-            }
-			foreach( $comm_id_array as $key => $comm_id )
-			{
-				if(isNull($comm_id))
-				{
-					continue;
-				}
-                //若為社區聯賣，同步時須略過
-                if ( isNotNull($post_comm_id) ){
-                    if ( $post_comm_id == $comm_id){
-                        continue;
-                    }
+    			//需要更新至web_menu_content的資料
+    			//----------------------------------------------------------------
+    			//dprint($comm_id_array);
+    			//dprint($orig_comm_id_array);
+                $post_comm_id = NULL;
+                if (tryGetData('is_post', $edit_data)==1) {
+                    $post_comm_id = tryGetData('post_comm_id', $edit_data);
                 }
-				$update_data = $arr_data;
-				$update_data["comm_id"] = $comm_id;
-				$update_data["del"] = 0;
-				$this->updateCommRent($update_data);
-			}
-			//$comm_id_ary
-			//----------------------------------------------------------------
+    			foreach( $comm_id_array as $key => $comm_id )
+    			{
+    				if(isNull($comm_id)) {
+    					continue;
+    				}
+                    //若為社區聯賣，同步時須略過
+                    if ( isNotNull($post_comm_id) ){
+                        if ( $post_comm_id == $comm_id){
+                            continue;
+                        }
+                    }
+    				$update_data = $arr_data;
+    				$update_data["comm_id"] = $comm_id;
+    				$update_data["del"] = 0;
+    				$this->updateCommRent($update_data); // 同步照片跟資料
+    			}
+    			//$comm_id_ary
+    			//----------------------------------------------------------------
 
-			//web_menu_content需要刪除的檔案
-			//----------------------------------------------------------------
-			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
-			//dprint($del_comm_ary);
-			foreach( $del_comm_ary as $key => $del_comm_id )
-			{
-				if(isNull($del_comm_id))
-				{
-					continue;
-				}
-				$update_data = $arr_data;
-				$update_data["comm_id"] = $del_comm_id;
-				$update_data["del"] = 1;
-				$this->updateCommRent($update_data);
-			}
-			//exit;
-			//----------------------------------------------------------------
-			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+    			//web_menu_content需要刪除的檔案
+    			//----------------------------------------------------------------
+    			$del_comm_ary = array_diff($orig_comm_id_array,$comm_id_array);
+    			//dprint($del_comm_ary);
+    			foreach( $del_comm_ary as $key => $del_comm_id )
+    			{
+    				if(isNull($del_comm_id))
+    				{
+    					continue;
+    				}
+    				$update_data = $arr_data;
+    				$update_data["comm_id"] = $del_comm_id;
+    				$update_data["del"] = 1;
+    				$this->updateCommRent($update_data); // 同步照片跟資料
+    			}
+    			//exit;
+    			//----------------------------------------------------------------
+    			/* 同步 同步 同步 同步 同步   ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑  ↑ */
+            }
 
 
 
 
 
 
-
-			redirect(bUrl("index",TRUE,array("sn")));
+			//redirect(bUrl("index",TRUE,array("sn")));
         }
 	}
 
+    function tttest() {
 
+                $this->updateCommRentTest(); // 同步照片跟資料
+    }
 
 	function _validateData()
 	{
 		$sn = tryGetValue($this->input->post('sn',TRUE),0);
-		$is_manager = tryGetValue($this->input->post('is_manager',TRUE), 0);
 		$end_date = tryGetValue($this->input->post('end_date',TRUE), 0);
 		$forever = tryGetValue($this->input->post('forever',TRUE), 0);
 
@@ -458,15 +460,15 @@ class Rent_House extends Backend_Controller {
 
 		$this->form_validation->set_rules( 'comms', '發佈社區', 'required' );
 
-		$this->form_validation->set_rules( 'rent_price', '租金 ', 'required|less_than[300000]|greater_than[1000]' );
+		$this->form_validation->set_rules( 'rent_price', '租金 ', 'required|greater_than[1000]' );
 		$this->form_validation->set_rules( 'deposit', '押金', 'required|max_length[20]' );
 		$this->form_validation->set_rules( 'area_ping', '面積', 'required|less_than[1000]|greater_than[0]' );
 		$this->form_validation->set_rules( 'room', '格局-房', 'required|less_than[10]|greater_than[0]' );
 		$this->form_validation->set_rules( 'livingroom', '格局-廳', 'required|less_than[10]|greater_than[0]' );
 		$this->form_validation->set_rules( 'bathroom', '格局-衛', 'required|less_than[10]|greater_than[0]' );
 		$this->form_validation->set_rules( 'balcony', '格局-陽台', 'less_than[10]' );
-		$this->form_validation->set_rules( 'locate_level', '位於幾樓', 'required|less_than[30]|greater_than[0]' );
-		$this->form_validation->set_rules( 'total_level', '總樓層', 'required|less_than[30]|greater_than[0]' );
+		$this->form_validation->set_rules( 'locate_level', '位於幾樓', 'required|less_than[100]|greater_than[0]' );
+		$this->form_validation->set_rules( 'total_level', '總樓層', 'required|less_than[100]|greater_than[0]' );
 
 
 		$this->form_validation->set_rules( 'title', '租屋標題', 'required|max_length[50]' );
@@ -479,11 +481,6 @@ class Rent_House extends Backend_Controller {
 		$this->form_validation->set_rules( 'current', '現況', 'required|max_length[20]' );
 		$this->form_validation->set_rules( 'desc', '特色說明', 'required|max_length[300]' );
 
-		if ($is_manager == 1) {
-			$this->form_validation->set_rules( 'manager_title', $this->lang->line("field_manager_title"), 'required|max_length[30]' );
-			$this->form_validation->set_rules( 'start_date', $this->lang->line("field_start_date"), 'required');
-
-		}
 
 		//$this->form_validation->set_rules('email', $this->lang->line("field_email"), 'trim|required|valid_email|checkAdminEmailExist' );
 		//$this->form_validation->set_rules( 'sys_user_group', $this->lang->line("field_admin_belong_group"), 'required' );

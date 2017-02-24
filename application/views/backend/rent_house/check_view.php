@@ -205,7 +205,7 @@ if (tryGetData('launch', $edit_data)==1) {
                 </button>
                 <button class="btn btn-info" id="Submit" type="submit">
                     <i class="icon-ok bigger-110"></i>
-                    確定發佈
+                    確定送出
                 </button>
 
             </div>

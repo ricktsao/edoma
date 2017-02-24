@@ -206,7 +206,7 @@ class Comm extends Backend_Controller
 
 		$this->form_validation->set_rules( 'name', '社區名稱', 'required|max_length[30]' );
 		if ($sn == 0) {
-			$this->form_validation->set_rules( 'city_code', '縣市別', 'required|greater_than[0]' );
+			$this->form_validation->set_rules( 'city_code', '縣市別', 'required' );
 			$this->form_validation->set_rules( 'town_sn', '鄉鎮市區', 'required|greater_than[0]' );
 			$this->form_validation->set_rules( 'village_sn', '村里', 'required|greater_than[0]' );
 		}

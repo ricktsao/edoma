@@ -17,7 +17,7 @@
                 <?php 
                     for($i=0;$i<24;$i++){
                         $select = "";
-                        if(tryGetData('hh', $edit_data,"1")==$i){
+                        if(tryGetData('hh', $edit_data,"0")==$i){
                             $select="selected";
                         }
 
@@ -32,7 +32,7 @@
                  for($i=0;$i<12;$i++){
                     $m = $i*5;
                     $select = "";
-                    if(tryGetData('mm', $edit_data,"5")==$m){
+                    if(tryGetData('mm', $edit_data,"0")==$m){
                         $select="selected";
                     }
 

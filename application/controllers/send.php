@@ -15,6 +15,12 @@ class Send extends IT_Controller {
 		$d = date("Y-m-d H:i:s");
 		$query = "SELECT sn,message FROM app_push WHERE flag_push=0 AND push_time <='${d}'";
 		$msg = $this->it_model->runSql($query)['data'];
+
+		if(count($msg)==0){
+			echo "no message";
+			return;
+		}
+
 		//ios
 		$push = new ApnsPHP_Push(
 			ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,

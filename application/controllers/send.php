@@ -9,6 +9,45 @@ class Send extends IT_Controller {
 	}
 
 	public function index() {
+		include_once APPPATH.'/third_party/ApnsPHP/Autoload.php';
+
+		//get unfire msg
+		$d = date("Y-m-d H:i:s");
+		$query = "SELECT sn,message FROM app_push WHERE flag_push=0 AND push_time <='${d}'";
+		$msg = $this->it_model->runSql($query)['data'];
+		//ios
+		$push = new ApnsPHP_Push(
+			ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,
+			'cert.pem'
+		);
+		$push->connect();
+
+		//get ios user;
+		$query = "SELECT token_id FROM sys_user WHERE token_type='2' AND token_id !=''";
+		$ios_ids = $this->it_model->runSql($query)['data'];
+		foreach ($ios_ids as $value) {
+			foreach ($msg as $single_msg) {
+				$iosUser = new ApnsPHP_Message($value['token_id']);
+				$iosUser->setBadge(1);
+				$iosUser->setSound();
+				$iosUser->setExpiry(30);
+				$iosUser->setText($single_msg['message']);
+				$push->add($iosUser);
+			}
+		}
+
+		$push->send();
+		// Disconnect from the Apple Push Notification Service
+		$push->disconnect();
+		// Examine the error message container
+		$aErrorQueue = $push->getErrors();
+		if (!empty($aErrorQueue)) {
+			var_dump($aErrorQueue);
+		}
+
+
+		//android
+
 		$apiKey = "AIzaSyAZ-RUOi_DZ9B-Xw_n95CvWXDOWCrXhQmM";
 		$gcm_url = 'https://android.googleapis.com/gcm/send';
 		//get android id
@@ -19,10 +58,7 @@ class Send extends IT_Controller {
 			array_push($android_tokens, $value['token_id']);
 		}
 
-		//get unfire msg
-		$d = date("Y-m-d H:i:s");
-		$query = "SELECT sn,message FROM app_push WHERE flag_push=0 AND push_time <='${d}'";
-		$msg = $this->it_model->runSql($query)['data'];
+
 
 		$headers = array('Content-Type: application/json',
 			'Authorization: key=' . $apiKey,

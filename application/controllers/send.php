@@ -23,7 +23,7 @@ class Send extends IT_Controller {
 
 		//ios
 		$push = new ApnsPHP_Push(
-			ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,
+			ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION,
 			'cert.pem'
 		);
 		$push->connect();

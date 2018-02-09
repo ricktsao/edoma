@@ -20,7 +20,7 @@ class Send_Api extends IT_Controller {
 		}
 
 		switch ($type) {
-			case 'i':
+			case '2':
 				include_once APPPATH.'/third_party/ApnsPHP/Autoload.php';
 				$push = new ApnsPHP_Push(
 					ApnsPHP_Abstract::ENVIRONMENT_PRODUCTION,
@@ -44,7 +44,7 @@ class Send_Api extends IT_Controller {
 				}
 				break;
 
-			case 'a':
+			case '1':
 				$apiKey = "AIzaSyAZ-RUOi_DZ9B-Xw_n95CvWXDOWCrXhQmM";
 				$gcm_url = 'https://android.googleapis.com/gcm/send';
 				$android_tokens = [];
